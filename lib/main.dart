@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:undealer/models/card_model.dart';
@@ -40,21 +41,48 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+class _MyHomePageState extends State<MyHomePage> {
   int? selectingIndex;
-  List<CommunityCardData> communityCards = List.generate(5, (_) => CommunityCardData());
+
+  final List<CommunityCardData> communityCards = List.generate(5, (_) => CommunityCardData());
 
   OverlayEntry? _overlayEntry;
   Suit? _selectedSuit;
   int? _panningCardValue;
   Offset? _panOrigin;
 
-  void _showSuitSelector(BuildContext context, Offset position) {
+  Set<Suit> getUnavailableSuitsForValue(int value) {
+    final Set<Suit> unavailable = {};
+    for (var card in communityCards) {
+      if (card.value == value && card.suit != null) {
+        unavailable.add(card.suit!);
+      }
+    }
+    return unavailable;
+  }
+
+  void setCommunityCard(int index, int value, Suit suit) {
+    setState(() {
+      communityCards[index].value = value;
+      communityCards[index].suit = suit;
+      communityCards[index].flipped = true;
+    });
+  }
+
+  void clearCard(int index) {
+    setState(() {
+      communityCards[index] = CommunityCardData();
+    });
+  }
+
+  void _showSuitSelector(BuildContext context, Offset position, int value) {
+    final unavailableSuits = getUnavailableSuitsForValue(value);
+
     _overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
         left: position.dx - 60,
         top: position.dy - 60,
-        child: SuitSelector(selectedSuit: _selectedSuit),
+        child: SuitSelector(selectedSuit: _selectedSuit, unavailableSuits: unavailableSuits),
       ),
     );
     Overlay.of(context).insert(_overlayEntry!);
@@ -65,18 +93,35 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     _overlayEntry = null;
   }
 
-  void _updateSuitSelection(Offset globalPosition) {
-    if (_panOrigin == null) return;
+  void _updateSuitSelection(Offset globalPosition, int value) {
+    if (_panOrigin == null) {
+      return;
+    }
 
+    final unavailableSuits = getUnavailableSuitsForValue(value);
     final offset = globalPosition - _panOrigin!;
     final distance = offset.distance;
 
     Suit? newSuit;
-    if (distance > 20) { // Deadzone
-      if (offset.dx.abs() > offset.dy.abs()) {
-        newSuit = offset.dx > 0 ? Suit.diamonds : Suit.spades;
+    if (distance > 20) {
+      // Deadzone
+      double angle = atan2(offset.dy, offset.dx);
+      if (angle < 0) {
+        angle += 2 * pi;
+      }
+
+      if (angle >= 7 * pi / 4 || angle < pi / 4) {
+        newSuit = Suit.diamonds;
+      } else if (angle >= pi / 4 && angle < 3 * pi / 4) {
+        newSuit = Suit.clubs;
+      } else if (angle >= 3 * pi / 4 && angle < 5 * pi / 4) {
+        newSuit = Suit.spades;
       } else {
-        newSuit = offset.dy < 0 ? Suit.hearts : Suit.clubs;
+        newSuit = Suit.hearts;
+      }
+
+      if (unavailableSuits.contains(newSuit)) {
+        newSuit = null;
       }
     }
 
@@ -89,56 +134,46 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   Widget valueButton(int val) {
-    return Builder(builder: (context) {
-      return GestureDetector(
-        onPanStart: (details) {
-          if (selectingIndex == null) return;
-
-          final cardBox = context.findRenderObject() as RenderBox;
-          final cardCenter = cardBox.localToGlobal(cardBox.size.center(Offset.zero));
-
-          setState(() {
-            _panningCardValue = val;
-            _panOrigin = cardCenter;
-            _selectedSuit = null;
-          });
-
-          _showSuitSelector(context, cardCenter);
-        },
-        onPanUpdate: (details) {
-          if (selectingIndex == null) return;
-          _updateSuitSelection(details.globalPosition);
-        },
-        onPanEnd: (details) {
-          if (selectingIndex != null && _selectedSuit != null && _panningCardValue == val) {
+    return Builder(
+      builder: (context) {
+        return GestureDetector(
+          onPanStart: (details) {
+            if (selectingIndex == null) {
+              return;
+            }
+            final cardBox = context.findRenderObject() as RenderBox;
+            final cardCenter = cardBox.localToGlobal(cardBox.size.center(Offset.zero));
             setState(() {
-              communityCards[selectingIndex!].value = _panningCardValue;
-              communityCards[selectingIndex!].suit = _selectedSuit;
-              communityCards[selectingIndex!].flipped = true;
-              selectingIndex = null;
+              _panningCardValue = val;
+              _panOrigin = cardCenter;
+              _selectedSuit = null;
             });
-          }
-          _removeSuitSelector();
-          setState(() {
-            _panningCardValue = null;
-            _panOrigin = null;
-            _selectedSuit = null;
-          });
-        },
-        onPanCancel: () {
-          _removeSuitSelector();
-          setState(() {
-            _panningCardValue = null;
-            _panOrigin = null;
-            _selectedSuit = null;
-          });
-        },
-        child: PokerCard(
-          value: val,
-          suit: _panningCardValue == val ? _selectedSuit : null,
-        ),
-      );
-    });
+            _showSuitSelector(context, cardCenter, val);
+          },
+          onPanUpdate: (details) {
+            if (selectingIndex == null) {
+              return;
+            }
+            _updateSuitSelection(details.globalPosition, val);
+          },
+          onPanEnd: (details) {
+            if (selectingIndex != null && _selectedSuit != null && _panningCardValue == val) {
+              setCommunityCard(selectingIndex!, val, _selectedSuit!);
+              setState(() {
+                selectingIndex = null;
+              });
+            }
+            _removeSuitSelector();
+            setState(() {
+              _panningCardValue = null;
+              _panOrigin = null;
+              _selectedSuit = null;
+            });
+          },
+          child: PokerCard(value: val, suit: _panningCardValue == val ? _selectedSuit : null),
+        );
+      },
+    );
   }
 
   @override
@@ -158,49 +193,48 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           padding: const EdgeInsets.all(25.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [valueButton(14), valueButton(2), valueButton(3), valueButton(4)]),
+              Row(spacing: 8, children: [valueButton(14), valueButton(2), valueButton(3), valueButton(4)]),
               const SizedBox(height: 12),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [valueButton(5), valueButton(6), valueButton(7)]),
+              Row(spacing: 8, children: [valueButton(5), valueButton(6), valueButton(7)]),
               const SizedBox(height: 12),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [valueButton(8), valueButton(9), valueButton(10)]),
+              Row(spacing: 8, children: [valueButton(8), valueButton(9), valueButton(10)]),
               const SizedBox(height: 12),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [valueButton(11), valueButton(12), valueButton(13)]),
+              Row(spacing: 8, children: [valueButton(11), valueButton(12), valueButton(13)]),
             ],
           ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        elevation: 2.0,
+        elevation: 0,
         height: 200,
-        padding: const EdgeInsets.all(0),
-        color: const Color(0x00000000),
+        color: Colors.transparent,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
               child: GradientText(
                 'River',
                 gradientDirection: GradientDirection.ttb,
-                colors: const [Color(0xFFC59090), Color(0xFF7E5B5B)],
-                style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w700),
+                colors: [Color(0xFFC59090), Color(0xFF7E5B5B)],
+                style: TextStyle(fontSize: 40, fontWeight: FontWeight.w700),
               ),
             ),
             Expanded(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 6,
                 children: List.generate(5, (index) {
                   final card = communityCards[index];
                   bool isActive = selectingIndex == index;
-                  bool isDisabled = selectingIndex != null && selectingIndex != index;
+                  bool isDisabled = selectingIndex != null && !isActive;
 
                   return AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     transform: Matrix4.identity()
-                      ..translate(isActive ? -6.0 : 0.0, isActive ? -30.0 : 0.0)
-                      ..scale(isActive ? 1.15 : 1.0),
+                      ..translate(0.0, isActive ? -20.0 : 0.0, 0.0)
+                      ..scale(isActive ? 1.1 : 1.0),
                     child: Opacity(
                       opacity: isDisabled ? 0.35 : 1,
                       child: IgnorePointer(
@@ -208,14 +242,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                         child: FlipCard(
                           flipped: card.flipped,
                           locked: card.flipped,
-                          onTap: () {
-                            if (card.value == null) {
-                              setState(() {
-                                selectingIndex = index;
-                              });
-                            }
-                          },
+                          onTap: () => setState(() => selectingIndex = index),
                           onLongPress: () {
+                            clearCard(index);
                             setState(() {
                               selectingIndex = index;
                             });

@@ -4,8 +4,9 @@ import 'package:undealer/models/suit.dart';
 
 class SuitSelector extends StatefulWidget {
   final Suit? selectedSuit;
+  final Set<Suit> unavailableSuits;
 
-  const SuitSelector({super.key, this.selectedSuit});
+  const SuitSelector({super.key, this.selectedSuit, this.unavailableSuits = const {}});
 
   @override
   State<SuitSelector> createState() => _SuitSelectorState();
@@ -17,10 +18,7 @@ class _SuitSelectorState extends State<SuitSelector> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 150),
-    )..forward();
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 100))..forward();
   }
 
   @override
@@ -35,11 +33,17 @@ class _SuitSelectorState extends State<SuitSelector> with SingleTickerProviderSt
       opacity: _controller,
       child: ScaleTransition(
         scale: _controller,
-        child: SizedBox(
-          width: 120,
-          height: 120,
-          child: CustomPaint(
-            painter: _RadialMenuPainter(selectedSuit: widget.selectedSuit),
+        child: PhysicalModel(
+          color: Colors.white,
+          elevation: 20,
+          shadowColor: Colors.black,
+          shape: BoxShape.circle,
+          child: SizedBox(
+            width: 120,
+            height: 120,
+            child: CustomPaint(
+              painter: _RadialMenuPainter(selectedSuit: widget.selectedSuit, unavailableSuits: widget.unavailableSuits),
+            ),
           ),
         ),
       ),
@@ -49,65 +53,67 @@ class _SuitSelectorState extends State<SuitSelector> with SingleTickerProviderSt
 
 class _RadialMenuPainter extends CustomPainter {
   final Suit? selectedSuit;
+  final Set<Suit> unavailableSuits;
 
-  _RadialMenuPainter({this.selectedSuit});
+  _RadialMenuPainter({this.selectedSuit, required this.unavailableSuits});
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    const radius = 40.0;
+    final radius = size.width / 2 + 20;
+    final rect = Rect.fromCircle(center: center, radius: radius);
 
+    // 1. Draw the main red background
+    final bgPaint = Paint()..color = const Color(0xFFFFFFFF);
+    canvas.drawCircle(center, radius, bgPaint);
+
+    // 2. Define suit properties
     final Map<Suit, Map<String, dynamic>> suitInfo = {
-      Suit.hearts: {
-        'offset': Offset(center.dx, center.dy - radius),
-        'symbol': '♥',
-        'color': Colors.red.shade700
-      },
-      Suit.spades: {
-        'offset': Offset(center.dx - radius, center.dy),
-        'symbol': '♠',
-        'color': Colors.black87
-      },
-      Suit.diamonds: {
-        'offset': Offset(center.dx + radius, center.dy),
-        'symbol': '♦',
-        'color': Colors.red.shade700
-      },
-      Suit.clubs: {
-        'offset': Offset(center.dx, center.dy + radius),
-        'symbol': '♣',
-        'color': Colors.black87
-      },
+      Suit.hearts: {'angle': -pi / 2, 'symbol': '♥', 'color': Colors.white},
+      Suit.diamonds: {'angle': 0, 'symbol': '♦', 'color': Colors.white},
+      Suit.clubs: {'angle': pi / 2, 'symbol': '♣', 'color': Colors.white},
+      Suit.spades: {'angle': pi, 'symbol': '♠', 'color': Colors.white},
     };
 
-    final bgPaint = Paint()..color = Colors.white.withOpacity(0.85);
-    canvas.drawCircle(center, radius + 25, bgPaint);
+    // 3. Draw highlight for the selected suit (if any)
+    if (selectedSuit != null && !unavailableSuits.contains(selectedSuit)) {
+      final highlightPaint = Paint()..color = Colors.pinkAccent.withAlpha(30);
+      final startAngle = suitInfo[selectedSuit!]!['angle'] - (pi / 4);
+      const sweepAngle = pi / 2;
+      canvas.drawArc(rect, startAngle, sweepAngle, true, highlightPaint);
+    }
 
+    // 4. Draw the dividers
+    final dividerPaint = Paint()
+      ..color = Colors.grey.withAlpha(40)
+      ..strokeWidth = 4;
+
+    canvas.drawLine(center + Offset.fromDirection(-pi / 4, radius), center + Offset.fromDirection(3 * pi / 4, radius), dividerPaint);
+    canvas.drawLine(center + Offset.fromDirection(pi / 4, radius), center + Offset.fromDirection(5 * pi / 4, radius), dividerPaint);
+
+    // 5. Draw suit symbols
     suitInfo.forEach((suit, data) {
-      final isSelected = selectedSuit == suit;
-      final selectedPaint = Paint()..color = Colors.blue.withOpacity(0.4);
+      final isUnavailable = unavailableSuits.contains(suit);
+      final symbolAngle = data['angle'];
+      final symbolRadius = radius * 0.5;
+      final symbolPosition = center + Offset(cos(symbolAngle) * symbolRadius, sin(symbolAngle) * symbolRadius);
 
-      if (isSelected) {
-        canvas.drawCircle(data['offset'], 22, selectedPaint);
-      }
+      final textColor = isUnavailable ? (data['color'] as Color).withOpacity(0.3) : data['color'];
 
       final textPainter = TextPainter(
         text: TextSpan(
           text: data['symbol'],
-          style: TextStyle(
-            fontSize: 32,
-            color: data['color'],
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          ),
+          style: TextStyle(fontSize: 30, color: textColor),
         ),
         textDirection: TextDirection.ltr,
       )..layout();
 
-      textPainter.paint(
-          canvas, data['offset'] - Offset(textPainter.width / 2, textPainter.height / 2));
+      textPainter.paint(canvas, symbolPosition - Offset(textPainter.width / 2, textPainter.height / 2));
     });
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _RadialMenuPainter oldDelegate) {
+    return oldDelegate.selectedSuit != selectedSuit || oldDelegate.unavailableSuits != unavailableSuits;
+  }
 }
