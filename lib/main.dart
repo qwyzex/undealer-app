@@ -212,14 +212,36 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
-              child: GradientText(
-                'River',
-                gradientDirection: GradientDirection.ttb,
-                colors: [Color(0xFFC59090), Color(0xFF7E5B5B)],
-                style: TextStyle(fontSize: 40, fontWeight: FontWeight.w700),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    // SWITCH BETWEEN COMMUNITY AND PLAYERS HOLE CARD
+                    IconButton(onPressed: () => {}, icon: Icon(Icons.spoke_rounded)),
+                    // TEXT DISPLAYING THE CURRENT STAGE OF COMMUNITY CARDS (FLOP, TURN, RIVER)
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
+                      child: GradientText(
+                        'River',
+                        gradientDirection: GradientDirection.ttb,
+                        colors: [Color(0xFFC59090), Color(0xFF7E5B5B)],
+                        style: TextStyle(fontSize: 40, fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ],
+                ),
+                // EVALUATION LOGIC BUTTON TO DETERMINE THE WINNING HAND
+                TextButton(
+                  onPressed: () => {},
+                  child: GradientText(
+                    "EVAL",
+                    colors: [Colors.red, Colors.orange],
+
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, fontFamily: 'Lexend'),
+                  ),
+                ),
+              ],
             ),
             Expanded(
               child: Row(

@@ -25,7 +25,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-    void clearCard(int index) {
+  void clearCard(int index) {
     communityCards[index] = CommunityCardData();
     notifyListeners();
   }

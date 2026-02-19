@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.undealer"
+    namespace = "com.love.undealer"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
