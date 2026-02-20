@@ -82,17 +82,32 @@ class AppState extends ChangeNotifier {
 
   /// Assign a value + suit to one of a player's two cards.
   void setPlayerCard(int playerIndex, int cardIndex, int value, Suit suit) {
+    // unlike community cards we don't persist a "flipped" state; the UI
+    // always hides hole cards when the player is collapsed and shows them
+    // while expanded.  Storing flipped would only matter if we wanted to
+    // animate the flip later, so we just set the value/suit here.
     if (playerIndex < 0 || playerIndex >= players.length) return;
     final player = players[playerIndex];
     final card = cardIndex == 0 ? player.card1 : player.card2;
     card.value = value;
     card.suit = suit;
-    card.flipped = true;
     notifyListeners();
   }
 
   void clearCard(int index) {
     communityCards[index] = CommunityCardData();
+    notifyListeners();
+  }
+
+  /// Reset a player's individual hole card, leaving the player expanded if
+  /// they were already.
+  void clearPlayerCard(int playerIndex, int cardIndex) {
+    if (playerIndex < 0 || playerIndex >= players.length) return;
+    final player = players[playerIndex];
+    final card = cardIndex == 0 ? player.card1 : player.card2;
+    card.value = null;
+    card.suit = null;
+    card.flipped = false;
     notifyListeners();
   }
 }

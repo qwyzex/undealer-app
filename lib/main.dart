@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'widgets/player_tab.dart';
 import 'package:provider/provider.dart';
+import 'package:vector_math/vector_math_64.dart' show Vector3;
 import '/app_state.dart';
 
 import 'package:flutter/material.dart';
@@ -92,6 +93,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void setPlayerCard(int playerIndex, int cardIndex, int value, Suit suit) {
     context.read<AppState>().setPlayerCard(playerIndex, cardIndex, value, suit);
+  }
+
+  void clearPlayerCard(int playerIndex, int cardIndex) {
+    context.read<AppState>().clearPlayerCard(playerIndex, cardIndex);
   }
 
   void _showSuitSelector(BuildContext context, Offset position, int value) {
@@ -386,8 +391,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           transform: Matrix4.identity()
-                            ..translate(0.0, isActive ? -20.0 : 0.0, 0.0)
-                            ..scale(isActive ? 1.1 : 1.0),
+                            ..translateByVector3(
+                              Vector3(0.0, isActive ? -20.0 : 0.0, 0.0),
+                            )
+                            ..scaleByVector3(Vector3.all(isActive ? 1.1 : 1.0)),
                           child: Opacity(
                             opacity: isDisabled ? 0.35 : 1,
                             child: IgnorePointer(

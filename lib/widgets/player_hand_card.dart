@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vector_math/vector_math_64.dart' show Vector3;
 import 'package:undealer/models/player_hand.dart';
 import 'package:undealer/widgets/poker_card.dart';
 import 'package:undealer/widgets/flip_card.dart';
@@ -12,7 +13,15 @@ class PlayerHandCard extends StatelessWidget {
   final VoidCallback onExpand;
   final Function(int cardIndex) onSelectCard;
 
-  const PlayerHandCard({super.key, required this.hand, required this.playerIndex, required this.isEditingThisHand, required this.onExpand, required this.onSelectCard, this.selectedCardIndex});
+  const PlayerHandCard({
+    super.key,
+    required this.hand,
+    required this.playerIndex,
+    required this.isEditingThisHand,
+    required this.onExpand,
+    required this.onSelectCard,
+    this.selectedCardIndex,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +46,11 @@ class PlayerHandCard extends StatelessWidget {
           strokeWidth: 2,
           dashPattern: const [6, 4],
         ),
-        child: const SizedBox(width: 70, height: 98, child: Icon(Icons.add, color: Colors.white54, size: 40)),
+        child: const SizedBox(
+          width: 70,
+          height: 98,
+          child: Icon(Icons.add, color: Colors.white54, size: 40),
+        ),
       ),
     );
   }
@@ -52,12 +65,19 @@ class PlayerHandCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            transform: Matrix4.identity()..translate(0.0, isCardSelected ? -20.0 : 0.0),
+            transform: Matrix4.identity()
+              ..translateByVector3(
+                Vector3(0.0, isCardSelected ? -20.0 : 0.0, 0.0),
+              ),
             child: FlipCard(
               flipped: card.flipped,
               locked: card.flipped,
               onTap: () => onSelectCard(index),
-              front: PokerCard(value: card.value ?? 0, suit: card.suit, small: true),
+              front: PokerCard(
+                value: card.value ?? 0,
+                suit: card.suit,
+                small: true,
+              ),
               back: const PokerCard(value: 0, small: true, showBack: true),
             ),
           ),
@@ -74,7 +94,10 @@ class PlayerHandCard extends StatelessWidget {
         height: 98,
         child: Stack(
           children: [
-            Transform.translate(offset: const Offset(8, 0), child: const PokerCard(value: 0, small: true, showBack: true)),
+            Transform.translate(
+              offset: const Offset(8, 0),
+              child: const PokerCard(value: 0, small: true, showBack: true),
+            ),
             const PokerCard(value: 0, small: true, showBack: true),
           ],
         ),
