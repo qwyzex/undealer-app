@@ -93,9 +93,7 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
               return Transform(
                 alignment: Alignment.center,
                 transform: Matrix4.rotationY(angle),
-                child: _flipAnimation.value < 0.5
-                    ? widget.back
-                    : Transform(alignment: Alignment.center, transform: Matrix4.rotationY(3.1416), child: widget.front),
+                child: _flipAnimation.value < 0.5 ? widget.back : Transform(alignment: Alignment.center, transform: Matrix4.rotationY(3.1416), child: widget.front),
               );
             },
           ),
@@ -105,12 +103,7 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
               builder: (context, _) => SizedBox(
                 width: 60,
                 height: 60,
-                child: CircularProgressIndicator(
-                  value: _progressController!.value,
-                  strokeWidth: 6,
-                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.white70),
-                  backgroundColor: Colors.black26,
-                ),
+                child: CircularProgressIndicator(value: _progressController!.value, strokeWidth: 6, valueColor: const AlwaysStoppedAnimation<Color>(Colors.white70), backgroundColor: Colors.black26),
               ),
             ),
         ],

@@ -2,8 +2,55 @@ import 'package:flutter/foundation.dart';
 import 'package:undealer/models/card_model.dart';
 import 'package:undealer/models/suit.dart';
 
+class PlayerData {
+  PlayerData({
+    CommunityCardData? card1,
+    CommunityCardData? card2,
+    this.isExpanded = false,
+  }) : card1 = card1 ?? CommunityCardData(),
+       card2 = card2 ?? CommunityCardData();
+
+  CommunityCardData card1;
+  CommunityCardData card2;
+  bool isExpanded;
+}
+
 class AppState extends ChangeNotifier {
-  final List<CommunityCardData> communityCards = List.generate(5, (_) => CommunityCardData());
+  final List<CommunityCardData> communityCards = List.generate(
+    5,
+    (_) => CommunityCardData(),
+  );
+
+  final List<PlayerData> players = [];
+
+  static const int maxPlayers = 20;
+
+  void addPlayer() {
+    if (players.length >= maxPlayers) return;
+
+    players.add(
+      PlayerData(
+        card1: CommunityCardData(), // empty
+        card2: CommunityCardData(),
+      ),
+    );
+
+    notifyListeners();
+  }
+
+  void togglePlayerExpansion(int index) {
+    players[index].isExpanded = !players[index].isExpanded;
+    notifyListeners();
+  }
+
+  /// Collapse every player's expanded cards. Useful when tapping outside or
+  /// after finishing edits.
+  void collapseAllPlayers() {
+    for (var player in players) {
+      player.isExpanded = false;
+    }
+    notifyListeners();
+  }
 
   // In the future, you can add player hands here
 
@@ -14,7 +61,15 @@ class AppState extends ChangeNotifier {
         unavailable.add(card.suit!);
       }
     }
-    // In the future, also check player hands
+    // also include cards already assigned to players so we don't duplicate
+    for (var player in players) {
+      if (player.card1.value == value && player.card1.suit != null) {
+        unavailable.add(player.card1.suit!);
+      }
+      if (player.card2.value == value && player.card2.suit != null) {
+        unavailable.add(player.card2.suit!);
+      }
+    }
     return unavailable;
   }
 
@@ -22,6 +77,17 @@ class AppState extends ChangeNotifier {
     communityCards[index].value = value;
     communityCards[index].suit = suit;
     communityCards[index].flipped = true;
+    notifyListeners();
+  }
+
+  /// Assign a value + suit to one of a player's two cards.
+  void setPlayerCard(int playerIndex, int cardIndex, int value, Suit suit) {
+    if (playerIndex < 0 || playerIndex >= players.length) return;
+    final player = players[playerIndex];
+    final card = cardIndex == 0 ? player.card1 : player.card2;
+    card.value = value;
+    card.suit = suit;
+    card.flipped = true;
     notifyListeners();
   }
 
