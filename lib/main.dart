@@ -377,6 +377,13 @@ class _MyHomePageState extends State<MyHomePage> {
                           selectingCommunityIndex = null;
                         });
                       },
+                      onClearCard: () => {
+                        setState(() {
+                          editingPlayerIndex = null;
+                          editingPlayerCardIndex = null;
+                          selectingCommunityIndex = null;
+                        }),
+                      },
                     )
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
