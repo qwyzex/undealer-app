@@ -5,10 +5,20 @@ class FlipCard extends StatefulWidget {
   final Widget back;
   final bool locked;
   final bool flipped;
+  final bool inverseLocked;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
 
-  const FlipCard({super.key, required this.front, required this.back, required this.flipped, required this.locked, this.onTap, this.onLongPress});
+  const FlipCard({
+    super.key,
+    required this.front,
+    required this.back,
+    required this.flipped,
+    required this.locked,
+    this.inverseLocked = false,
+    this.onTap,
+    this.onLongPress,
+  });
 
   @override
   State<FlipCard> createState() => _FlipCardState();
@@ -23,7 +33,10 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _flipController = AnimationController(duration: const Duration(milliseconds: 150), vsync: this);
+    _flipController = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
 
     if (widget.flipped) {
       _flipController.value = 1;
@@ -45,9 +58,14 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
   }
 
   void _onLongPressStart(LongPressStartDetails _) {
-    if (!widget.locked) return;
+    if (!widget.inverseLocked == !widget.locked) {
+      if (!widget.locked) return;
+    }
 
-    _progressController = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
+    _progressController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
     _progressController!.forward().whenComplete(() {
       if (!mounted) return;
       // If animation completes, it means it wasn't cancelled.
@@ -93,7 +111,13 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
               return Transform(
                 alignment: Alignment.center,
                 transform: Matrix4.rotationY(angle),
-                child: _flipAnimation.value < 0.5 ? widget.back : Transform(alignment: Alignment.center, transform: Matrix4.rotationY(3.1416), child: widget.front),
+                child: _flipAnimation.value < 0.5
+                    ? widget.back
+                    : Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.rotationY(3.1416),
+                        child: widget.front,
+                      ),
               );
             },
           ),
@@ -103,7 +127,14 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
               builder: (context, _) => SizedBox(
                 width: 60,
                 height: 60,
-                child: CircularProgressIndicator(value: _progressController!.value, strokeWidth: 6, valueColor: const AlwaysStoppedAnimation<Color>(Colors.white70), backgroundColor: Colors.black26),
+                child: CircularProgressIndicator(
+                  value: _progressController!.value,
+                  strokeWidth: 6,
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    Colors.white70,
+                  ),
+                  backgroundColor: Colors.black26,
+                ),
               ),
             ),
         ],

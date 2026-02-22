@@ -38,6 +38,12 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void deletePlayer(int index) {
+    if (index < 0 || index >= players.length) return;
+    players.removeAt(index);
+    notifyListeners();
+  }
+
   void togglePlayerExpansion(int index) {
     players[index].isExpanded = !players[index].isExpanded;
     notifyListeners();

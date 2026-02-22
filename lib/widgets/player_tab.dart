@@ -170,19 +170,35 @@ class _PlayerCard extends StatelessWidget {
     // ClipRect prevents children from overflowing during the animation.
 
     final playerDisabled = isAnyCardActive && activeCardIndex == null;
+
+    void handleLongPress() {
+      if (!player.isExpanded) {
+        // stacked state: remove this player
+        context.read<AppState>().deletePlayer(playerIndex);
+      } else {
+        // expanded state: toggle expansion as before
+        onExpand();
+      }
+    }
+
     return SizedBox(
       width: player.isExpanded ? 200 : 130,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        // only allow tapping to collapse/expand when the player is not
-        // already expanded; when expanded we rely on the inner cards' own
-        // detectors so they can be tapped.
-        onTap: player.isExpanded ? null : onExpand,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-
-          margin: const EdgeInsets.only(right: 16),
-          child: player.isExpanded
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        // margin: const EdgeInsets.only(right: 16),
+        child: FlipCard(
+          // behavior: HitTestBehavior.opaque,
+          // only allow tapping to collapse/expand when the player is not
+          // already expanded; when expanded we rely on the inner cards' own
+          // detectors so they can be tapped.
+          back: Container(),
+          flipped: true,
+          locked: false,
+          inverseLocked: true,
+          onTap: player.isExpanded ? null : onExpand,
+          // onTap: () => {print("object")},
+          onLongPress: handleLongPress,
+          front: player.isExpanded
               ? _ExpandedCards(
                   player: player,
                   playerIndex: playerIndex,
@@ -204,12 +220,12 @@ class _PlayerCard extends StatelessWidget {
                   player: player,
                   playerIndex: playerIndex,
                   disabled: playerDisabled,
-                  onLongPressCard: (cardIndex) {
-                    context.read<AppState>().clearPlayerCard(
-                      playerIndex,
-                      cardIndex,
-                    );
-                  },
+                  // onLongPressCard: (cardIndex) {
+                  //   context.read<AppState>().clearPlayerCard(
+                  //     playerIndex,
+                  //     cardIndex,
+                  //   );
+                  // },
                 ),
         ),
       ),
@@ -221,13 +237,13 @@ class _StackedCards extends StatelessWidget {
   final PlayerData player;
   final int playerIndex;
   final bool disabled;
-  final void Function(int cardIndex) onLongPressCard;
+  // final void Function(int cardIndex) onLongPressCard;
 
   const _StackedCards({
     required this.player,
     required this.playerIndex,
     required this.disabled,
-    required this.onLongPressCard,
+    // required this.onLongPressCard,
   });
 
   @override
@@ -236,19 +252,28 @@ class _StackedCards extends StatelessWidget {
     return Stack(
       alignment: Alignment.center,
       children: [
-        Positioned(left: 28, top: 15, child: _buildCard(player.card1, 0)),
-        Positioned(right: 27, child: _buildCard(player.card2, 1)),
+        Positioned(right: 30, top: 17, child: _buildCard(player.card1, 0)),
+        Positioned(left: 24, child: _buildCard(player.card2, 1)),
+        Positioned(left: 28, bottom: 16, child: _indicator(0)),
+        Positioned(left: 40, bottom: 16, child: _indicator(1)),
       ],
     );
   }
 
-  Widget _separator() {
+  Widget _indicator(int cardNum) {
     return Container(
-      width: 2,
-      height: 70,
+      width: 10,
+      height: 10,
       decoration: BoxDecoration(
-        color: AppColors.textColorDim.withAlpha(60),
-        borderRadius: BorderRadius.circular(2),
+        color: cardNum == 0
+            ? player.card1.value != null && player.card1.value! > 1
+                  ? Colors.green
+                  : Colors.red
+            : player.card2.value != null && player.card2.value! > 1
+            ? Colors.green
+            : Colors.red,
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.primary, width: 2),
       ),
     );
   }
@@ -257,7 +282,7 @@ class _StackedCards extends StatelessWidget {
     return Opacity(
       opacity: disabled ? 0.35 : 1,
       child: GestureDetector(
-        onLongPress: disabled ? null : () => onLongPressCard(cardIndex),
+        // onLongPress: disabled ? null : () => onLongPressCard(cardIndex),
         child: SizedBox(
           width: 70,
           child: PokerCard(
