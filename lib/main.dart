@@ -17,12 +17,7 @@ import 'package:undealer/widgets/suit_selector.dart';
 // }
 
 void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => AppState(),
-      child: const UndealerApp(),
-    ),
-  );
+  runApp(ChangeNotifierProvider(create: (_) => AppState(), child: const UndealerApp()));
 }
 
 class UndealerApp extends StatelessWidget {
@@ -34,12 +29,8 @@ class UndealerApp extends StatelessWidget {
       title: 'Undealer',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.background),
-        appBarTheme: const AppBarThemeData(
-          backgroundColor: AppColors.background,
-        ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Color(0x00000000),
-        ),
+        appBarTheme: const AppBarThemeData(backgroundColor: AppColors.background),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(backgroundColor: Color(0x00000000)),
         useMaterial3: true,
         scaffoldBackgroundColor: AppColors.background,
         fontFamily: 'Lexend',
@@ -106,10 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (context) => Positioned(
         left: position.dx - 60,
         top: position.dy - 60,
-        child: SuitSelector(
-          selectedSuit: _selectedSuit,
-          unavailableSuits: unavailableSuits,
-        ),
+        child: SuitSelector(selectedSuit: _selectedSuit, unavailableSuits: unavailableSuits),
       ),
     );
     Overlay.of(context).insert(_overlayEntry!);
@@ -165,16 +153,12 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (context) {
         return GestureDetector(
           onPanStart: (details) {
-            if (selectingCommunityIndex == null &&
-                (editingPlayerIndex == null ||
-                    editingPlayerCardIndex == null)) {
+            if (selectingCommunityIndex == null && (editingPlayerIndex == null || editingPlayerCardIndex == null)) {
               // nothing to edit (either no target or no card chosen)
               return;
             }
             final cardBox = context.findRenderObject() as RenderBox;
-            final cardCenter = cardBox.localToGlobal(
-              cardBox.size.center(Offset.zero),
-            );
+            final cardCenter = cardBox.localToGlobal(cardBox.size.center(Offset.zero));
             setState(() {
               _panningCardValue = val;
               _panOrigin = cardCenter;
@@ -183,9 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
             _showSuitSelector(context, cardCenter, val);
           },
           onPanUpdate: (details) {
-            if (selectingCommunityIndex == null &&
-                (editingPlayerIndex == null ||
-                    editingPlayerCardIndex == null)) {
+            if (selectingCommunityIndex == null && (editingPlayerIndex == null || editingPlayerCardIndex == null)) {
               return;
             }
             _updateSuitSelection(details.globalPosition, val);
@@ -195,14 +177,8 @@ class _MyHomePageState extends State<MyHomePage> {
               if (selectingCommunityIndex != null) {
                 setCommunityCard(selectingCommunityIndex!, val, _selectedSuit!);
                 selectingCommunityIndex = null;
-              } else if (editingPlayerIndex != null &&
-                  editingPlayerCardIndex != null) {
-                setPlayerCard(
-                  editingPlayerIndex!,
-                  editingPlayerCardIndex!,
-                  val,
-                  _selectedSuit!,
-                );
+              } else if (editingPlayerIndex != null && editingPlayerCardIndex != null) {
+                setPlayerCard(editingPlayerIndex!, editingPlayerCardIndex!, val, _selectedSuit!);
                 // keep the player expanded so the other hole card can be set;
                 // clear only the card index so a subsequent tap will choose the
                 // other card.
@@ -216,10 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
               _selectedSuit = null;
             });
           },
-          child: PokerCard(
-            value: val,
-            suit: _panningCardValue == val ? _selectedSuit : null,
-          ),
+          child: PokerCard(value: val, suit: _panningCardValue == val ? _selectedSuit : null),
         );
       },
     );
@@ -227,27 +200,32 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int openedCardTab = 1;
 
+  String getStage(int tableStage) {
+    switch (tableStage) {
+      case 0:
+        return "Flop";
+      case 1:
+        return "Turn";
+      case 2:
+        return "River";
+      default:
+        return "Table";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
           widget.title,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF532B2B),
-            fontSize: 30,
-            letterSpacing: 2,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF532B2B), fontSize: 30, letterSpacing: 2),
         ),
-        leading: IconButton(
-          onPressed: () => {},
-          icon: const Icon(Icons.arrow_back_ios),
-        ),
-        actions: [
-          IconButton(onPressed: () => {}, icon: const Icon(Icons.menu)),
-        ],
+        leading: IconButton(onPressed: () => {}, icon: const Icon(Icons.arrow_back_ios)),
+        actions: [IconButton(onPressed: () => {}, icon: const Icon(Icons.menu))],
       ),
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
@@ -266,30 +244,13 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(
-                  spacing: 8,
-                  children: [
-                    valueButton(14),
-                    valueButton(2),
-                    valueButton(3),
-                    valueButton(4),
-                  ],
-                ),
+                Row(spacing: 8, children: [valueButton(14), valueButton(2), valueButton(3), valueButton(4)]),
                 const SizedBox(height: 12),
-                Row(
-                  spacing: 8,
-                  children: [valueButton(5), valueButton(6), valueButton(7)],
-                ),
+                Row(spacing: 8, children: [valueButton(5), valueButton(6), valueButton(7)]),
                 const SizedBox(height: 12),
-                Row(
-                  spacing: 8,
-                  children: [valueButton(8), valueButton(9), valueButton(10)],
-                ),
+                Row(spacing: 8, children: [valueButton(8), valueButton(9), valueButton(10)]),
                 const SizedBox(height: 12),
-                Row(
-                  spacing: 8,
-                  children: [valueButton(11), valueButton(12), valueButton(13)],
-                ),
+                Row(spacing: 8, children: [valueButton(11), valueButton(12), valueButton(13)]),
               ],
             ),
           ),
@@ -320,20 +281,18 @@ class _MyHomePageState extends State<MyHomePage> {
                         });
                       },
                       icon: Icon(Icons.spoke_rounded),
-                      color: openedCardTab == 1
-                          ? Color(0xFFC59090)
-                          : Color(0xFF7E5B5B),
+                      color: openedCardTab == 1 ? Color(0xFFC59090) : Color(0xFF7E5B5B),
                     ),
                     // TEXT DISPLAYING THE CURRENT STAGE OF COMMUNITY CARDS (FLOP, TURN, RIVER)
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
-                      child: GradientText(
-                        'River',
-                        gradientDirection: GradientDirection.ttb,
-                        colors: [Color(0xFFC59090), Color(0xFF7E5B5B)],
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.w700,
+                    GestureDetector(
+                      onTap: () => context.read<AppState>().nextStage(),
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
+                        child: GradientText(
+                          getStage(appState.tableStage),
+                          gradientDirection: GradientDirection.ttb,
+                          colors: [Color(0xFFC59090), Color(0xFF7E5B5B)],
+                          style: TextStyle(fontSize: 40, fontWeight: FontWeight.w700),
                         ),
                       ),
                     ),
@@ -345,12 +304,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: GradientText(
                     "EVAL",
                     colors: [Colors.red, Colors.orange],
-
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'Lexend',
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, fontFamily: 'Lexend'),
                   ),
                 ),
               ],
@@ -362,9 +316,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       editingPlayerCardIndex: editingPlayerCardIndex,
                       onExpand: (playerIndex) {
                         // tapping the top-level card either expands or collapses
-                        context.read<AppState>().togglePlayerExpansion(
-                          playerIndex,
-                        );
+                        context.read<AppState>().togglePlayerExpansion(playerIndex);
                         // when expanding we also clear any community selection
                         setState(() {
                           selectingCommunityIndex = null;
@@ -389,18 +341,18 @@ class _MyHomePageState extends State<MyHomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       spacing: 6,
                       children: List.generate(5, (index) {
-                        final appState = context.watch<AppState>();
                         final card = appState.communityCards[index];
                         bool isActive = selectingCommunityIndex == index;
-                        bool isDisabled =
-                            selectingCommunityIndex != null && !isActive;
+
+                        bool isCardDisabledForSelection = selectingCommunityIndex != null && !isActive;
+                        bool isCardDisabledByStage =
+                            (appState.tableStage == 0 && index > 2) || (appState.tableStage == 1 && index > 3);
+                        bool isDisabled = isCardDisabledForSelection || isCardDisabledByStage;
 
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           transform: Matrix4.identity()
-                            ..translateByVector3(
-                              Vector3(0.0, isActive ? -20.0 : 0.0, 0.0),
-                            )
+                            ..translateByVector3(Vector3(0.0, isActive ? -20.0 : 0.0, 0.0))
                             ..scaleByVector3(Vector3.all(isActive ? 1.1 : 1.0)),
                           child: Opacity(
                             opacity: isDisabled ? 0.35 : 1,
@@ -427,17 +379,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                     selectingCommunityIndex = index;
                                   });
                                 },
-                                front: PokerCard(
-                                  value: card.value ?? 0,
-                                  suit: card.suit,
-                                  small: true,
-                                  showBack: false,
-                                ),
-                                back: const PokerCard(
-                                  value: 0,
-                                  small: true,
-                                  showBack: true,
-                                ),
+                                front: PokerCard(value: card.value ?? 0, suit: card.suit, small: true, showBack: false),
+                                back: const PokerCard(value: 0, small: true, showBack: true),
                               ),
                             ),
                           ),
