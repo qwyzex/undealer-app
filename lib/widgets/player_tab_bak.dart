@@ -156,135 +156,43 @@ class _PlayerCard extends StatelessWidget {
       }
     }
 
-    Widget _separator() {
-      return IgnorePointer(
-        ignoring: true,
-        child: Container(
-          width: 2,
-          height: 70,
-          decoration: BoxDecoration(color: AppColors.textColorDim.withAlpha(player.isExpanded ? 100 : 0), borderRadius: BorderRadius.circular(2)),
-        ),
-      );
-    }
-
-    Widget _indicator(int cardNum) {
-      return IgnorePointer(
-        ignoring: true,
-        child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 250),
-          opacity: player.isExpanded ? 0 : 1,
-          child: Container(
-            width: 10,
-            height: 10,
-            decoration: BoxDecoration(
-              color: cardNum == 0
-                  ? player.card1.value != null && player.card1.value! > 1
-                        ? Colors.green
-                        : Colors.red
-                  : player.card2.value != null && player.card2.value! > 1
-                  ? Colors.green
-                  : Colors.red,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.primary, width: 2),
-            ),
-          ),
-        ),
-      );
-    }
-
-    Widget _buildCard(CommunityCardData card, int cardIndex) {
-      final bool isActive = isEditing && editingCardIndex == cardIndex;
-      final bool isDisabled = isAnyCardActive && !isActive;
-
-      return GestureDetector(
-        // if already active, tapping again clears the selection.
-        // otherwise, select this card for editing.
-        onTap: isActive ? onClearCard : () => onSelectCard(cardIndex),
-        onLongPress: isDisabled
-            ? null
-            : () => (cardIndex) {
-                // clear a card when long‑pressed
-                context.read<AppState>().clearPlayerCard(playerIndex, cardIndex);
-              },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            transform: Matrix4.identity()..scaleByVector3(Vector3.all(isActive ? 1.1 : 1.0)),
-            transformAlignment: Alignment.center,
-            child: AnimatedOpacity(
-              duration: const Duration(milliseconds: 150),
-              opacity: isDisabled ? 0.35 : 1,
-              child: FlipCard(
-                flipped: card.value != null,
-                locked: false,
-                onTap: isActive ? onClearCard : () => onSelectCard(cardIndex),
-                front: PokerCard(value: card.value ?? 0, suit: card.suit, small: true, showBack: false),
-                back: PokerCard(value: 0, small: true, showBack: true),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      width: player.isExpanded ? 180 : 90,
+    return Container(
+      width: player.isExpanded ? 180 : 80,
+      // color: Colors.red,
       margin: const EdgeInsets.only(right: 16),
-      // color: player.isExpanded ? Colors.red : Colors.blue,
-      // onTap: player.isExpanded ? null : onExpand,
-      // onLongPress: handleLongPress,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Margin separator
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 8, child: _separator()),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), right: 8, child: _separator()),
-
-          // CARDs
-          AnimatedPositioned(duration: Duration(milliseconds: 250), right: player.isExpanded ? 12 : 0, top: !player.isExpanded ? 20 : 10.5, child: _buildCard(player.card1, 0)),
-          // AnimatedPositioned(duration: Duration(milliseconds: 250), child: child, duration: duration)(left: 0, child: IgnorePointer(ignoring: true, child: _buildCard(player.card2, 1))),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: player.isExpanded ? 12 : 0, child: _buildCard(player.card2, 1)),
-
-          // Card assigned indicator
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 9, bottom: 18, child: _indicator(0)),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 18, bottom: 18, child: _indicator(1)),
-
-          // Overlay
-          Expanded(
-            child: IgnorePointer(
-              ignoring: player.isExpanded,
-              child: FlipCard(
-                flipped: true,
-                locked: false,
-                inverseLocked: true,
-                onTap: player.isExpanded ? null : onExpand,
-                onLongPress: handleLongPress,
-                front: Container(color: Colors.transparent),
-                back: Container(),
-              ),
-            ),
-          ),
-        ],
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        // margin: const EdgeInsets.only(right: 16),
+        child: FlipCard(
+          // behavior: HitTestBehavior.opaque,
+          // only allow tapping to collapse/expand when the player is not
+          // already expanded; when expanded we rely on the inner cards' own
+          // detectors so they can be tapped.
+          back: Container(),
+          flipped: true,
+          locked: false,
+          inverseLocked: true,
+          onTap: player.isExpanded ? null : onExpand,
+          // onTap: () => {print("object")},
+          onLongPress: handleLongPress,
+          front: player.isExpanded
+              ? _ExpandedCards(
+                  player: player,
+                  playerIndex: playerIndex,
+                  isEditingThisPlayer: isEditing,
+                  editingCardIndex: editingCardIndex,
+                  activeCardIndex: activeCardIndex,
+                  isAnyCardActive: isAnyCardActive,
+                  onSelectCard: onSelectCard,
+                  onClearCard: onClearCard,
+                  onLongPressCard: (cardIndex) {
+                    // clear a card when long‑pressed
+                    context.read<AppState>().clearPlayerCard(playerIndex, cardIndex);
+                  },
+                )
+              : _StackedCards(player: player, playerIndex: playerIndex, disabled: playerDisabled),
+        ),
       ),
-
-      //   player.isExpanded
-      //       ? _ExpandedCards(
-      //           player: player,
-      //           playerIndex: playerIndex,
-      //           isEditingThisPlayer: isEditing,
-      //           editingCardIndex: editingCardIndex,
-      //           activeCardIndex: activeCardIndex,
-      //           isAnyCardActive: isAnyCardActive,
-      //           onSelectCard: onSelectCard,
-      //           onClearCard: onClearCard,
-      //           onLongPressCard: (cardIndex) {
-      //             // clear a card when long‑pressed
-      //             context.read<AppState>().clearPlayerCard(playerIndex, cardIndex);
-      //           },
-      //         )
-      //       : _StackedCards(player: player, playerIndex: playerIndex, disabled: playerDisabled),
     );
   }
 }
