@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:undealer/models/card_model.dart';
 import 'package:undealer/models/suit.dart';
+import 'package:flutter/material.dart';
 
 class PlayerData {
   PlayerData({
@@ -23,6 +24,8 @@ class AppState extends ChangeNotifier {
 
   final List<PlayerData> players = [];
 
+  final GlobalKey addPlayerRefKey = GlobalKey();
+
   static const int maxPlayers = 20;
 
   void addPlayer() {
@@ -35,8 +38,21 @@ class AppState extends ChangeNotifier {
       ),
     );
 
+    final context = addPlayerRefKey.currentContext;
+    if (context != null) {
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(
+          milliseconds: 500,
+        ), // Optional animation duration
+        curve: Curves.easeInOut, // Optional animation curve
+      );
+    }
+
     notifyListeners();
   }
+
+  void scrollToFocus() {}
 
   void deletePlayer(int index) {
     if (index < 0 || index >= players.length) return;

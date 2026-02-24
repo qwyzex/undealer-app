@@ -42,10 +42,16 @@ class PlayerTab extends StatelessWidget {
         physics: const BouncingScrollPhysics(),
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: appState.players.length + 1,
+        itemCount: appState.players.length + 2,
         itemBuilder: (context, index) {
+          if (index == appState.players.length + 1) {
+            return _GhostReference(
+              key: context.read<AppState>().addPlayerRefKey,
+            );
+          }
+
           if (index == appState.players.length) {
-            // Add player card
+            // "Add player" card
             if (appState.players.length >= AppState.maxPlayers) {
               return const SizedBox();
             }
@@ -76,6 +82,15 @@ class PlayerTab extends StatelessWidget {
   }
 }
 
+class _GhostReference extends StatelessWidget {
+  const _GhostReference({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(width: 165, color: Colors.transparent);
+  }
+}
+
 class _AddPlayerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -85,7 +100,8 @@ class _AddPlayerCard extends StatelessWidget {
       onTap: () => appState.addPlayer(),
       child: Container(
         width: 90,
-        margin: const EdgeInsets.only(right: 16),
+        height: 90,
+        // margin: const EdgeInsets.only(left: 20),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey, style: BorderStyle.solid),
           borderRadius: BorderRadius.circular(12),
@@ -181,8 +197,10 @@ class _PlayerCard extends StatelessWidget {
       }
     }
 
-    return SizedBox(
-      width: player.isExpanded ? 200 : 130,
+    return Container(
+      width: player.isExpanded ? 180 : 80,
+      // color: Colors.red,
+      margin: const EdgeInsets.only(right: 16),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         // margin: const EdgeInsets.only(right: 16),
@@ -252,10 +270,10 @@ class _StackedCards extends StatelessWidget {
     return Stack(
       alignment: Alignment.center,
       children: [
-        Positioned(right: 30, top: 17, child: _buildCard(player.card1, 0)),
-        Positioned(left: 24, child: _buildCard(player.card2, 1)),
-        Positioned(left: 28, bottom: 16, child: _indicator(0)),
-        Positioned(left: 40, bottom: 16, child: _indicator(1)),
+        Positioned(right: 0, top: 20, child: _buildCard(player.card2, 1)),
+        Positioned(left: 0, child: _buildCard(player.card1, 0)),
+        Positioned(left: 6, bottom: 18, child: _indicator(0)),
+        Positioned(left: 18, bottom: 18, child: _indicator(1)),
       ],
     );
   }
@@ -338,7 +356,7 @@ class _ExpandedCards extends StatelessWidget {
       width: 2,
       height: 70,
       decoration: BoxDecoration(
-        color: AppColors.textColorDim.withAlpha(60),
+        color: AppColors.textColorDim.withAlpha(100),
         borderRadius: BorderRadius.circular(2),
       ),
     );
