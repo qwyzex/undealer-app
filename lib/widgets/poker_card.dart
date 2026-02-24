@@ -24,31 +24,32 @@ class PokerCard extends StatelessWidget {
     double fontSizeVal = small ? 34 : 42;
 
     String valOf(number) {
-      if (number == 2) {
+      switch (number) {
+      case 2:
         return "2";
-      } else if (number == 3) {
+      case 3:
         return "3";
-      } else if (number == 4) {
+      case 4:
         return "4";
-      } else if (number == 5) {
+      case 5:
         return "5";
-      } else if (number == 6) {
+      case 6:
         return "6";
-      } else if (number == 7) {
+      case 7:
         return "7";
-      } else if (number == 8) {
+      case 8:
         return "8";
-      } else if (number == 9) {
+      caee 9:
         return "9";
-      } else if (number == 10) {
+      case 10:
         return "10";
-      } else if (number == 11) {
+      caee 11:
         return "J";
-      } else if (number == 12) {
+      case 12:
         return "Q";
-      } else if (number == 13) {
+      case 13:
         return "K";
-      } else if (number == 14) {
+      case 14:
         return "A";
       }
 
