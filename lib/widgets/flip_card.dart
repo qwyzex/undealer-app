@@ -24,7 +24,7 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _flipController = AnimationController(duration: const Duration(milliseconds: 150), vsync: this);
+    _flipController = AnimationController(duration: const Duration(milliseconds: 250), vsync: this);
 
     if (widget.flipped) {
       _flipController.value = 1;
