@@ -284,16 +284,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       color: openedCardTab == 1 ? Color(0xFFC59090) : Color(0xFF7E5B5B),
                     ),
                     // TEXT DISPLAYING THE CURRENT STAGE OF COMMUNITY CARDS (FLOP, TURN, RIVER)
-                    GestureDetector(
-                      onTap: () => context.read<AppState>().nextStage(),
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
-                        child: GradientText(
-                          getStage(appState.tableStage),
-                          gradientDirection: GradientDirection.ttb,
-                          colors: [Color(0xFFC59090), Color(0xFF7E5B5B)],
-                          style: TextStyle(fontSize: 40, fontWeight: FontWeight.w700),
-                        ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
+                      child: GradientText(
+                        getStage(appState.tableStage),
+                        gradientDirection: GradientDirection.ttb,
+                        colors: [Color(0xFFC59090), Color(0xFF7E5B5B)],
+                        style: TextStyle(fontSize: 40, fontWeight: FontWeight.w700),
                       ),
                     ),
                   ],
