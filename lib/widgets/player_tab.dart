@@ -248,8 +248,8 @@ class _PlayerCard extends StatelessWidget {
           AnimatedPositioned(duration: Duration(milliseconds: 250), left: player.isExpanded ? 12 : 0, child: _buildCard(player.card2, 1)),
 
           // Card assigned indicator
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 9, bottom: 18, child: _indicator(0)),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 18, bottom: 18, child: _indicator(1)),
+          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 9 + (player.isExpanded ? 10 : 0), bottom: 18, child: _indicator(0)),
+          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 18 + (player.isExpanded ? 10 : 0), bottom: 18, child: _indicator(1)),
 
           // Overlay
           Expanded(
@@ -268,23 +268,6 @@ class _PlayerCard extends StatelessWidget {
           ),
         ],
       ),
-
-      //   player.isExpanded
-      //       ? _ExpandedCards(
-      //           player: player,
-      //           playerIndex: playerIndex,
-      //           isEditingThisPlayer: isEditing,
-      //           editingCardIndex: editingCardIndex,
-      //           activeCardIndex: activeCardIndex,
-      //           isAnyCardActive: isAnyCardActive,
-      //           onSelectCard: onSelectCard,
-      //           onClearCard: onClearCard,
-      //           onLongPressCard: (cardIndex) {
-      //             // clear a card when long‑pressed
-      //             context.read<AppState>().clearPlayerCard(playerIndex, cardIndex);
-      //           },
-      //         )
-      //       : _StackedCards(player: player, playerIndex: playerIndex, disabled: playerDisabled),
     );
   }
 }

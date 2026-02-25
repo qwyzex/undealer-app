@@ -345,17 +345,16 @@ class _MyHomePageState extends State<MyHomePage> {
                         bool isActive = selectingCommunityIndex == index;
 
                         bool isCardDisabledForSelection = selectingCommunityIndex != null && !isActive;
-                        bool isCardDisabledByStage =
-                            (appState.tableStage == 0 && index > 2) || (appState.tableStage == 1 && index > 3);
+                        bool isCardDisabledByStage = (appState.tableStage == 0 && index > 2) || (appState.tableStage == 1 && index > 3);
                         bool isDisabled = isCardDisabledForSelection || isCardDisabledByStage;
 
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           transform: Matrix4.identity()
-                            ..translateByVector3(Vector3(0.0, isActive ? -20.0 : 0.0, 0.0))
-                            ..scaleByVector3(Vector3.all(isActive ? 1.1 : 1.0)),
+                            ..translateByVector3(Vector3(isActive ? -10 : 0, isActive ? -15.0 : 0.0, 0.0))
+                            ..scaleByVector3(Vector3.all(isActive ? 1.2 : 1.0)),
                           child: Opacity(
-                            opacity: isDisabled ? 0.35 : 1,
+                            opacity: isDisabled ? 0.4 : 1,
                             child: IgnorePointer(
                               ignoring: isDisabled,
                               child: FlipCard(
