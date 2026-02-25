@@ -12,10 +12,6 @@ import 'package:undealer/widgets/flip_card.dart';
 import 'package:undealer/widgets/poker_card.dart';
 import 'package:undealer/widgets/suit_selector.dart';
 
-// void main() {
-//   runApp(const UndealerApp());
-// }
-
 void main() {
   runApp(ChangeNotifierProvider(create: (_) => AppState(), child: const UndealerApp()));
 }

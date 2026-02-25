@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:undealer/models/card_model.dart';
 import 'package:undealer/models/suit.dart';
 import 'package:flutter/material.dart';
@@ -99,11 +98,11 @@ class AppState extends ChangeNotifier {
 
     // Auto-advance logic:
     // If we just finished the Flop (index 2), move to Turn
-    if (index == 2 && tableStage == 0)
+    if (index == 2 && tableStage == 0) {
       tableStage = 1;
-    // If we just finished the Turn (index 3), move to River
-    else if (index == 3 && tableStage == 1)
+    } else if (index == 3 && tableStage == 1) {
       tableStage = 2;
+    }
 
     notifyListeners();
   }

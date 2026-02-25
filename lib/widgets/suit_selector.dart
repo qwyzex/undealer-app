@@ -98,7 +98,7 @@ class _RadialMenuPainter extends CustomPainter {
       final symbolRadius = radius * 0.5;
       final symbolPosition = center + Offset(cos(symbolAngle) * symbolRadius, sin(symbolAngle) * symbolRadius);
 
-      final textColor = isUnavailable ? (data['color'] as Color).withOpacity(0.3) : data['color'];
+      final textColor = isUnavailable ? (data['color'] as Color).withAlpha(80) : data['color'];
 
       final textPainter = TextPainter(
         text: TextSpan(

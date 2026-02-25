@@ -144,8 +144,6 @@ class _PlayerCard extends StatelessWidget {
     // width grows when expanded so the second card has space; wrapping ine
     // ClipRect prevents children from overflowing during the animation.
 
-    final playerDisabled = isAnyCardActive && activeCardIndex == null;
-
     void handleLongPress() {
       if (!player.isExpanded) {
         // stacked state: remove this player
@@ -156,7 +154,7 @@ class _PlayerCard extends StatelessWidget {
       }
     }
 
-    Widget _separator() {
+    Widget separator() {
       return IgnorePointer(
         ignoring: true,
         child: Container(
@@ -167,7 +165,7 @@ class _PlayerCard extends StatelessWidget {
       );
     }
 
-    Widget _indicator(int cardNum) {
+    Widget indicator(int cardNum) {
       return IgnorePointer(
         ignoring: true,
         child: AnimatedOpacity(
@@ -192,7 +190,7 @@ class _PlayerCard extends StatelessWidget {
       );
     }
 
-    Widget _buildCard(CommunityCardData card, int cardIndex) {
+    Widget buildCard(CommunityCardData card, int cardIndex) {
       final bool isActive = isEditing && editingCardIndex == cardIndex;
       final bool isDisabled = isAnyCardActive && !isActive;
 
@@ -240,16 +238,16 @@ class _PlayerCard extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           // Margin separator
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 8, child: _separator()),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), right: 8, child: _separator()),
+          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 8, child: separator()),
+          AnimatedPositioned(duration: Duration(milliseconds: 250), right: 8, child: separator()),
 
           // CARDs
-          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, right: player.isExpanded ? 12 : 0, top: !player.isExpanded ? 20 : 10.5, child: _buildCard(player.card1, 0)),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, left: player.isExpanded ? 12 : 0, child: _buildCard(player.card2, 1)),
+          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, right: player.isExpanded ? 12 : 0, top: !player.isExpanded ? 20 : 10.5, child: buildCard(player.card1, 0)),
+          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, left: player.isExpanded ? 12 : 0, child: buildCard(player.card2, 1)),
 
           // Card assigned indicator
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 9 + (player.isExpanded ? 10 : 0), bottom: 18, child: _indicator(0)),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 18 + (player.isExpanded ? 10 : 0), bottom: 18, child: _indicator(1)),
+          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 9 + (player.isExpanded ? 10 : 0), bottom: 18, child: indicator(0)),
+          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 18 + (player.isExpanded ? 10 : 0), bottom: 18, child: indicator(1)),
 
           // Overlay
           Expanded(
