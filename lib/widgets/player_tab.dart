@@ -230,6 +230,7 @@ class _PlayerCard extends StatelessWidget {
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
       width: player.isExpanded ? 180 : 90,
       margin: const EdgeInsets.only(right: 16),
       // color: player.isExpanded ? Colors.red : Colors.blue,
@@ -243,9 +244,8 @@ class _PlayerCard extends StatelessWidget {
           AnimatedPositioned(duration: Duration(milliseconds: 250), right: 8, child: _separator()),
 
           // CARDs
-          AnimatedPositioned(duration: Duration(milliseconds: 250), right: player.isExpanded ? 12 : 0, top: !player.isExpanded ? 20 : 10.5, child: _buildCard(player.card1, 0)),
-          // AnimatedPositioned(duration: Duration(milliseconds: 250), child: child, duration: duration)(left: 0, child: IgnorePointer(ignoring: true, child: _buildCard(player.card2, 1))),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: player.isExpanded ? 12 : 0, child: _buildCard(player.card2, 1)),
+          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, right: player.isExpanded ? 12 : 0, top: !player.isExpanded ? 20 : 10.5, child: _buildCard(player.card1, 0)),
+          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, left: player.isExpanded ? 12 : 0, child: _buildCard(player.card2, 1)),
 
           // Card assigned indicator
           AnimatedPositioned(duration: Duration(milliseconds: 250), left: 9 + (player.isExpanded ? 10 : 0), bottom: 18, child: _indicator(0)),
