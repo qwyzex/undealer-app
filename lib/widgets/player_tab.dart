@@ -216,7 +216,7 @@ class _PlayerCard extends StatelessWidget {
               duration: const Duration(milliseconds: 150),
               opacity: isDisabled ? 0.35 : 1,
               child: FlipCard(
-                flipped: card.value != null,
+                flipped: card.value != null && player.isExpanded,
                 locked: false,
                 onTap: isActive ? onClearCard : () => onSelectCard(cardIndex),
                 front: PokerCard(value: card.value ?? 0, suit: card.suit, small: true, showBack: false),
