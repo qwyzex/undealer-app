@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:scaffold_gradient_background/scaffold_gradient_background.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
+import 'package:undealer/components/quick_play.dart';
 import 'package:undealer/theme/colors.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,21 +17,27 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return ScaffoldGradientBackground(
       gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFFde896b), Color(0xFFF4E9DE)]),
+
+      appBar: AppBar(
+        title: Text("undealer"),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.transparent,
+        shadowColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        titleTextStyle: TextStyle(fontFamily: 'Lexend', fontWeight: FontWeight.w700, fontSize: 30, color: AppColors.primary),
+      ),
+
       body: SafeArea(
         child: Stack(
+          alignment: Alignment.center,
           children: [
             ListView.builder(
               physics: const BouncingScrollPhysics(),
-              itemCount: 30,
+              itemCount: 1,
               scrollDirection: Axis.vertical,
               itemBuilder: (context, index) {
-                return Center(
-                  child: GradientText(
-                    "UNDEALER",
-                    colors: [AppColors.background, AppColors.primaryLighter],
-                    style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w700),
-                  ),
-                );
+                return QuickPlay();
               },
             ),
 
