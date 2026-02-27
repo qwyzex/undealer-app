@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
+import 'package:undealer/components/primary_button.dart';
 import 'package:undealer/models/suit.dart';
 import 'package:undealer/theme/colors.dart';
 import 'package:undealer/widgets/poker_card.dart';
@@ -25,12 +26,14 @@ class QuickPlay extends StatelessWidget {
             padding: EdgeInsetsGeometry.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GradientText(
                   "Quick Play!",
                   colors: [AppColors.textColor, AppColors.textColorDim],
                   style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700),
                 ),
+                PrimaryButton(buttonText: "Play"),
               ],
             ),
           ),
