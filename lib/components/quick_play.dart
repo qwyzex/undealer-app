@@ -67,7 +67,7 @@ class QuickPlay extends StatelessWidget {
                           buttonText: "Play",
                           onTap: () => {
                             // route to table screen
-                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer'))),
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer'))),
                           },
                         ),
                         PrimaryButton(buttonText: "Settings"),

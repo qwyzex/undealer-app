@@ -195,7 +195,7 @@ class _TableRoomState extends State<TableRoom> {
           widget.title,
           style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF532B2B), fontSize: 30, letterSpacing: 2),
         ),
-        leading: IconButton(onPressed: () => {}, icon: const Icon(Icons.arrow_back_ios)),
+        leading: IconButton(onPressed: () => {Navigator.pop(context)}, icon: const Icon(Icons.arrow_back_ios)),
         actions: [IconButton(onPressed: () => {}, icon: const Icon(Icons.menu))],
       ),
       body: GestureDetector(
