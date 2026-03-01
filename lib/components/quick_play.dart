@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:undealer/app_state.dart';
 import 'package:undealer/components/primary_button.dart';
-import 'package:undealer/components/secondary_buttons.dart';
 import 'package:undealer/models/suit.dart';
 import 'package:undealer/screens/game_options_screen.dart';
 import 'package:undealer/screens/table_screen.dart';
@@ -53,6 +52,7 @@ class QuickPlay extends StatelessWidget {
           ),
           Positioned.fill(
             child: Padding(
+              // padding: const EdgeInsets.only(left: 10, right: 10, bottom: 20, top: 20),
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -75,12 +75,15 @@ class QuickPlay extends StatelessWidget {
                         if (appState.hasSavedGame) ...[
                           PrimaryButton(
                             buttonText: "Continue",
+                            width: 160,
                             onTap: () {
                               Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
                             },
                           ),
-                          SecondaryButton(
+                          PrimaryButton(
+                            secondary: true,
                             buttonText: "New Game",
+                            width: 160,
                             onTap: () {
                               delayCardUIUpdate(context, appState);
                             },
@@ -88,12 +91,15 @@ class QuickPlay extends StatelessWidget {
                         ] else ...[
                           PrimaryButton(
                             buttonText: "Play",
+                            // width: 160,
                             onTap: () {
                               Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
                             },
                           ),
-                          SecondaryButton(
-                            buttonText: "Settings",
+                          PrimaryButton(
+                            secondary: true,
+                            buttonText: "Customize",
+                            width: 160,
                             onTap: () {
                               Navigator.push(context, MaterialPageRoute(builder: (context) => const GameOptionsScreen()));
                             },
