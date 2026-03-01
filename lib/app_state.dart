@@ -96,9 +96,11 @@ class AppState extends ChangeNotifier {
     communityCards[index].suit = suit;
     communityCards[index].flipped = true;
 
+    final bool isTrueFlop = communityCards[0].value != null && communityCards[1].value != null && communityCards[2].value != null;
+
     // Auto-advance logic:
     // If we just finished the Flop (index 2), move to Turn
-    if (index == 2 && tableStage == 0) {
+    if (isTrueFlop && tableStage == 0) {
       tableStage = 1;
     } else if (index == 3 && tableStage == 1) {
       tableStage = 2;
