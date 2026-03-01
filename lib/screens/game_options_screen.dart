@@ -29,15 +29,18 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
         height: 150,
         color: Colors.transparent,
         child: Column(
-          // spacing: 20,
+          spacing: 15,
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.stretch, // Stretch children to fill width
           children: [
             PrimaryButton(
               buttonText: "Create new game",
+              height: 50,
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
               },
             ),
-            PrimaryButton(secondary: true, buttonText: "Cancel"),
+            PrimaryButton(height: 50, onTap: () => {}, secondary: true, buttonText: "Cancel"),
           ],
         ),
       ),

@@ -208,11 +208,11 @@ class _PlayerCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
+            duration: const Duration(milliseconds: 250),
             transform: Matrix4.identity()..scaleByVector3(Vector3.all(isActive ? 1.1 : 1.0)),
             transformAlignment: Alignment.center,
             child: AnimatedOpacity(
-              duration: const Duration(milliseconds: 150),
+              duration: const Duration(milliseconds: 250),
               opacity: isDisabled ? 0.35 : 1,
               child: FlipCard(
                 flipped: card.value != null && player.isExpanded,
@@ -229,7 +229,7 @@ class _PlayerCard extends StatelessWidget {
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
-      curve: Curves.easeInOut,
+      curve: Curves.ease,
       width: player.isExpanded ? 180 : 90,
       margin: const EdgeInsets.only(right: 16),
       // color: player.isExpanded ? Colors.red : Colors.blue,
@@ -239,12 +239,12 @@ class _PlayerCard extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           // Margin separator
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 8, child: separator()),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), right: 8, child: separator()),
+          AnimatedPositioned(duration: Duration(milliseconds: 250), left: player.isExpanded ? 8 : 0, child: separator()),
+          AnimatedPositioned(duration: Duration(milliseconds: 250), right: player.isExpanded ? 8 : 0, child: separator()),
 
           // CARDs
-          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, right: player.isExpanded ? 12 : 0, top: !player.isExpanded ? 20 : 10.5, child: buildCard(player.card1, 0)),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, left: player.isExpanded ? 12 : 0, child: buildCard(player.card2, 1)),
+          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, right: player.isExpanded ? 12 : 0, top: player.isExpanded ? 10.5 : 20, child: buildCard(player.card1, 0)),
+          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, left: player.isExpanded ? 12 : 0, top: 10.5, child: buildCard(player.card2, 1)),
 
           // Card assigned indicator
           AnimatedPositioned(duration: Duration(milliseconds: 250), left: 9 + (player.isExpanded ? 10 : 0), bottom: 18, child: indicator(0)),
