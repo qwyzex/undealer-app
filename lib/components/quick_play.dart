@@ -33,7 +33,7 @@ class QuickPlay extends StatelessWidget {
             bottom: -17,
             child: Transform.rotate(
               angle: -math.pi / 30,
-              child: const PokerCard(value: 14, suit: Suit.spades),
+              child: PokerCard(value: context.read<AppState>().communityCards[3].value ?? 14, suit: context.read<AppState>().communityCards[3].suit ?? Suit.spades),
             ),
           ),
           Positioned(
@@ -41,7 +41,7 @@ class QuickPlay extends StatelessWidget {
             bottom: -12,
             child: Transform.rotate(
               angle: math.pi / 30,
-              child: const PokerCard(value: 13, suit: Suit.hearts),
+              child: PokerCard(value: context.read<AppState>().communityCards[4].value ?? 13, suit: context.read<AppState>().communityCards[4].suit ?? Suit.hearts),
             ),
           ),
           Positioned.fill(
