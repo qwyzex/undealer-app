@@ -9,13 +9,7 @@ class PokerCard extends StatelessWidget {
   final bool small;
   final bool showBack;
 
-  const PokerCard({
-    super.key,
-    required this.value,
-    this.suit,
-    this.small = false,
-    this.showBack = false,
-  });
+  const PokerCard({super.key, required this.value, this.suit, this.small = false, this.showBack = false});
 
   @override
   Widget build(BuildContext context) {
@@ -93,11 +87,7 @@ class PokerCard extends StatelessWidget {
     } else {
       valueWidget = Text(
         valOf(value),
-        style: TextStyle(
-          fontSize: fontSizeVal,
-          fontWeight: FontWeight.w900,
-          color: getSuitColor(suit),
-        ),
+        style: TextStyle(fontSize: fontSizeVal, fontWeight: FontWeight.w900, color: getSuitColor(suit)),
       );
     }
 
@@ -108,19 +98,10 @@ class PokerCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         color: showBack ? const Color(0xFF3A1A1A) : Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withAlpha(25),
-            spreadRadius: 4,
-            blurRadius: 10,
-            offset: const Offset(1, 6),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.grey.withAlpha(25), spreadRadius: 4, blurRadius: 10, offset: const Offset(1, 6))],
       ),
       child: showBack
-          ? const Center(
-              child: Icon(Icons.casino, color: Colors.white, size: 28),
-            )
+          ? const Center(child: Icon(Icons.casino, color: Colors.white, size: 28))
           : Padding(
               padding: const EdgeInsets.fromLTRB(12, 6, 0, 0),
               child: Column(
@@ -133,11 +114,7 @@ class PokerCard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 2.0),
                       child: Text(
                         getSuitSymbol(suit),
-                        style: TextStyle(
-                          fontSize: small ? 18 : 22,
-                          color: getSuitColor(suit),
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(fontSize: small ? 18 : 22, color: getSuitColor(suit), fontWeight: FontWeight.bold),
                       ),
                     ),
                 ],

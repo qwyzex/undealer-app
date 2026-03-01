@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:undealer/models/card_model.dart';
+import 'package:undealer/models/game_options.dart';
 import 'package:undealer/models/player_model.dart';
 import 'package:undealer/models/suit.dart';
 import 'package:flutter/material.dart';
@@ -10,17 +11,24 @@ class AppState extends ChangeNotifier {
     loadState();
   }
 
+  // PRIMITIVES
   List<CommunityCardData> communityCards = List.generate(5, (_) => CommunityCardData());
   List<PlayerData> players = [];
   final GlobalKey addPlayerRefKey = GlobalKey();
+  static const int maxPlayers = 20;
 
+  // SETTINGS OPTIONS
+  // This is the "Initial" value, but loadState() will overwrite this if data exists in storage.
+  GameOptionsModel gameOptions = GameOptionsModel(lockPlayerCount: true, setPlayerCount: 6, dontCalculateFolds: false, playerAssignTheirOwnCard: true, test: "LOVE");
+
+  /// TABLE STAGES
   /// 0: Flop, 1: Turn, 2: River
   int tableStage = 0;
 
-  static const int maxPlayers = 20;
-
+  // PERSISTENCE SAVE STATES
   bool get hasSavedGame => players.isNotEmpty || communityCards.any((c) => c.value != null);
 
+  // ACTIONS
   void setTableStage(int stage) {
     if (stage >= 0 && stage <= 2) {
       tableStage = stage;
@@ -51,11 +59,7 @@ class AppState extends ChangeNotifier {
 
     final context = addPlayerRefKey.currentContext;
     if (context != null) {
-      Scrollable.ensureVisible(
-        context,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
+      Scrollable.ensureVisible(context, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
     }
 
     notifyListeners();
@@ -141,6 +145,16 @@ class AppState extends ChangeNotifier {
     communityCards = List.generate(5, (_) => CommunityCardData());
     players = [];
     tableStage = 0;
+
+    // Reset game options to default values
+    gameOptions = GameOptionsModel(lockPlayerCount: false, setPlayerCount: 6, dontCalculateFolds: false, playerAssignTheirOwnCard: true, test: "LOVE");
+
+    saveState();
+    notifyListeners();
+  }
+
+  void updateGameOptions(GameOptionsModel options) {
+    gameOptions = options;
     saveState();
     notifyListeners();
   }
@@ -148,30 +162,28 @@ class AppState extends ChangeNotifier {
   // Persistence logic
   Future<void> saveState() async {
     final prefs = await SharedPreferences.getInstance();
-    final stateData = {
-      'communityCards': communityCards.map((c) => c.toJson()).toList(),
-      'players': players.map((p) => p.toJson()).toList(),
-      'tableStage': tableStage,
-    };
+    final stateData = {'communityCards': communityCards.map((c) => c.toJson()).toList(), 'players': players.map((p) => p.toJson()).toList(), 'tableStage': tableStage, 'gameOptions': gameOptions.toJson()};
     await prefs.setString('game_state', jsonEncode(stateData));
   }
 
   Future<void> loadState() async {
     final prefs = await SharedPreferences.getInstance();
     final String? stateString = prefs.getString('game_state');
+
     if (stateString != null) {
       final Map<String, dynamic> stateData = jsonDecode(stateString);
-      
-      communityCards = (stateData['communityCards'] as List)
-          .map((c) => CommunityCardData.fromJson(c))
-          .toList();
-      
-      players = (stateData['players'] as List)
-          .map((p) => PlayerData.fromJson(p))
-          .toList();
-      
+
+      communityCards = (stateData['communityCards'] as List).map((c) => CommunityCardData.fromJson(c)).toList();
+      players = (stateData['players'] as List).map((p) => PlayerData.fromJson(p)).toList();
       tableStage = stateData['tableStage'] ?? 0;
+
+      if (stateData['gameOptions'] != null) {
+        gameOptions = GameOptionsModel.fromJson(stateData['gameOptions']);
+      }
       notifyListeners();
+    } else {
+      // If no saved state exists, save the default one (which has "LOVE")
+      saveState();
     }
   }
 }

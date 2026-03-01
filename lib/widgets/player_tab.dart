@@ -39,7 +39,8 @@ class PlayerTab extends StatelessWidget {
         itemCount: appState.players.length + 2,
         itemBuilder: (context, index) {
           if (index == appState.players.length + 1) {
-            return _GhostReference(key: context.read<AppState>().addPlayerRefKey);
+            // return _GhostReference(key: context.read<AppState>().addPlayerRefKey);
+            return Text(appState.gameOptions.lockPlayerCount.toString());
           }
 
           if (index == appState.players.length) {
@@ -47,7 +48,7 @@ class PlayerTab extends StatelessWidget {
             if (appState.players.length >= AppState.maxPlayers) {
               return const SizedBox();
             }
-            return _AddPlayerCard();
+            return appState.gameOptions.lockPlayerCount ? Container() : _AddPlayerCard();
           }
 
           final anyActive = editingPlayerIndex != null && editingPlayerCardIndex != null;

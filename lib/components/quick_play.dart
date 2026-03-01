@@ -15,8 +15,8 @@ class QuickPlay extends StatelessWidget {
   const QuickPlay({super.key});
 
   Future<void> delayCardUIUpdate(BuildContext context, AppState appState) async {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
-    await Future.delayed(const Duration(milliseconds: 25));
+    //   Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
+    //   await Future.delayed(const Duration(milliseconds: 25));
     appState.resetGame();
   }
 
@@ -93,6 +93,7 @@ class QuickPlay extends StatelessWidget {
                             buttonText: "Play",
                             // width: 160,
                             onTap: () {
+                              appState.resetGame();
                               Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
                             },
                           ),
