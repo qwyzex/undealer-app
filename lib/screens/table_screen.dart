@@ -65,11 +65,12 @@ class _TableRoomState extends State<TableRoom> {
     final unavailableSuits = getUnavailableSuitsForValue(value);
 
     _overlayEntry = OverlayEntry(
-      builder: (context) => Positioned(
-        left: position.dx - 60,
-        top: position.dy - 60,
-        child: SuitSelector(selectedSuit: _selectedSuit, unavailableSuits: unavailableSuits),
-      ),
+      builder: (context) =>
+          Positioned(
+            left: position.dx - 60,
+            top: position.dy - 60,
+            child: SuitSelector(selectedSuit: _selectedSuit, unavailableSuits: unavailableSuits),
+          ),
     );
     Overlay.of(context).insert(_overlayEntry!);
   }
@@ -280,80 +281,81 @@ class _TableRoomState extends State<TableRoom> {
             Expanded(
               child: openedCardTab == 2
                   ? PlayerTab(
-                      editingPlayerIndex: editingPlayerIndex,
-                      editingPlayerCardIndex: editingPlayerCardIndex,
-                      onExpand: (playerIndex) {
-                        // tapping the top-level card either expands or collapses
-                        context.read<AppState>().togglePlayerExpansion(playerIndex);
-                        // when expanding we also clear any community selection
-                        setState(() {
-                          selectingCommunityIndex = null;
-                        });
-                      },
-                      onSelectCard: (playerIndex, cardIndex) {
-                        setState(() {
-                          editingPlayerIndex = playerIndex;
-                          editingPlayerCardIndex = cardIndex;
-                          selectingCommunityIndex = null;
-                        });
-                      },
-                      onClearCard: () => {
-                        setState(() {
-                          editingPlayerIndex = null;
-                          editingPlayerCardIndex = null;
-                          selectingCommunityIndex = null;
-                        }),
-                      },
-                    )
+                editingPlayerIndex: editingPlayerIndex,
+                editingPlayerCardIndex: editingPlayerCardIndex,
+                onExpand: (playerIndex) {
+                  // tapping the top-level card either expands or collapses
+                  context.read<AppState>().togglePlayerExpansion(playerIndex);
+                  // when expanding we also clear any community selection
+                  setState(() {
+                    selectingCommunityIndex = null;
+                  });
+                },
+                onSelectCard: (playerIndex, cardIndex) {
+                  setState(() {
+                    editingPlayerIndex = playerIndex;
+                    editingPlayerCardIndex = cardIndex;
+                    selectingCommunityIndex = null;
+                  });
+                },
+                onClearCard: () =>
+                {
+                  setState(() {
+                    editingPlayerIndex = null;
+                    editingPlayerCardIndex = null;
+                    selectingCommunityIndex = null;
+                  }),
+                },
+              )
                   : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      spacing: 6,
-                      children: List.generate(5, (index) {
-                        final card = appState.communityCards[index];
-                        bool isActive = selectingCommunityIndex == index;
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 6,
+                children: List.generate(5, (index) {
+                  final card = appState.communityCards[index];
+                  bool isActive = selectingCommunityIndex == index;
 
-                        bool isCardDisabledForSelection = selectingCommunityIndex != null && !isActive;
-                        bool isCardDisabledByStage = (appState.tableStage == 0 && index > 2) || (appState.tableStage == 1 && index > 3);
-                        bool isDisabled = isCardDisabledForSelection || isCardDisabledByStage;
+                  bool isCardDisabledForSelection = selectingCommunityIndex != null && !isActive;
+                  bool isCardDisabledByStage = (appState.tableStage == 0 && index > 2) || (appState.tableStage == 1 && index > 3);
+                  bool isDisabled = isCardDisabledForSelection || isCardDisabledByStage;
 
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          transform: Matrix4.identity()
-                            ..translateByVector3(Vector3(isActive ? -10 : 0, isActive ? -15.0 : 0.0, 0.0))
-                            ..scaleByVector3(Vector3.all(isActive ? 1.2 : 1.0)),
-                          child: Opacity(
-                            opacity: isDisabled ? 0.4 : 1,
-                            child: IgnorePointer(
-                              ignoring: isDisabled,
-                              child: FlipCard(
-                                flipped: card.flipped,
-                                locked: card.flipped,
-                                onTap: () {
-                                  // collapse any open player cards
-                                  context.read<AppState>().collapseAllPlayers();
-                                  setState(() {
-                                    editingPlayerIndex = null;
-                                    editingPlayerCardIndex = null;
-                                    selectingCommunityIndex = index;
-                                  });
-                                },
-                                onLongPress: () {
-                                  clearCard(index);
-                                  context.read<AppState>().collapseAllPlayers();
-                                  setState(() {
-                                    editingPlayerIndex = null;
-                                    editingPlayerCardIndex = null;
-                                    selectingCommunityIndex = index;
-                                  });
-                                },
-                                front: PokerCard(value: card.value ?? 0, suit: card.suit, small: true, showBack: false),
-                                back: const PokerCard(value: 0, small: true, showBack: true),
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    transform: Matrix4.identity()
+                      ..translateByVector3(Vector3(isActive ? -10 : 0, isActive ? -15.0 : 0.0, 0.0))
+                      ..scaleByVector3(Vector3.all(isActive ? 1.2 : 1.0)),
+                    child: Opacity(
+                      opacity: isDisabled ? 0.4 : 1,
+                      child: IgnorePointer(
+                        ignoring: isDisabled,
+                        child: FlipCard(
+                          flipped: card.flipped,
+                          locked: card.flipped,
+                          onTap: () {
+                            // collapse any open player cards
+                            context.read<AppState>().collapseAllPlayers();
+                            setState(() {
+                              editingPlayerIndex = null;
+                              editingPlayerCardIndex = null;
+                              selectingCommunityIndex = index;
+                            });
+                          },
+                          onLongPress: () {
+                            clearCard(index);
+                            context.read<AppState>().collapseAllPlayers();
+                            setState(() {
+                              editingPlayerIndex = null;
+                              editingPlayerCardIndex = null;
+                              selectingCommunityIndex = index;
+                            });
+                          },
+                          front: PokerCard(value: card.value ?? 0, suit: card.suit, small: true, showBack: false),
+                          back: const PokerCard(value: 0, small: true, showBack: true),
+                        ),
+                      ),
                     ),
+                  );
+                }),
+              ),
             ),
           ],
         ),

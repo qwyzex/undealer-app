@@ -18,7 +18,7 @@ class _SuitSelectorState extends State<SuitSelector> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 100))..forward();
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 200))..fling(velocity: 1.0);
   }
 
   @override
