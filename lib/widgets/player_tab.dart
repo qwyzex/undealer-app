@@ -4,6 +4,7 @@ import 'package:vector_math/vector_math_64.dart' show Vector3;
 import 'package:provider/provider.dart';
 import '../app_state.dart';
 import 'package:undealer/models/card_model.dart';
+import '../models/player_model.dart';
 import 'flip_card.dart';
 import 'poker_card.dart';
 
