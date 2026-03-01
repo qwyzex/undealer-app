@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:undealer/app_state.dart';
 import 'package:undealer/components/primary_button.dart';
+import 'package:undealer/components/secondary_buttons.dart';
 import 'package:undealer/models/suit.dart';
 import 'package:undealer/screens/table_screen.dart';
 import 'package:undealer/theme/colors.dart';
@@ -71,7 +72,7 @@ class QuickPlay extends StatelessWidget {
                               Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
                             },
                           ),
-                          PrimaryButton(
+                          SecondaryButton(
                             buttonText: "New Game",
                             onTap: () {
                               appState.resetGame();
@@ -85,7 +86,7 @@ class QuickPlay extends StatelessWidget {
                               Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
                             },
                           ),
-                          const PrimaryButton(buttonText: "Settings"),
+                          const SecondaryButton(buttonText: "Settings"),
                         ],
                       ],
                     ),
