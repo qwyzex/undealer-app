@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
+import 'package:undealer/app_state.dart';
 import 'package:undealer/components/primary_button.dart';
 import 'package:undealer/models/suit.dart';
 import 'package:undealer/screens/table_screen.dart';
@@ -13,17 +15,15 @@ class QuickPlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
+
     return Container(
-      margin: EdgeInsets.all(30),
+      margin: const EdgeInsets.all(30),
       width: double.infinity,
       height: 220,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppColors.primaryLighter, Color(0xFFFAFAFA)]),
         borderRadius: BorderRadius.all(Radius.circular(20)),
-        boxShadow: [
-          // BoxShadow(color: Colors.black26, blurRadius: 10, spreadRadius: -20),
-          // BoxShadow(color: Colors.black26.withAlpha(10), blurRadius: 10, offset: Offset(0, 10)),
-        ],
       ),
       child: Stack(
         children: [
@@ -32,7 +32,7 @@ class QuickPlay extends StatelessWidget {
             bottom: -17,
             child: Transform.rotate(
               angle: -math.pi / 30,
-              child: PokerCard(value: 14, suit: Suit.spades),
+              child: const PokerCard(value: 14, suit: Suit.spades),
             ),
           ),
           Positioned(
@@ -40,12 +40,12 @@ class QuickPlay extends StatelessWidget {
             bottom: -12,
             child: Transform.rotate(
               angle: math.pi / 30,
-              child: PokerCard(value: 13, suit: Suit.hearts),
+              child: const PokerCard(value: 13, suit: Suit.hearts),
             ),
           ),
           Positioned.fill(
             child: Padding(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -54,23 +54,39 @@ class QuickPlay extends StatelessWidget {
                     alignment: Alignment.topLeft,
                     child: GradientText(
                       "Quick Play!",
-                      colors: [AppColors.textColor, AppColors.textColorDim],
-                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700),
+                      colors: const [AppColors.textColor, AppColors.textColorDim],
+                      style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w700),
                     ),
                   ),
                   Align(
                     alignment: Alignment.bottomRight,
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       spacing: 10,
                       children: [
-                        PrimaryButton(
-                          buttonText: "Play",
-                          onTap: () => {
-                            // route to table screen
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer'))),
-                          },
-                        ),
-                        PrimaryButton(buttonText: "Settings"),
+                        if (appState.hasSavedGame) ...[
+                          PrimaryButton(
+                            buttonText: "Continue",
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
+                            },
+                          ),
+                          PrimaryButton(
+                            buttonText: "New Game",
+                            onTap: () {
+                              appState.resetGame();
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
+                            },
+                          ),
+                        ] else ...[
+                          PrimaryButton(
+                            buttonText: "Play",
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
+                            },
+                          ),
+                          const PrimaryButton(buttonText: "Settings"),
+                        ],
                       ],
                     ),
                   ),

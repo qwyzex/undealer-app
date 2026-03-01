@@ -1,18 +1,17 @@
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:undealer/models/card_model.dart';
+import 'package:undealer/models/player_model.dart';
 import 'package:undealer/models/suit.dart';
 import 'package:flutter/material.dart';
 
-class PlayerData {
-  PlayerData({CommunityCardData? card1, CommunityCardData? card2, this.isExpanded = false}) : card1 = card1 ?? CommunityCardData(), card2 = card2 ?? CommunityCardData();
-
-  CommunityCardData card1;
-  CommunityCardData card2;
-  bool isExpanded;
-}
-
 class AppState extends ChangeNotifier {
-  final List<CommunityCardData> communityCards = List.generate(5, (_) => CommunityCardData());
-  final List<PlayerData> players = [];
+  AppState() {
+    loadState();
+  }
+
+  List<CommunityCardData> communityCards = List.generate(5, (_) => CommunityCardData());
+  List<PlayerData> players = [];
   final GlobalKey addPlayerRefKey = GlobalKey();
 
   /// 0: Flop, 1: Turn, 2: River
@@ -20,9 +19,12 @@ class AppState extends ChangeNotifier {
 
   static const int maxPlayers = 20;
 
+  bool get hasSavedGame => players.isNotEmpty || communityCards.any((c) => c.value != null);
+
   void setTableStage(int stage) {
     if (stage >= 0 && stage <= 2) {
       tableStage = stage;
+      saveState();
       notifyListeners();
     }
   }
@@ -30,6 +32,7 @@ class AppState extends ChangeNotifier {
   void nextStage() {
     if (tableStage < 2) {
       tableStage++;
+      saveState();
       notifyListeners();
     }
   }
@@ -44,24 +47,25 @@ class AppState extends ChangeNotifier {
       ),
     );
 
+    saveState();
+
     final context = addPlayerRefKey.currentContext;
     if (context != null) {
       Scrollable.ensureVisible(
         context,
-        duration: const Duration(milliseconds: 500), // Optional animation duration
-        curve: Curves.easeInOut, // Optional animation curve
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
       );
     }
 
     notifyListeners();
   }
 
-  void scrollToFocus() {}
-
   void deletePlayer(int index) {
     if (index < 0 || index >= players.length) return;
     if (players.length != index + 1 && players[index + 1].isExpanded) togglePlayerExpansion(index + 1);
     players.removeAt(index);
+    saveState();
     notifyListeners();
   }
 
@@ -98,14 +102,13 @@ class AppState extends ChangeNotifier {
 
     final bool isTrueFlop = communityCards[0].value != null && communityCards[1].value != null && communityCards[2].value != null;
 
-    // Auto-advance logic:
-    // If we just finished the Flop (index 2), move to Turn
     if (isTrueFlop && tableStage == 0) {
       tableStage = 1;
     } else if (index == 3 && tableStage == 1) {
       tableStage = 2;
     }
 
+    saveState();
     notifyListeners();
   }
 
@@ -114,11 +117,13 @@ class AppState extends ChangeNotifier {
     final card = cardIndex == 0 ? players[playerIndex].card1 : players[playerIndex].card2;
     card.value = value;
     card.suit = suit;
+    saveState();
     notifyListeners();
   }
 
   void clearCard(int index) {
     communityCards[index] = CommunityCardData();
+    saveState();
     notifyListeners();
   }
 
@@ -128,6 +133,45 @@ class AppState extends ChangeNotifier {
     card.value = null;
     card.suit = null;
     card.flipped = false;
+    saveState();
     notifyListeners();
+  }
+
+  void resetGame() {
+    communityCards = List.generate(5, (_) => CommunityCardData());
+    players = [];
+    tableStage = 0;
+    saveState();
+    notifyListeners();
+  }
+
+  // Persistence logic
+  Future<void> saveState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final stateData = {
+      'communityCards': communityCards.map((c) => c.toJson()).toList(),
+      'players': players.map((p) => p.toJson()).toList(),
+      'tableStage': tableStage,
+    };
+    await prefs.setString('game_state', jsonEncode(stateData));
+  }
+
+  Future<void> loadState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? stateString = prefs.getString('game_state');
+    if (stateString != null) {
+      final Map<String, dynamic> stateData = jsonDecode(stateString);
+      
+      communityCards = (stateData['communityCards'] as List)
+          .map((c) => CommunityCardData.fromJson(c))
+          .toList();
+      
+      players = (stateData['players'] as List)
+          .map((p) => PlayerData.fromJson(p))
+          .toList();
+      
+      tableStage = stateData['tableStage'] ?? 0;
+      notifyListeners();
+    }
   }
 }
