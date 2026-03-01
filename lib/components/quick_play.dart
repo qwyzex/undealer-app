@@ -6,6 +6,7 @@ import 'package:undealer/app_state.dart';
 import 'package:undealer/components/primary_button.dart';
 import 'package:undealer/components/secondary_buttons.dart';
 import 'package:undealer/models/suit.dart';
+import 'package:undealer/screens/game_options_screen.dart';
 import 'package:undealer/screens/table_screen.dart';
 import 'package:undealer/theme/colors.dart';
 import 'package:undealer/widgets/poker_card.dart';
@@ -13,6 +14,12 @@ import 'dart:math' as math;
 
 class QuickPlay extends StatelessWidget {
   const QuickPlay({super.key});
+
+  Future<void> delayCardUIUpdate(BuildContext context, AppState appState) async {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
+    await Future.delayed(const Duration(milliseconds: 25));
+    appState.resetGame();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +82,7 @@ class QuickPlay extends StatelessWidget {
                           SecondaryButton(
                             buttonText: "New Game",
                             onTap: () {
-                              appState.resetGame();
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
+                              delayCardUIUpdate(context, appState);
                             },
                           ),
                         ] else ...[
@@ -86,7 +92,12 @@ class QuickPlay extends StatelessWidget {
                               Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
                             },
                           ),
-                          const SecondaryButton(buttonText: "Settings"),
+                          SecondaryButton(
+                            buttonText: "Settings",
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const GameOptionsScreen()));
+                            },
+                          ),
                         ],
                       ],
                     ),
