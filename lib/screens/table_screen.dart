@@ -286,9 +286,11 @@ class _TableRoomState extends State<TableRoom> {
                       onExpand: (playerIndex) {
                         // tapping the top-level card either expands or collapses
                         context.read<AppState>().togglePlayerExpansion(playerIndex);
-                        // when expanding we also clear any community selection
+                        // when expanding we also clear any selection
                         setState(() {
                           selectingCommunityIndex = null;
+                          editingPlayerIndex = null;
+                          editingPlayerCardIndex = null;
                         });
                       },
                       onSelectCard: (playerIndex, cardIndex) {
