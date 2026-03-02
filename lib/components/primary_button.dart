@@ -21,7 +21,7 @@ class PrimaryButton extends StatelessWidget {
         color: isSecondary ? Colors.transparent : Colors.pinkAccent.shade200,
         boxShadow: isSecondary ? [] : [BoxShadow(color: Colors.pinkAccent.shade200.withAlpha(60), blurRadius: 25, offset: const Offset(0, 0), spreadRadius: 10)],
         borderRadius: BorderRadius.all(Radius.circular(12)),
-        border: Border.all(color: isSecondary ? AppColors.textColor : Colors.pinkAccent, width: 1, style: BorderStyle.solid, strokeAlign: BorderSide.strokeAlignInside),
+        border: Border.all(color: isSecondary ? AppColors.textColor : Colors.pinkAccent, width: 2, style: BorderStyle.solid, strokeAlign: BorderSide.strokeAlignInside),
       ),
       child: CupertinoButton(
         onPressed: onTap,

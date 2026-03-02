@@ -85,7 +85,7 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                             decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey.shade300),
+                              border: Border.all(color: AppColors.deepShade, width: 2),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text("$_playerCount", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -124,7 +124,7 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
               decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(12)),
               child: CupertinoSlidingSegmentedControl<bool>(
                 groupValue: _playerAssignTheirOwnCard,
-                backgroundColor: Colors.grey.shade200,
+                backgroundColor: AppColors.deepShade,
                 thumbColor: Colors.white,
                 padding: const EdgeInsets.all(4),
                 children: const {
