@@ -39,7 +39,7 @@ class PlayerTab extends StatelessWidget {
         itemCount: appState.players.length + 2,
         itemBuilder: (context, index) {
           if (index == appState.players.length + 1) {
-            return _GhostReference(key: context.read<AppState>().addPlayerRefKey);
+            return _GhostReference(key: appState.addPlayerRefKey);
           }
 
           if (index == appState.players.length) {
@@ -142,15 +142,14 @@ class _PlayerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // width grows when expanded so the second card has space; wrapping ine
-    // ClipRect prevents children from overflowing during the animation.
+    final appState = context.read<AppState>();
 
     void handleLongPress() {
+      if (appState.gameOptions.lockPlayerCount) return;
+
       if (!player.isExpanded) {
-        // stacked state: remove this player
         context.read<AppState>().deletePlayer(playerIndex);
       } else {
-        // expanded state: toggle expansion as before
         onExpand();
       }
     }
