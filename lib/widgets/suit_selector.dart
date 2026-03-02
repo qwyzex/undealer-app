@@ -41,7 +41,7 @@ class _SuitSelectorState extends State<SuitSelector> with SingleTickerProviderSt
       child: ScaleTransition(
         scale: _controller,
         child: PhysicalModel(
-          color: Colors.white,
+          color: const Color(0xFFFFFFFF),
           elevation: 20,
           shadowColor: Colors.black,
           shape: BoxShape.circle,
@@ -92,7 +92,7 @@ class _RadialMenuPainter extends CustomPainter {
     };
 
     // 3. Draw highlight for the selected suit (if any)
-    if (letDuplicateCards || selectedSuit != null && !unavailableSuits.contains(selectedSuit)) {
+    if (selectedSuit != null && (letDuplicateCards || !unavailableSuits.contains(selectedSuit!))) {
       final highlightPaint = Paint()..color = Colors.pinkAccent.withAlpha(30);
       final startAngle = suitInfo[selectedSuit!]!['angle'] - (pi / 4);
       const sweepAngle = pi / 2;
