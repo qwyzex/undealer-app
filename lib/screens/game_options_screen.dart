@@ -161,9 +161,7 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
               buttonText: "Create New Game",
               height: 55,
               onTap: () {
-                final newOptions = GameOptionsModel(lockPlayerCount: _lockPlayerCount, setPlayerCount: _playerCount, dontCalculateFolds: _dontCalculateFolds, playerAssignTheirOwnCard: _playerAssignTheirOwnCard, test: "GAME_START");
-
-                appState.updateGameOptions(newOptions);
+                appState.initializeNewGame(GameOptionsModel(lockPlayerCount: _lockPlayerCount, setPlayerCount: _playerCount, dontCalculateFolds: _dontCalculateFolds, playerAssignTheirOwnCard: _playerAssignTheirOwnCard, test: "GAME_START"));
 
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
               },

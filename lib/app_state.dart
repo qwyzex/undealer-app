@@ -29,6 +29,18 @@ class AppState extends ChangeNotifier {
   bool get hasSavedGame => players.isNotEmpty || communityCards.any((c) => c.value != null);
 
   // ACTIONS
+
+  void initializeNewGame(GameOptionsModel gameOptions) {
+    updateGameOptions(gameOptions);
+
+    // CHECK EVERY OPTIONS AND CALL LOGIC ACCORDINGLY
+    if (gameOptions.lockPlayerCount) {
+      players = List.generate(gameOptions.setPlayerCount, (_) => PlayerData());
+    } else {
+      players = [];
+    }
+  }
+
   void setTableStage(int stage) {
     if (stage >= 0 && stage <= 2) {
       tableStage = stage;
