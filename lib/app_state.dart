@@ -99,41 +99,53 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Set<Suit> getUnavailableSuitsForValue(int value, {int? playerIndex, int? cardIndex}) {
+  Set<Suit> getUnavailableSuitsForValue(int value, {int? playerIndex, int? cardIndex, int? communityIndex}) {
     final Set<Suit> unavailable = {};
-    for (var card in communityCards) {
-      if (card.value == value && card.suit != null) unavailable.add(card.suit!);
+
+    // 1. Check Community Cards
+    // We always block suits already taken by other community cards of the same value
+    for (int i = 0; i < communityCards.length; i++) {
+      if (i == communityIndex) continue;
+      final card = communityCards[i];
+      if (card.value == value && card.suit != null) {
+        unavailable.add(card.suit!);
+      }
     }
 
-    if (!gameOptions.playerAssignTheirOwnCard) {
-      for (int i = 0; i < players.length; i++) {
-        final player = players[i];
-        if (player.card1.value == value && player.card1.suit != null) {
-          if (!(playerIndex == i && cardIndex == 0)) {
-            unavailable.add(player.card1.suit!);
-          }
+    // 2. Context-dependent Player Card checking
+    if (playerIndex != null) {
+      // WE ARE EDITING A PLAYER'S CARD
+      if (gameOptions.playerAssignTheirOwnCard) {
+        // PRIVATE MODE: Only sentient of community cards and the player's OWN other card.
+        final player = players[playerIndex];
+        final otherCard = (cardIndex == 0) ? player.card2 : player.card1;
+        if (otherCard.value == value && otherCard.suit != null) {
+          unavailable.add(otherCard.suit!);
         }
-        if (player.card2.value == value && player.card2.suit != null) {
-          if (!(playerIndex == i && cardIndex == 1)) {
-            unavailable.add(player.card2.suit!);
+      } else {
+        // PUBLIC MODE: Sentient of everything.
+        for (int i = 0; i < players.length; i++) {
+          final p = players[i];
+          if (i == playerIndex) {
+            final otherCard = (cardIndex == 0) ? p.card2 : p.card1;
+            if (otherCard.value == value && otherCard.suit != null) {
+              unavailable.add(otherCard.suit!);
+            }
+          } else {
+            if (p.card1.value == value && p.card1.suit != null) unavailable.add(p.card1.suit!);
+            if (p.card2.value == value && p.card2.suit != null) unavailable.add(p.card2.suit!);
           }
         }
       }
     } else {
-      // If playerAssignTheirOwnCard is true, we still want to block duplicates within the SAME player's hole cards
-      if (playerIndex != null) {
-        final player = players[playerIndex];
-        if (cardIndex == 0) {
-          if (player.card2.value == value && player.card2.suit != null) {
-            unavailable.add(player.card2.suit!);
-          }
-        } else if (cardIndex == 1) {
-          if (player.card1.value == value && player.card1.suit != null) {
-            unavailable.add(player.card1.suit!);
-          }
-        }
+      // WE ARE EDITING A COMMUNITY CARD (or just viewing the value selector)
+      // The dealer must be sentient of ALL players' cards to ensure no duplicates on the table.
+      for (var p in players) {
+        if (p.card1.value == value && p.card1.suit != null) unavailable.add(p.card1.suit!);
+        if (p.card2.value == value && p.card2.suit != null) unavailable.add(p.card2.suit!);
       }
     }
+
     return unavailable;
   }
 

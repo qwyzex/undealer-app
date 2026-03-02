@@ -40,7 +40,12 @@ class _TableRoomState extends State<TableRoom> {
   /// community and player cards when deciding which suits are already used.
   Set<Suit> getUnavailableSuitsForValue(int value) {
     final appState = context.read<AppState>();
-    return appState.getUnavailableSuitsForValue(value);
+    return appState.getUnavailableSuitsForValue(
+      value,
+      playerIndex: editingPlayerIndex,
+      cardIndex: editingPlayerCardIndex,
+      communityIndex: selectingCommunityIndex,
+    );
   }
 
   /// Convenience wrappers that operate on the appState instead of a local
