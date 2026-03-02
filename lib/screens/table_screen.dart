@@ -61,14 +61,24 @@ class _TableRoomState extends State<TableRoom> {
     context.read<AppState>().clearPlayerCard(playerIndex, cardIndex);
   }
 
-  void _showSuitSelector(BuildContext context, Offset position, int value) {
+  void _showSuitSelector(
+    BuildContext context,
+    Offset position,
+    int value,
+    bool hideAssignedCardFromPlayer,
+  ) {
     final unavailableSuits = getUnavailableSuitsForValue(value);
+    bool isAssigningPlayerCard = (editingPlayerIndex != null && editingPlayerCardIndex != null);
 
     _overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
         left: position.dx - 60,
         top: position.dy - 60,
-        child: SuitSelector(selectedSuit: _selectedSuit, unavailableSuits: unavailableSuits),
+        child: SuitSelector(
+          selectedSuit: _selectedSuit,
+          unavailableSuits: unavailableSuits,
+          letDuplicateCards: hideAssignedCardFromPlayer && isAssigningPlayerCard ? true : false,
+        ),
       ),
     );
     Overlay.of(context).insert(_overlayEntry!);
@@ -119,12 +129,13 @@ class _TableRoomState extends State<TableRoom> {
     }
   }
 
-  Widget valueButton(int val) {
+  Widget valueButton(int val, bool hideAssignedCardFromPlayer) {
     return Builder(
       builder: (context) {
         return GestureDetector(
           onPanStart: (details) {
-            if (selectingCommunityIndex == null && (editingPlayerIndex == null || editingPlayerCardIndex == null)) {
+            if (selectingCommunityIndex == null &&
+                (editingPlayerIndex == null || editingPlayerCardIndex == null)) {
               // nothing to edit (either no target or no card chosen)
               return;
             }
@@ -135,10 +146,11 @@ class _TableRoomState extends State<TableRoom> {
               _panOrigin = cardCenter;
               _selectedSuit = null;
             });
-            _showSuitSelector(context, cardCenter, val);
+            _showSuitSelector(context, cardCenter, val, hideAssignedCardFromPlayer);
           },
           onPanUpdate: (details) {
-            if (selectingCommunityIndex == null && (editingPlayerIndex == null || editingPlayerCardIndex == null)) {
+            if (selectingCommunityIndex == null &&
+                (editingPlayerIndex == null || editingPlayerCardIndex == null)) {
               return;
             }
             _updateSuitSelection(details.globalPosition, val);
@@ -188,15 +200,25 @@ class _TableRoomState extends State<TableRoom> {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
+    bool hideAssignedCardFromPlayer = appState.gameOptions.playerAssignTheirOwnCard;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
           // widget.title,
-          appState.gameOptions.lockPlayerCount.toString(),
-          style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF532B2B), fontSize: 30, letterSpacing: 2),
+          appState.gameOptions.playerAssignTheirOwnCard.toString(),
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF532B2B),
+            fontSize: 30,
+            letterSpacing: 2,
+          ),
         ),
-        leading: IconButton(onPressed: () => {Navigator.pop(context)}, icon: const Icon(Icons.arrow_back_ios)),
+        leading: IconButton(
+          onPressed: () => {Navigator.pop(context)},
+          icon: const Icon(Icons.arrow_back_ios),
+        ),
         actions: [IconButton(onPressed: () => {}, icon: const Icon(Icons.menu))],
       ),
       body: GestureDetector(
@@ -216,13 +238,42 @@ class _TableRoomState extends State<TableRoom> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(spacing: 8, children: [valueButton(14), valueButton(2), valueButton(3), valueButton(4)]),
+                Row(
+                  spacing: 8,
+                  children: [
+                    valueButton(14, hideAssignedCardFromPlayer),
+                    valueButton(2, hideAssignedCardFromPlayer),
+                    valueButton(3, hideAssignedCardFromPlayer),
+                    valueButton(4, hideAssignedCardFromPlayer),
+                  ],
+                ),
                 const SizedBox(height: 12),
-                Row(spacing: 8, children: [valueButton(5), valueButton(6), valueButton(7)]),
+                Row(
+                  spacing: 8,
+                  children: [
+                    valueButton(5, hideAssignedCardFromPlayer),
+                    valueButton(6, hideAssignedCardFromPlayer),
+                    valueButton(7, hideAssignedCardFromPlayer),
+                  ],
+                ),
                 const SizedBox(height: 12),
-                Row(spacing: 8, children: [valueButton(8), valueButton(9), valueButton(10)]),
+                Row(
+                  spacing: 8,
+                  children: [
+                    valueButton(8, hideAssignedCardFromPlayer),
+                    valueButton(9, hideAssignedCardFromPlayer),
+                    valueButton(10, hideAssignedCardFromPlayer),
+                  ],
+                ),
                 const SizedBox(height: 12),
-                Row(spacing: 8, children: [valueButton(11), valueButton(12), valueButton(13)]),
+                Row(
+                  spacing: 8,
+                  children: [
+                    valueButton(11, hideAssignedCardFromPlayer),
+                    valueButton(12, hideAssignedCardFromPlayer),
+                    valueButton(13, hideAssignedCardFromPlayer),
+                  ],
+                ),
               ],
             ),
           ),
@@ -273,7 +324,11 @@ class _TableRoomState extends State<TableRoom> {
                   child: GradientText(
                     "EVAL",
                     colors: [Colors.red, Colors.orange],
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, fontFamily: 'Lexend'),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Lexend',
+                    ),
                   ),
                 ),
               ],
@@ -315,14 +370,19 @@ class _TableRoomState extends State<TableRoom> {
                         final card = appState.communityCards[index];
                         bool isActive = selectingCommunityIndex == index;
 
-                        bool isCardDisabledForSelection = selectingCommunityIndex != null && !isActive;
-                        bool isCardDisabledByStage = (appState.tableStage == 0 && index > 2) || (appState.tableStage == 1 && index > 3);
+                        bool isCardDisabledForSelection =
+                            selectingCommunityIndex != null && !isActive;
+                        bool isCardDisabledByStage =
+                            (appState.tableStage == 0 && index > 2) ||
+                            (appState.tableStage == 1 && index > 3);
                         bool isDisabled = isCardDisabledForSelection || isCardDisabledByStage;
 
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           transform: Matrix4.identity()
-                            ..translateByVector3(Vector3(isActive ? -10 : 0, isActive ? -15.0 : 0.0, 0.0))
+                            ..translateByVector3(
+                              Vector3(isActive ? -10 : 0, isActive ? -15.0 : 0.0, 0.0),
+                            )
                             ..scaleByVector3(Vector3.all(isActive ? 1.2 : 1.0)),
                           child: Opacity(
                             opacity: isDisabled ? 0.4 : 1,
@@ -349,7 +409,12 @@ class _TableRoomState extends State<TableRoom> {
                                     selectingCommunityIndex = index;
                                   });
                                 },
-                                front: PokerCard(value: card.value ?? 0, suit: card.suit, small: true, showBack: false),
+                                front: PokerCard(
+                                  value: card.value ?? 0,
+                                  suit: card.suit,
+                                  small: true,
+                                  showBack: false,
+                                ),
                                 back: const PokerCard(value: 0, small: true, showBack: true),
                               ),
                             ),

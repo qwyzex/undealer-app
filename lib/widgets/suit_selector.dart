@@ -5,8 +5,14 @@ import 'package:undealer/models/suit.dart';
 class SuitSelector extends StatefulWidget {
   final Suit? selectedSuit;
   final Set<Suit> unavailableSuits;
+  final bool letDuplicateCards;
 
-  const SuitSelector({super.key, this.selectedSuit, this.unavailableSuits = const {}});
+  const SuitSelector({
+    super.key,
+    this.selectedSuit,
+    this.unavailableSuits = const {},
+    required this.letDuplicateCards,
+  });
 
   @override
   State<SuitSelector> createState() => _SuitSelectorState();
@@ -18,7 +24,8 @@ class _SuitSelectorState extends State<SuitSelector> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 200))..fling(velocity: 1.0);
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 200))
+      ..fling(velocity: 1.0);
   }
 
   @override
@@ -42,7 +49,11 @@ class _SuitSelectorState extends State<SuitSelector> with SingleTickerProviderSt
             width: 120,
             height: 120,
             child: CustomPaint(
-              painter: _RadialMenuPainter(selectedSuit: widget.selectedSuit, unavailableSuits: widget.unavailableSuits),
+              painter: _RadialMenuPainter(
+                selectedSuit: widget.selectedSuit,
+                unavailableSuits: widget.unavailableSuits,
+                letDuplicateCards: widget.letDuplicateCards,
+              ),
             ),
           ),
         ),
@@ -54,8 +65,13 @@ class _SuitSelectorState extends State<SuitSelector> with SingleTickerProviderSt
 class _RadialMenuPainter extends CustomPainter {
   final Suit? selectedSuit;
   final Set<Suit> unavailableSuits;
+  final bool letDuplicateCards;
 
-  _RadialMenuPainter({this.selectedSuit, required this.unavailableSuits});
+  _RadialMenuPainter({
+    this.selectedSuit,
+    required this.unavailableSuits,
+    required this.letDuplicateCards,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -76,7 +92,7 @@ class _RadialMenuPainter extends CustomPainter {
     };
 
     // 3. Draw highlight for the selected suit (if any)
-    if (selectedSuit != null && !unavailableSuits.contains(selectedSuit)) {
+    if (letDuplicateCards || selectedSuit != null && !unavailableSuits.contains(selectedSuit)) {
       final highlightPaint = Paint()..color = Colors.pinkAccent.withAlpha(30);
       final startAngle = suitInfo[selectedSuit!]!['angle'] - (pi / 4);
       const sweepAngle = pi / 2;
@@ -88,15 +104,24 @@ class _RadialMenuPainter extends CustomPainter {
       ..color = Colors.grey.withAlpha(40)
       ..strokeWidth = 4;
 
-    canvas.drawLine(center + Offset.fromDirection(-pi / 4, radius), center + Offset.fromDirection(3 * pi / 4, radius), dividerPaint);
-    canvas.drawLine(center + Offset.fromDirection(pi / 4, radius), center + Offset.fromDirection(5 * pi / 4, radius), dividerPaint);
+    canvas.drawLine(
+      center + Offset.fromDirection(-pi / 4, radius),
+      center + Offset.fromDirection(3 * pi / 4, radius),
+      dividerPaint,
+    );
+    canvas.drawLine(
+      center + Offset.fromDirection(pi / 4, radius),
+      center + Offset.fromDirection(5 * pi / 4, radius),
+      dividerPaint,
+    );
 
     // 5. Draw suit symbols
     suitInfo.forEach((suit, data) {
       final isUnavailable = unavailableSuits.contains(suit);
       final symbolAngle = data['angle'];
       final symbolRadius = radius * 0.5;
-      final symbolPosition = center + Offset(cos(symbolAngle) * symbolRadius, sin(symbolAngle) * symbolRadius);
+      final symbolPosition =
+          center + Offset(cos(symbolAngle) * symbolRadius, sin(symbolAngle) * symbolRadius);
 
       final textColor = isUnavailable ? (data['color'] as Color).withAlpha(80) : data['color'];
 
@@ -108,12 +133,16 @@ class _RadialMenuPainter extends CustomPainter {
         textDirection: TextDirection.ltr,
       )..layout();
 
-      textPainter.paint(canvas, symbolPosition - Offset(textPainter.width / 2, textPainter.height / 2));
+      textPainter.paint(
+        canvas,
+        symbolPosition - Offset(textPainter.width / 2, textPainter.height / 2),
+      );
     });
   }
 
   @override
   bool shouldRepaint(covariant _RadialMenuPainter oldDelegate) {
-    return oldDelegate.selectedSuit != selectedSuit || oldDelegate.unavailableSuits != unavailableSuits;
+    return oldDelegate.selectedSuit != selectedSuit ||
+        oldDelegate.unavailableSuits != unavailableSuits;
   }
 }

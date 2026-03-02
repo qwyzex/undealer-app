@@ -99,14 +99,40 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Set<Suit> getUnavailableSuitsForValue(int value) {
+  Set<Suit> getUnavailableSuitsForValue(int value, {int? playerIndex, int? cardIndex}) {
     final Set<Suit> unavailable = {};
     for (var card in communityCards) {
       if (card.value == value && card.suit != null) unavailable.add(card.suit!);
     }
-    for (var player in players) {
-      if (player.card1.value == value && player.card1.suit != null) unavailable.add(player.card1.suit!);
-      if (player.card2.value == value && player.card2.suit != null) unavailable.add(player.card2.suit!);
+
+    if (!gameOptions.playerAssignTheirOwnCard) {
+      for (int i = 0; i < players.length; i++) {
+        final player = players[i];
+        if (player.card1.value == value && player.card1.suit != null) {
+          if (!(playerIndex == i && cardIndex == 0)) {
+            unavailable.add(player.card1.suit!);
+          }
+        }
+        if (player.card2.value == value && player.card2.suit != null) {
+          if (!(playerIndex == i && cardIndex == 1)) {
+            unavailable.add(player.card2.suit!);
+          }
+        }
+      }
+    } else {
+      // If playerAssignTheirOwnCard is true, we still want to block duplicates within the SAME player's hole cards
+      if (playerIndex != null) {
+        final player = players[playerIndex];
+        if (cardIndex == 0) {
+          if (player.card2.value == value && player.card2.suit != null) {
+            unavailable.add(player.card2.suit!);
+          }
+        } else if (cardIndex == 1) {
+          if (player.card1.value == value && player.card1.suit != null) {
+            unavailable.add(player.card1.suit!);
+          }
+        }
+      }
     }
     return unavailable;
   }
