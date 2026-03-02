@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:undealer/models/suit.dart';
+import 'package:undealer/theme/colors.dart';
 
 // POKER CARD
 class PokerCard extends StatelessWidget {
@@ -8,8 +9,9 @@ class PokerCard extends StatelessWidget {
   final Suit? suit;
   final bool small;
   final bool showBack;
+  final int? showPlayerIndex;
 
-  const PokerCard({super.key, required this.value, this.suit, this.small = false, this.showBack = false});
+  const PokerCard({super.key, required this.value, this.suit, this.small = false, this.showBack = false, this.showPlayerIndex});
 
   @override
   Widget build(BuildContext context) {
@@ -100,8 +102,32 @@ class PokerCard extends StatelessWidget {
         color: showBack ? const Color(0xFF3A1A1A) : Colors.white,
         boxShadow: [BoxShadow(color: Colors.grey.withAlpha(25), spreadRadius: 4, blurRadius: 10, offset: const Offset(1, 6))],
       ),
-      child: showBack
-          ? const Center(child: Icon(Icons.casino, color: Colors.white, size: 28))
+      child: showPlayerIndex != null
+          ? Padding(
+              padding: EdgeInsetsGeometry.only(left: 10, right: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      'P',
+                      style: TextStyle(fontSize: small ? 30 : 60, color: AppColors.deepShade, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Text(
+                      showPlayerIndex.toString(),
+                      style: TextStyle(fontSize: small ? 30 : 60, color: AppColors.deepShade, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : showBack
+          ? const Center(child: Icon(Icons.casino_outlined, color: Colors.white, size: 28))
           : Padding(
               padding: const EdgeInsets.fromLTRB(12, 6, 0, 0),
               child: Column(

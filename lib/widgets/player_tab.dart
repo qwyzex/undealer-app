@@ -39,8 +39,7 @@ class PlayerTab extends StatelessWidget {
         itemCount: appState.players.length + 2,
         itemBuilder: (context, index) {
           if (index == appState.players.length + 1) {
-            // return _GhostReference(key: context.read<AppState>().addPlayerRefKey);
-            return Text(appState.gameOptions.lockPlayerCount.toString());
+            return _GhostReference(key: context.read<AppState>().addPlayerRefKey);
           }
 
           if (index == appState.players.length) {
@@ -83,10 +82,10 @@ class _AddPlayerCard extends StatelessWidget {
         height: 90,
         // margin: const EdgeInsets.only(left: 20),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey, style: BorderStyle.solid),
+          border: Border.all(color: AppColors.deepShadeHeavy, style: BorderStyle.solid, width: 3, strokeAlign: BorderSide.strokeAlignInside),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: const Center(child: Icon(Icons.add, size: 40, color: Colors.grey)),
+        child: const Center(child: Icon(Icons.add, size: 40, color: AppColors.deepShadeHeavy)),
       ),
     );
   }
@@ -192,7 +191,7 @@ class _PlayerCard extends StatelessWidget {
       );
     }
 
-    Widget buildCard(CommunityCardData card, int cardIndex) {
+    Widget buildCard(CommunityCardData card, int cardIndex, bool showPlayerIndex) {
       final bool isActive = isEditing && editingCardIndex == cardIndex;
       final bool isDisabled = isAnyCardActive && !isActive;
 
@@ -220,7 +219,7 @@ class _PlayerCard extends StatelessWidget {
                 locked: false,
                 onTap: isActive ? onClearCard : () => onSelectCard(cardIndex),
                 front: PokerCard(value: card.value ?? 0, suit: card.suit, small: true, showBack: false),
-                back: PokerCard(value: 0, small: true, showBack: true),
+                back: PokerCard(value: 0, small: true, showBack: true, showPlayerIndex: showPlayerIndex ? playerIndex + 1 : null),
               ),
             ),
           ),
@@ -244,12 +243,12 @@ class _PlayerCard extends StatelessWidget {
           AnimatedPositioned(duration: Duration(milliseconds: 250), right: player.isExpanded ? 8 : 0, child: separator()),
 
           // CARDs
-          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, right: player.isExpanded ? 12 : 0, top: player.isExpanded ? 10.5 : 20, child: buildCard(player.card1, 0)),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, left: player.isExpanded ? 12 : 0, top: 10.5, child: buildCard(player.card2, 1)),
+          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, right: player.isExpanded ? 12 : 0, top: player.isExpanded ? 10.5 : 20, child: buildCard(player.card1, 0, false)),
+          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, left: player.isExpanded ? 12 : 0, top: 10.5, child: buildCard(player.card2, 1, true)),
 
           // Card assigned indicator
           AnimatedPositioned(duration: Duration(milliseconds: 250), left: 9 + (player.isExpanded ? 10 : 0), bottom: 18, child: indicator(0)),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 18 + (player.isExpanded ? 10 : 0), bottom: 18, child: indicator(1)),
+          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 9 + (player.isExpanded ? 10 : 0), bottom: 30, child: indicator(1)),
 
           // Overlay
           Expanded(
