@@ -92,9 +92,9 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
 
     final progress = _progressController!.value;
 
-    if (progress <= 1 / 3) {
+    if (progress <= 1 / 4) {
       widget.onCancelPress?.fun?.call();
-    } else if (progress <= 2 / 3) {
+    } else if (progress <= 3 / 4) {
       widget.onActionOne?.fun?.call();
     } else {
       widget.onActionTwo?.fun?.call();
@@ -151,9 +151,9 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
               builder: (context, _) {
                 final progress = _progressController!.value;
                 String? currentTip;
-                if (progress <= 1 / 3) {
+                if (progress <= 1 / 4) {
                   currentTip = widget.onCancelPress?.tip;
-                } else if (progress <= 2 / 3) {
+                } else if (progress <= 3 / 4) {
                   currentTip = widget.onActionOne?.tip;
                 } else {
                   currentTip = widget.onActionTwo?.tip;

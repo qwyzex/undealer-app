@@ -40,9 +40,12 @@ class PlayerTab extends StatelessWidget {
     return SizedBox(
       height: 150,
       child: ListView.builder(
+        clipBehavior: Clip.none,
         physics: const BouncingScrollPhysics(),
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
+        // padding: const EdgeInsets.fromLTRB(16, 40, 16, 16),
+        // Extra top padding for tooltip
         itemCount: appState.players.length + 2,
         itemBuilder: (context, index) {
           if (index == appState.players.length + 1) {
@@ -291,6 +294,7 @@ class _PlayerCard extends StatelessWidget {
       // onLongPress: handleLongPress,
       child: Stack(
         alignment: Alignment.center,
+        clipBehavior: Clip.none,
         children: [
           // Margin separator
           AnimatedPositioned(
@@ -337,7 +341,7 @@ class _PlayerCard extends StatelessWidget {
           ),
 
           // Overlay
-          Expanded(
+          Positioned.fill(
             child: IgnorePointer(
               ignoring: player.isExpanded,
               child: FlipCard(
