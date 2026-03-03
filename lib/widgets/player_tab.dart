@@ -24,7 +24,14 @@ class PlayerTab extends StatelessWidget {
   /// Called when the user taps an already active card to clear the selection.
   final void Function() onClearCard;
 
-  const PlayerTab({super.key, required this.editingPlayerIndex, required this.editingPlayerCardIndex, required this.onExpand, required this.onSelectCard, required this.onClearCard});
+  const PlayerTab({
+    super.key,
+    required this.editingPlayerIndex,
+    required this.editingPlayerCardIndex,
+    required this.onExpand,
+    required this.onSelectCard,
+    required this.onClearCard,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +60,17 @@ class PlayerTab extends StatelessWidget {
           final anyActive = editingPlayerIndex != null && editingPlayerCardIndex != null;
           final activeForThis = editingPlayerIndex == index ? editingPlayerCardIndex : null;
           return AnimatedPlayerCard(
-            child: _PlayerCard(player: appState.players[index], playerIndex: index, isEditing: editingPlayerIndex == index, editingCardIndex: editingPlayerCardIndex, activeCardIndex: activeForThis, isAnyCardActive: anyActive, onExpand: () => onExpand(index), onSelectCard: (cardIndex) => onSelectCard(index, cardIndex), onClearCard: onClearCard),
+            child: _PlayerCard(
+              player: appState.players[index],
+              playerIndex: index,
+              isEditing: editingPlayerIndex == index,
+              editingCardIndex: editingPlayerCardIndex,
+              activeCardIndex: activeForThis,
+              isAnyCardActive: anyActive,
+              onExpand: () => onExpand(index),
+              onSelectCard: (cardIndex) => onSelectCard(index, cardIndex),
+              onClearCard: onClearCard,
+            ),
           );
         },
       ),
@@ -82,7 +99,12 @@ class _AddPlayerCard extends StatelessWidget {
         height: 90,
         // margin: const EdgeInsets.only(left: 20),
         decoration: BoxDecoration(
-          border: Border.all(color: AppColors.deepShadeHeavy, style: BorderStyle.solid, width: 3, strokeAlign: BorderSide.strokeAlignInside),
+          border: Border.all(
+            color: AppColors.deepShadeHeavy,
+            style: BorderStyle.solid,
+            width: 3,
+            strokeAlign: BorderSide.strokeAlignInside,
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
         child: const Center(child: Icon(Icons.add, size: 40, color: AppColors.deepShadeHeavy)),
@@ -100,7 +122,8 @@ class AnimatedPlayerCard extends StatefulWidget {
   State<AnimatedPlayerCard> createState() => _AnimatedPlayerCardState();
 }
 
-class _AnimatedPlayerCardState extends State<AnimatedPlayerCard> with SingleTickerProviderStateMixin {
+class _AnimatedPlayerCardState extends State<AnimatedPlayerCard>
+    with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
 
   @override
@@ -138,7 +161,23 @@ class _PlayerCard extends StatelessWidget {
   final void Function(int cardIndex) onSelectCard;
   final void Function() onClearCard;
 
-  const _PlayerCard({required this.player, required this.playerIndex, required this.isEditing, required this.editingCardIndex, required this.activeCardIndex, required this.isAnyCardActive, required this.onExpand, required this.onSelectCard, required this.onClearCard});
+  _PlayerCard({
+    required this.player,
+    required this.playerIndex,
+    required this.isEditing,
+    required this.editingCardIndex,
+    required this.activeCardIndex,
+    required this.isAnyCardActive,
+    required this.onExpand,
+    required this.onSelectCard,
+    required this.onClearCard,
+  });
+
+  // PASSES
+  final Duration animationDuration = const Duration(milliseconds: 250);
+
+  // late final animationCurves = !player.isExpanded ? Curves.easeOut : Curves.easeIn;
+  late final animationCurves = Curves.easeInOut;
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +199,10 @@ class _PlayerCard extends StatelessWidget {
         child: Container(
           width: 2,
           height: 70,
-          decoration: BoxDecoration(color: AppColors.textColorDim.withAlpha(player.isExpanded ? 100 : 0), borderRadius: BorderRadius.circular(2)),
+          decoration: BoxDecoration(
+            color: AppColors.textColorDim.withAlpha(player.isExpanded ? 100 : 0),
+            borderRadius: BorderRadius.circular(2),
+          ),
         ),
       );
     }
@@ -169,7 +211,7 @@ class _PlayerCard extends StatelessWidget {
       return IgnorePointer(
         ignoring: true,
         child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 250),
+          duration: animationDuration,
           opacity: player.isExpanded ? 0 : 1,
           child: Container(
             width: 10,
@@ -207,18 +249,28 @@ class _PlayerCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
+            duration: animationDuration,
             transform: Matrix4.identity()..scaleByVector3(Vector3.all(isActive ? 1.1 : 1.0)),
             transformAlignment: Alignment.center,
             child: AnimatedOpacity(
-              duration: const Duration(milliseconds: 250),
+              duration: animationDuration,
               opacity: isDisabled ? 0.35 : 1,
               child: FlipCard(
                 flipped: card.value != null && player.isExpanded,
                 locked: false,
                 onTap: isActive ? onClearCard : () => onSelectCard(cardIndex),
-                front: PokerCard(value: card.value ?? 0, suit: card.suit, small: true, showBack: false),
-                back: PokerCard(value: 0, small: true, showBack: true, showPlayerIndex: showPlayerIndex ? playerIndex + 1 : null),
+                front: PokerCard(
+                  value: card.value ?? 0,
+                  suit: card.suit,
+                  small: true,
+                  showBack: false,
+                ),
+                back: PokerCard(
+                  value: 0,
+                  small: true,
+                  showBack: true,
+                  showPlayerIndex: showPlayerIndex ? playerIndex + 1 : null,
+                ),
               ),
             ),
           ),
@@ -227,8 +279,8 @@ class _PlayerCard extends StatelessWidget {
     }
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.ease,
+      duration: animationDuration,
+      curve: Curves.easeInOut,
       width: player.isExpanded ? 180 : 90,
       margin: const EdgeInsets.only(right: 16),
       // color: player.isExpanded ? Colors.red : Colors.blue,
@@ -238,16 +290,48 @@ class _PlayerCard extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           // Margin separator
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: player.isExpanded ? 8 : 0, child: separator()),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), right: player.isExpanded ? 8 : 0, child: separator()),
+          AnimatedPositioned(
+            duration: animationDuration,
+            left: player.isExpanded ? 8 : 0,
+            child: separator(),
+          ),
+          AnimatedPositioned(
+            duration: animationDuration,
+            right: player.isExpanded ? 8 : 0,
+            child: separator(),
+          ),
 
           // CARDs
-          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, right: player.isExpanded ? 12 : 0, top: player.isExpanded ? 10.5 : 20, child: buildCard(player.card1, 0, false)),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, left: player.isExpanded ? 12 : 0, top: 10.5, child: buildCard(player.card2, 1, true)),
+          AnimatedPositioned(
+            duration: animationDuration,
+            curve: animationCurves,
+            left: player.isExpanded ? 90 : 10,
+            top: player.isExpanded ? 10 : 20,
+            child: buildCard(player.card1, 0, false),
+          ),
+          AnimatedPositioned(
+            duration: animationDuration,
+            curve: animationCurves,
+            left: player.isExpanded ? 12 : 0,
+            top: 10.5,
+            child: buildCard(player.card2, 1, true),
+          ),
 
           // Card assigned indicator
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 9 + (player.isExpanded ? 10 : 0), bottom: 18, child: indicator(0)),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 9 + (player.isExpanded ? 10 : 0), bottom: 30, child: indicator(1)),
+          AnimatedPositioned(
+            duration: animationDuration,
+            curve: animationCurves,
+            left: 9 + (player.isExpanded ? 15 : 0),
+            bottom: 18,
+            child: indicator(0),
+          ),
+          AnimatedPositioned(
+            duration: animationDuration,
+            curve: animationCurves,
+            left: 9 + (player.isExpanded ? 15 : 0),
+            bottom: 30,
+            child: indicator(1),
+          ),
 
           // Overlay
           Expanded(
