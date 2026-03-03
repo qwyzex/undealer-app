@@ -394,6 +394,13 @@ class _TableRoomState extends State<TableRoom> {
                               child: FlipCard(
                                 flipped: card.flipped,
                                 locked: card.flipped,
+                                front: PokerCard(
+                                  value: card.value ?? 0,
+                                  suit: card.suit,
+                                  small: true,
+                                  showBack: false,
+                                ),
+                                back: const PokerCard(value: 0, small: true, showBack: true),
                                 onTap: () {
                                   // collapse any open player cards
                                   context.read<AppState>().collapseAllPlayers();
@@ -404,19 +411,11 @@ class _TableRoomState extends State<TableRoom> {
                                   });
                                 },
                                 onCancelPress: RadialFunctionCall(() => {}, "CANCEL"),
-                                onActionOne: RadialFunctionCall(() {
-                                  handleLongPressCommunityCard(index);
-                                }, "RESET"),
+                                onActionOne: RadialFunctionCall(() => {}, "CANCEL"),
                                 onActionTwo: RadialFunctionCall(() {
                                   handleLongPressCommunityCard(index);
                                 }, "RESET"),
-                                front: PokerCard(
-                                  value: card.value ?? 0,
-                                  suit: card.suit,
-                                  small: true,
-                                  showBack: false,
-                                ),
-                                back: const PokerCard(value: 0, small: true, showBack: true),
+                                quickRadialCall: true,
                               ),
                             ),
                           ),

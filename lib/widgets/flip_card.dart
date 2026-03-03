@@ -14,6 +14,7 @@ class FlipCard extends StatefulWidget {
   final bool flipped;
   final bool inverseLocked;
   final VoidCallback? onTap;
+  final bool? quickRadialCall;
 
   // final VoidCallback? onLongPress;
 
@@ -32,6 +33,7 @@ class FlipCard extends StatefulWidget {
     this.onCancelPress,
     this.onActionOne,
     this.onActionTwo,
+    this.quickRadialCall,
   });
 
   @override
@@ -70,6 +72,14 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
     }
   }
 
+  bool _getQuickRadialCallState(double value, [bool? firstCall = false]) {
+    final int secondNumerator = widget.quickRadialCall == true ? 2 : 3;
+    final int numerator = (firstCall == true ? 1 : secondNumerator);
+    final int denominator = widget.quickRadialCall == true ? 3 : 4;
+
+    return value <= numerator / denominator;
+  }
+
   void _onLongPressStart(LongPressStartDetails _) {
     if (!widget.inverseLocked == !widget.locked) {
       if (!widget.locked) return;
@@ -77,7 +87,10 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
 
     _pressStart = DateTime.now();
 
-    _progressController = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500));
+    _progressController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: widget.quickRadialCall == true ? 1000 : 1500),
+    );
 
     _progressController!.forward();
 
@@ -92,9 +105,9 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
 
     final progress = _progressController!.value;
 
-    if (progress <= 1 / 4) {
+    if (_getQuickRadialCallState(progress, true)) {
       widget.onCancelPress?.fun?.call();
-    } else if (progress <= 3 / 4) {
+    } else if (_getQuickRadialCallState(progress)) {
       widget.onActionOne?.fun?.call();
     } else {
       widget.onActionTwo?.fun?.call();
@@ -127,6 +140,7 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
       onLongPressCancel: _onLongPressEnd,
       child: Stack(
         alignment: Alignment.center,
+        clipBehavior: Clip.none,
         children: [
           AnimatedBuilder(
             animation: _flipAnimation,
@@ -151,9 +165,9 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
               builder: (context, _) {
                 final progress = _progressController!.value;
                 String? currentTip;
-                if (progress <= 1 / 4) {
+                if (_getQuickRadialCallState(progress, true)) {
                   currentTip = widget.onCancelPress?.tip;
-                } else if (progress <= 3 / 4) {
+                } else if (_getQuickRadialCallState(progress)) {
                   currentTip = widget.onActionOne?.tip;
                 } else {
                   currentTip = widget.onActionTwo?.tip;
