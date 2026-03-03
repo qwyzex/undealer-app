@@ -85,16 +85,16 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
   }
 
   void _onLongPressEnd() {
-    if (_pressStart == null) {
+    if (_progressController == null) {
       _resetProgress();
       return;
     }
 
-    final duration = DateTime.now().difference(_pressStart!).inMilliseconds;
+    final progress = _progressController!.value;
 
-    if (duration <= 500) {
+    if (progress <= 1 / 3) {
       widget.onCancelPress?.fun?.call();
-    } else if (duration <= 1000) {
+    } else if (progress <= 2 / 3) {
       widget.onActionOne?.fun?.call();
     } else {
       widget.onActionTwo?.fun?.call();
@@ -148,16 +148,56 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
           if (_progressController != null)
             AnimatedBuilder(
               animation: _progressController!,
-              builder: (context, _) => SizedBox(
-                width: 60,
-                height: 60,
-                child: CircularProgressIndicator(
-                  value: _progressController!.value,
-                  strokeWidth: 6,
-                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.white70),
-                  backgroundColor: Colors.black26,
-                ),
-              ),
+              builder: (context, _) {
+                final progress = _progressController!.value;
+                String? currentTip;
+                if (progress <= 1 / 3) {
+                  currentTip = widget.onCancelPress?.tip;
+                } else if (progress <= 2 / 3) {
+                  currentTip = widget.onActionOne?.tip;
+                } else {
+                  currentTip = widget.onActionTwo?.tip;
+                }
+
+                return Stack(
+                  alignment: Alignment.center,
+                  clipBehavior: Clip.none,
+                  children: [
+                    SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: CircularProgressIndicator(
+                        value: progress,
+                        strokeWidth: 6,
+                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.white70),
+                        backgroundColor: Colors.black26,
+                      ),
+                    ),
+                    if (currentTip != null)
+                      Positioned(
+                        top: -45,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.white24, width: 0.5),
+                          ),
+                          child: Text(
+                            currentTip,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
             ),
         ],
       ),

@@ -122,8 +122,7 @@ class AnimatedPlayerCard extends StatefulWidget {
   State<AnimatedPlayerCard> createState() => _AnimatedPlayerCardState();
 }
 
-class _AnimatedPlayerCardState extends State<AnimatedPlayerCard>
-    with SingleTickerProviderStateMixin {
+class _AnimatedPlayerCardState extends State<AnimatedPlayerCard> with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
 
   @override
@@ -187,10 +186,19 @@ class _PlayerCard extends StatelessWidget {
       if (appState.gameOptions.lockPlayerCount) return;
 
       if (!player.isExpanded) {
-        context.read<AppState>().deletePlayer(playerIndex);
+        appState.deletePlayer(playerIndex);
       } else {
         onExpand();
       }
+    }
+
+    void handleDeletePlayer() {
+      appState.deletePlayer(playerIndex);
+    }
+
+    void handleTogglePlayerFold() {
+      // appState.togglePlayerFold(playerIndex);
+      return;
     }
 
     Widget separator() {
@@ -259,12 +267,7 @@ class _PlayerCard extends StatelessWidget {
                 flipped: card.value != null && player.isExpanded,
                 locked: false,
                 onTap: isActive ? onClearCard : () => onSelectCard(cardIndex),
-                front: PokerCard(
-                  value: card.value ?? 0,
-                  suit: card.suit,
-                  small: true,
-                  showBack: false,
-                ),
+                front: PokerCard(value: card.value ?? 0, suit: card.suit, small: true, showBack: false),
                 back: PokerCard(
                   value: 0,
                   small: true,
@@ -342,7 +345,12 @@ class _PlayerCard extends StatelessWidget {
                 locked: false,
                 inverseLocked: true,
                 onTap: player.isExpanded ? null : onExpand,
-                onLongPress: handleLongPress,
+                // onLongPress: handleLongPress,
+                onCancelPress: RadialFunctionCall(() => {}, "CANCEL"),
+                onActionOne: RadialFunctionCall(handleTogglePlayerFold, "FOLD"),
+                onActionTwo: appState.gameOptions.lockPlayerCount
+                    ? RadialFunctionCall(handleTogglePlayerFold, "FOLD")
+                    : RadialFunctionCall(handleDeletePlayer, "DELETE"),
                 front: Container(color: Colors.transparent),
                 back: Container(),
               ),

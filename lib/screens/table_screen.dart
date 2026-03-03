@@ -66,12 +66,7 @@ class _TableRoomState extends State<TableRoom> {
     context.read<AppState>().clearPlayerCard(playerIndex, cardIndex);
   }
 
-  void _showSuitSelector(
-    BuildContext context,
-    Offset position,
-    int value,
-    bool hideAssignedCardFromPlayer,
-  ) {
+  void _showSuitSelector(BuildContext context, Offset position, int value, bool hideAssignedCardFromPlayer) {
     final unavailableSuits = getUnavailableSuitsForValue(value);
     bool isAssigningPlayerCard = (editingPlayerIndex != null && editingPlayerCardIndex != null);
 
@@ -199,6 +194,16 @@ class _TableRoomState extends State<TableRoom> {
       default:
         return "Table";
     }
+  }
+
+  void handleLongPressCommunityCard(int index) {
+    clearCard(index);
+    context.read<AppState>().collapseAllPlayers();
+    setState(() {
+      editingPlayerIndex = null;
+      editingPlayerCardIndex = null;
+      selectingCommunityIndex = index;
+    });
   }
 
   @override
@@ -329,11 +334,7 @@ class _TableRoomState extends State<TableRoom> {
                   child: GradientText(
                     "EVAL",
                     colors: [Colors.red, Colors.orange],
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'Lexend',
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, fontFamily: 'Lexend'),
                   ),
                 ),
               ],
@@ -375,8 +376,7 @@ class _TableRoomState extends State<TableRoom> {
                         final card = appState.communityCards[index];
                         bool isActive = selectingCommunityIndex == index;
 
-                        bool isCardDisabledForSelection =
-                            selectingCommunityIndex != null && !isActive;
+                        bool isCardDisabledForSelection = selectingCommunityIndex != null && !isActive;
                         bool isCardDisabledByStage =
                             (appState.tableStage == 0 && index > 2) ||
                             (appState.tableStage == 1 && index > 3);
@@ -385,9 +385,7 @@ class _TableRoomState extends State<TableRoom> {
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           transform: Matrix4.identity()
-                            ..translateByVector3(
-                              Vector3(isActive ? -10 : 0, isActive ? -15.0 : 0.0, 0.0),
-                            )
+                            ..translateByVector3(Vector3(isActive ? -10 : 0, isActive ? -15.0 : 0.0, 0.0))
                             ..scaleByVector3(Vector3.all(isActive ? 1.2 : 1.0)),
                           child: Opacity(
                             opacity: isDisabled ? 0.4 : 1,
@@ -405,15 +403,13 @@ class _TableRoomState extends State<TableRoom> {
                                     selectingCommunityIndex = index;
                                   });
                                 },
-                                onLongPress: () {
-                                  clearCard(index);
-                                  context.read<AppState>().collapseAllPlayers();
-                                  setState(() {
-                                    editingPlayerIndex = null;
-                                    editingPlayerCardIndex = null;
-                                    selectingCommunityIndex = index;
-                                  });
-                                },
+                                onCancelPress: RadialFunctionCall(() => {}, "CANCEL"),
+                                onActionOne: RadialFunctionCall(() {
+                                  handleLongPressCommunityCard(index);
+                                }, "RESET"),
+                                onActionTwo: RadialFunctionCall(() {
+                                  handleLongPressCommunityCard(index);
+                                }, "RESET"),
                                 front: PokerCard(
                                   value: card.value ?? 0,
                                   suit: card.suit,
