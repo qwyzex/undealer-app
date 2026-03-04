@@ -186,7 +186,7 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.7),
+                            color: Colors.black.withAlpha((0.7 * 255).floor()),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(color: Colors.white24, width: 0.5),
                           ),

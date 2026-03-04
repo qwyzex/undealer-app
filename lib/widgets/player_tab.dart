@@ -183,16 +183,6 @@ class _PlayerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = context.read<AppState>();
 
-    void handleLongPress() {
-      if (appState.gameOptions.lockPlayerCount) return;
-
-      if (!player.isExpanded) {
-        appState.deletePlayer(playerIndex);
-      } else {
-        onExpand();
-      }
-    }
-
     void handleDeletePlayer() {
       appState.deletePlayer(playerIndex);
     }
