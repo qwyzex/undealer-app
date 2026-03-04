@@ -212,6 +212,24 @@ class _TableRoomState extends State<TableRoom> {
 
     bool hideAssignedCardFromPlayer = appState.gameOptions.playerAssignTheirOwnCard;
 
+    List<Widget> plainCards = [
+      valueButton(14, hideAssignedCardFromPlayer),
+      valueButton(2, hideAssignedCardFromPlayer),
+      valueButton(3, hideAssignedCardFromPlayer),
+      valueButton(4, hideAssignedCardFromPlayer),
+      valueButton(5, hideAssignedCardFromPlayer),
+      valueButton(6, hideAssignedCardFromPlayer),
+      valueButton(7, hideAssignedCardFromPlayer),
+      valueButton(8, hideAssignedCardFromPlayer),
+      valueButton(9, hideAssignedCardFromPlayer),
+      valueButton(10, hideAssignedCardFromPlayer),
+      valueButton(11, hideAssignedCardFromPlayer),
+      valueButton(12, hideAssignedCardFromPlayer),
+      valueButton(13, hideAssignedCardFromPlayer),
+    ];
+
+    // plainCards.shuffle();
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -248,42 +266,13 @@ class _TableRoomState extends State<TableRoom> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(
-                  spacing: 8,
-                  children: [
-                    valueButton(14, hideAssignedCardFromPlayer),
-                    valueButton(2, hideAssignedCardFromPlayer),
-                    valueButton(3, hideAssignedCardFromPlayer),
-                    valueButton(4, hideAssignedCardFromPlayer),
-                  ],
-                ),
+                Row(spacing: 8, children: [plainCards[0], plainCards[1], plainCards[2], plainCards[3]]),
                 const SizedBox(height: 12),
-                Row(
-                  spacing: 8,
-                  children: [
-                    valueButton(5, hideAssignedCardFromPlayer),
-                    valueButton(6, hideAssignedCardFromPlayer),
-                    valueButton(7, hideAssignedCardFromPlayer),
-                  ],
-                ),
+                Row(spacing: 8, children: [plainCards[4], plainCards[5], plainCards[6]]),
                 const SizedBox(height: 12),
-                Row(
-                  spacing: 8,
-                  children: [
-                    valueButton(8, hideAssignedCardFromPlayer),
-                    valueButton(9, hideAssignedCardFromPlayer),
-                    valueButton(10, hideAssignedCardFromPlayer),
-                  ],
-                ),
+                Row(spacing: 8, children: [plainCards[7], plainCards[8], plainCards[9]]),
                 const SizedBox(height: 12),
-                Row(
-                  spacing: 8,
-                  children: [
-                    valueButton(11, hideAssignedCardFromPlayer),
-                    valueButton(12, hideAssignedCardFromPlayer),
-                    valueButton(13, hideAssignedCardFromPlayer),
-                  ],
-                ),
+                Row(spacing: 8, children: [plainCards[10], plainCards[11], plainCards[12]]),
               ],
             ),
           ),
