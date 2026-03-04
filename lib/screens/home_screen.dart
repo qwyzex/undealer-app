@@ -40,11 +40,15 @@ class _HomeScreenState extends State<HomeScreen> {
           alignment: Alignment.center,
           children: [
             ListView.builder(
-              physics: const BouncingScrollPhysics(),
+              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
               itemCount: 1,
               scrollDirection: Axis.vertical,
               itemBuilder: (context, index) {
-                return QuickPlay();
+                switch (index) {
+                  case 0:
+                    return QuickPlay();
+                }
+                return null;
               },
             ),
 

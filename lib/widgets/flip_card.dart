@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class RadialFunctionCall {
@@ -138,7 +140,7 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
           AnimatedBuilder(
             animation: _flipAnimation,
             builder: (context, child) {
-              final angle = _flipAnimation.value * 3.1416;
+              final angle = _flipAnimation.value * pi;
               return Transform(
                 alignment: Alignment.center,
                 transform: Matrix4.rotationY(angle),
@@ -146,7 +148,7 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
                     ? widget.back
                     : Transform(
                         alignment: Alignment.center,
-                        transform: Matrix4.rotationY(3.1416),
+                        transform: Matrix4.rotationY(pi),
                         child: widget.front,
                       ),
               );

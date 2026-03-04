@@ -75,7 +75,7 @@ class _RadialMenuPainter extends CustomPainter {
     final radius = size.width / 2 + 20;
     final rect = Rect.fromCircle(center: center, radius: radius);
 
-    // 1. Draw the main red background
+    // 1. Main background
     final bgPaint = Paint()..color = const Color(0xFFFFFFFF);
     canvas.drawCircle(center, radius, bgPaint);
 

@@ -11,13 +11,17 @@ class AppState extends ChangeNotifier {
     loadState();
   }
 
+  //*************************************************************************//
   // PRIMITIVES
+
   List<CommunityCardData> communityCards = List.generate(5, (_) => CommunityCardData());
   List<PlayerData> players = [];
   final GlobalKey addPlayerRefKey = GlobalKey();
   static const int maxPlayers = 20;
 
+  //*************************************************************************//
   // SETTINGS OPTIONS
+
   // This is the "Initial" value, but loadState() will overwrite this if data exists in storage.
   GameOptionsModel gameOptions = GameOptionsModel(
     lockPlayerCount: true,
@@ -33,6 +37,7 @@ class AppState extends ChangeNotifier {
   // PERSISTENCE SAVE STATES
   bool get hasSavedGame => players.isNotEmpty || communityCards.any((c) => c.value != null);
 
+  //*************************************************************************//
   // ACTIONS
 
   void initializeNewGame(GameOptionsModel gameOptions) {
@@ -65,12 +70,7 @@ class AppState extends ChangeNotifier {
   void addPlayer() {
     if (players.length >= maxPlayers) return;
 
-    players.add(
-      PlayerData(
-        card1: CommunityCardData(), // empty
-        card2: CommunityCardData(),
-      ),
-    );
+    players.add(PlayerData(card1: CommunityCardData(), card2: CommunityCardData()));
 
     saveState();
 
@@ -202,6 +202,7 @@ class AppState extends ChangeNotifier {
     players = [];
     tableStage = 0;
 
+    // TODO: Extract this logic into a separate function
     // Reset game options to default values
     gameOptions = GameOptionsModel(
       lockPlayerCount: false,
@@ -220,7 +221,9 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  //*************************************************************************//
   // Persistence logic
+
   Future<void> saveState() async {
     final prefs = await SharedPreferences.getInstance();
     final stateData = {
@@ -250,7 +253,6 @@ class AppState extends ChangeNotifier {
       }
       notifyListeners();
     } else {
-      // If no saved state exists, save the default one (which has "LOVE")
       saveState();
     }
   }

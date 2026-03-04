@@ -57,6 +57,90 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
+    //*************************************************************************//
+
+    Widget sectionName(String text, [bool? disableTopMargin = false]) {
+      return Column(
+        children: [
+          SizedBox(height: disableTopMargin == true ? 0 : 30),
+          Text(
+            text,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 10),
+        ],
+      );
+    }
+
+    Widget sectionDivider() {
+      return const Divider(height: 40);
+    }
+
+    //*************************************************************************//
+
+    void onNewGame() {
+      appState.initializeNewGame(
+        GameOptionsModel(
+          lockPlayerCount: _lockPlayerCount,
+          setPlayerCount: _playerCount,
+          dontCalculateFolds: _dontCalculateFolds,
+          playerAssignTheirOwnCard: _playerAssignTheirOwnCard,
+        ),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')),
+      );
+    }
+
+    void onCancel() {
+      Navigator.pop(context);
+    }
+
+    //*************************************************************************//
+
+    void handleToggleLockPlayerCount() {
+      setState(() {
+        _lockPlayerCount = !_lockPlayerCount;
+      });
+    }
+
+    void incrementPlayerCount() {
+      if (_playerCount >= 20) return;
+
+      setState(() {
+        _playerCount++;
+      });
+    }
+
+    void decrementPlayerCount() {
+      if (_playerCount >= 20) return;
+
+      setState(() {
+        _playerCount++;
+      });
+    }
+
+    void handleTogglePassiveMode() {
+      setState(() {
+        _dontCalculateFolds = !_dontCalculateFolds;
+      });
+    }
+
+    void handleToggleCardAssigner() {
+      setState(() {
+        _playerAssignTheirOwnCard = !_playerAssignTheirOwnCard;
+      });
+    }
+
+    //*************************************************************************//
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -70,23 +154,16 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
           ),
         ),
         leading: IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.arrow_back_ios)),
-        actions: [IconButton(onPressed: () => {}, icon: const Icon(Icons.settings_outlined))],
+        actions: /* REPLACE WITH BURGER MENU LOGIC */ [
+          IconButton(onPressed: () => {}, icon: const Icon(Icons.settings_outlined)),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "PREFERENCES",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey,
-                letterSpacing: 1.2,
-              ),
-            ),
-            const SizedBox(height: 10),
+            sectionName("PREFERENCES", true),
 
             // Fixed Player Count Toggle
             _buildOptionRow(
@@ -95,7 +172,7 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
               trailing: CupertinoSwitch(
                 value: _lockPlayerCount,
                 activeTrackColor: Colors.pinkAccent,
-                onChanged: (val) => setState(() => _lockPlayerCount = val),
+                onChanged: (val) => handleToggleLockPlayerCount(),
               ),
             ),
 
@@ -117,7 +194,7 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
                       Row(
                         children: [
                           IconButton(
-                            onPressed: _playerCount > 1 ? () => setState(() => _playerCount--) : null,
+                            onPressed: decrementPlayerCount,
                             icon: const Icon(Icons.remove_circle_outline, color: Colors.pinkAccent),
                           ),
                           Container(
@@ -132,7 +209,7 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
                             ),
                           ),
                           IconButton(
-                            onPressed: _playerCount < 20 ? () => setState(() => _playerCount++) : null,
+                            onPressed: incrementPlayerCount,
                             icon: const Icon(Icons.add_circle_outline, color: Colors.pinkAccent),
                           ),
                         ],
@@ -143,7 +220,7 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
               ),
             ),
 
-            const Divider(height: 40),
+            sectionDivider(),
 
             // Don't Calculate Folds
             _buildOptionRow(
@@ -152,21 +229,11 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
               trailing: CupertinoCheckbox(
                 value: _dontCalculateFolds,
                 activeColor: Colors.pinkAccent,
-                onChanged: (val) => setState(() => _dontCalculateFolds = val ?? false),
+                onChanged: (val) => handleTogglePassiveMode(),
               ),
             ),
 
-            const SizedBox(height: 30),
-            const Text(
-              "GAMEPLAY MODE",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey,
-                letterSpacing: 1.2,
-              ),
-            ),
-            const SizedBox(height: 15),
+            sectionName("GAMEPLAY MODE"),
 
             // Dealer vs Player Assignment
             Container(
@@ -188,7 +255,7 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
                   ),
                 },
                 onValueChanged: (val) {
-                  if (val != null) setState(() => _playerAssignTheirOwnCard = val);
+                  if (val != null) handleToggleCardAssigner();
                 },
               ),
             ),
@@ -203,39 +270,15 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        elevation: 0,
-        height: 160,
+        height: 150,
         color: Colors.transparent,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            PrimaryButton(
-              buttonText: "Create New Game",
-              height: 55,
-              onTap: () {
-                appState.initializeNewGame(
-                  GameOptionsModel(
-                    lockPlayerCount: _lockPlayerCount,
-                    setPlayerCount: _playerCount,
-                    dontCalculateFolds: _dontCalculateFolds,
-                    playerAssignTheirOwnCard: _playerAssignTheirOwnCard,
-                  ),
-                );
-
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')),
-                );
-              },
-            ),
+            PrimaryButton(buttonText: "Create New Game", height: 55, onTap: onNewGame),
             const SizedBox(height: 12),
-            PrimaryButton(
-              height: 50,
-              onTap: () => Navigator.pop(context),
-              secondary: true,
-              buttonText: "Cancel",
-            ),
+            PrimaryButton(buttonText: "Cancel", height: 50, secondary: true, onTap: onCancel),
           ],
         ),
       ),

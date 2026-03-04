@@ -55,7 +55,7 @@ class PlayerTab extends StatelessWidget {
             if (appState.players.length >= AppState.maxPlayers) {
               return const SizedBox();
             }
-            return appState.gameOptions.lockPlayerCount ? Container() : _AddPlayerCard();
+            return appState.gameOptions.lockPlayerCount ? null : _AddPlayerCard();
           }
 
           final anyActive = editingPlayerIndex != null && editingPlayerCardIndex != null;
@@ -98,7 +98,6 @@ class _AddPlayerCard extends StatelessWidget {
       child: Container(
         width: 90,
         height: 90,
-        // margin: const EdgeInsets.only(left: 20),
         decoration: BoxDecoration(
           border: Border.all(
             color: AppColors.deepShadeHeavy,
@@ -161,7 +160,7 @@ class _PlayerCard extends StatelessWidget {
   final void Function(int cardIndex) onSelectCard;
   final void Function() onClearCard;
 
-  _PlayerCard({
+  const _PlayerCard({
     required this.player,
     required this.playerIndex,
     required this.isEditing,
@@ -176,8 +175,7 @@ class _PlayerCard extends StatelessWidget {
   // PASSES
   final Duration animationDuration = const Duration(milliseconds: 250);
 
-  // late final animationCurves = !player.isExpanded ? Curves.easeOut : Curves.easeIn;
-  late final animationCurves = Curves.easeInOut;
+  final animationCurves = Curves.easeInOut;
 
   @override
   Widget build(BuildContext context) {
@@ -187,6 +185,7 @@ class _PlayerCard extends StatelessWidget {
       appState.deletePlayer(playerIndex);
     }
 
+    // TODO: Add a player fold logic
     void handleTogglePlayerFold() {
       // appState.togglePlayerFold(playerIndex);
       return;
@@ -236,13 +235,10 @@ class _PlayerCard extends StatelessWidget {
       final bool isDisabled = isAnyCardActive && !isActive;
 
       return GestureDetector(
-        // if already active, tapping again clears the selection.
-        // otherwise, select this card for editing.
         onTap: isActive ? onClearCard : () => onSelectCard(cardIndex),
         onLongPress: isDisabled
             ? null
             : () => (cardIndex) {
-                // clear a card when long‑pressed
                 context.read<AppState>().clearPlayerCard(playerIndex, cardIndex);
               },
         child: Padding(
@@ -277,9 +273,6 @@ class _PlayerCard extends StatelessWidget {
       curve: Curves.easeInOut,
       width: player.isExpanded ? 180 : 90,
       margin: const EdgeInsets.only(right: 16),
-      // color: player.isExpanded ? Colors.red : Colors.blue,
-      // onTap: player.isExpanded ? null : onExpand,
-      // onLongPress: handleLongPress,
       child: Stack(
         alignment: Alignment.center,
         clipBehavior: Clip.none,

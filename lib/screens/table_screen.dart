@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:undealer/widgets/player_tab.dart';
 import 'package:provider/provider.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
@@ -100,17 +101,19 @@ class _TableRoomState extends State<TableRoom> {
 
     Suit? newSuit;
     if (distance > 20) {
+      const quarterPi = pi / 4;
+
       // Deadzone
       double angle = atan2(offset.dy, offset.dx);
       if (angle < 0) {
         angle += 2 * pi;
       }
 
-      if (angle >= 7 * pi / 4 || angle < pi / 4) {
+      if (angle >= 7 * quarterPi || angle < quarterPi) {
         newSuit = Suit.diamonds;
-      } else if (angle >= pi / 4 && angle < 3 * pi / 4) {
+      } else if (angle >= quarterPi && angle < 3 * quarterPi) {
         newSuit = Suit.clubs;
-      } else if (angle >= 3 * pi / 4 && angle < 5 * pi / 4) {
+      } else if (angle >= 3 * quarterPi && angle < 5 * quarterPi) {
         newSuit = Suit.spades;
       } else {
         newSuit = Suit.hearts;
@@ -228,14 +231,28 @@ class _TableRoomState extends State<TableRoom> {
       valueButton(13, hideAssignedCardFromPlayer),
     ];
 
+    // TODO: Shuffle plain cards when in player tab && assigned by players
     // plainCards.shuffle();
+
+    //*************************************************************************//
+
+    void switchTab() {
+      appState.collapseAllPlayers();
+      setState(() {
+        openedCardTab = openedCardTab == 1 ? 2 : 1;
+        selectingCommunityIndex = null;
+        editingPlayerIndex = null;
+        editingPlayerCardIndex = null;
+      });
+    }
+
+    //*************************************************************************//
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          // widget.title,
-          appState.gameOptions.playerAssignTheirOwnCard.toString(),
+          widget.title,
           style: const TextStyle(
             fontWeight: FontWeight.w600,
             color: Color(0xFF532B2B),
@@ -258,7 +275,7 @@ class _TableRoomState extends State<TableRoom> {
             editingPlayerCardIndex = null;
             selectingCommunityIndex = null;
           });
-          context.read<AppState>().collapseAllPlayers();
+          appState.collapseAllPlayers();
         },
         child: Center(
           child: Padding(
@@ -287,22 +304,14 @@ class _TableRoomState extends State<TableRoom> {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Row(
                   children: [
                     // SWITCH BETWEEN COMMUNITY AND PLAYERS HOLE CARD
                     IconButton(
-                      onPressed: () {
-                        // clear any active selections/expansions when swapping views
-                        context.read<AppState>().collapseAllPlayers();
-                        setState(() {
-                          openedCardTab = openedCardTab == 1 ? 2 : 1;
-                          selectingCommunityIndex = null;
-                          editingPlayerIndex = null;
-                          editingPlayerCardIndex = null;
-                        });
-                      },
-                      icon: Icon(Icons.spoke_rounded),
+                      onPressed: switchTab,
+                      icon: HugeIcon(icon: HugeIcons.strokeRoundedCards01, size: 40, strokeWidth: 1.4),
                       color: openedCardTab == 1 ? Color(0xFFC59090) : Color(0xFF7E5B5B),
                     ),
                     // TEXT DISPLAYING THE CURRENT STAGE OF COMMUNITY CARDS (FLOP, TURN, RIVER)
@@ -317,6 +326,7 @@ class _TableRoomState extends State<TableRoom> {
                     ),
                   ],
                 ),
+                // TODO: Replace evaluation UI and add logic
                 // EVALUATION LOGIC BUTTON TO DETERMINE THE WINNING HAND
                 TextButton(
                   onPressed: () => {},
@@ -334,7 +344,7 @@ class _TableRoomState extends State<TableRoom> {
                       editingPlayerIndex: editingPlayerIndex,
                       editingPlayerCardIndex: editingPlayerCardIndex,
                       onExpand: (playerIndex) {
-                        context.read<AppState>().togglePlayerExpansion(playerIndex);
+                        appState.togglePlayerExpansion(playerIndex);
                         setState(() {
                           selectingCommunityIndex = null;
                           editingPlayerIndex = null;
@@ -370,9 +380,10 @@ class _TableRoomState extends State<TableRoom> {
                         bool isDisabled = isCardDisabledForSelection || isCardDisabledByStage;
 
                         return AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.ease,
                           transform: Matrix4.identity()
-                            ..translateByVector3(Vector3(isActive ? -10 : 0, isActive ? -15.0 : 0.0, 0.0))
+                            ..translateByVector3(Vector3(isActive ? -8 : 0, isActive ? -15.0 : 0.0, 0.0))
                             ..scaleByVector3(Vector3.all(isActive ? 1.2 : 1.0)),
                           child: Opacity(
                             opacity: isDisabled ? 0.4 : 1,
@@ -389,8 +400,7 @@ class _TableRoomState extends State<TableRoom> {
                                 ),
                                 back: const PokerCard(value: 0, small: true, showBack: true),
                                 onTap: () {
-                                  // collapse any open player cards
-                                  context.read<AppState>().collapseAllPlayers();
+                                  appState.collapseAllPlayers();
                                   setState(() {
                                     editingPlayerIndex = null;
                                     editingPlayerCardIndex = null;

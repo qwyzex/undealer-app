@@ -21,6 +21,16 @@ class QuickPlay extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
 
+    final double cardShiftAngle = math.pi / 30; // r+ l-
+
+    void enterRoom() {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
+    }
+
+    void enterGameOptions() {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const GameOptionsScreen()));
+    }
+
     return Container(
       margin: const EdgeInsets.all(30),
       width: double.infinity,
@@ -39,10 +49,10 @@ class QuickPlay extends StatelessWidget {
             left: 20,
             bottom: -17,
             child: Transform.rotate(
-              angle: -math.pi / 30,
+              angle: -cardShiftAngle,
               child: PokerCard(
-                value: context.read<AppState>().communityCards[3].value ?? 14,
-                suit: context.read<AppState>().communityCards[3].suit ?? Suit.spades,
+                value: appState.communityCards[3].value ?? 14,
+                suit: appState.communityCards[3].suit ?? Suit.spades,
               ),
             ),
           ),
@@ -50,10 +60,10 @@ class QuickPlay extends StatelessWidget {
             left: 70,
             bottom: -12,
             child: Transform.rotate(
-              angle: math.pi / 30,
+              angle: cardShiftAngle,
               child: PokerCard(
-                value: context.read<AppState>().communityCards[4].value ?? 13,
-                suit: context.read<AppState>().communityCards[4].suit ?? Suit.hearts,
+                value: appState.communityCards[4].value ?? 12,
+                suit: appState.communityCards[4].suit ?? Suit.hearts,
               ),
             ),
           ),
@@ -79,20 +89,10 @@ class QuickPlay extends StatelessWidget {
                       spacing: 10,
                       children: [
                         if (appState.hasSavedGame) ...[
-                          PrimaryButton(
-                            buttonText: "Continue",
-                            width: 160,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')),
-                              );
-                            },
-                          ),
+                          PrimaryButton(buttonText: "Continue", onTap: enterRoom),
                           PrimaryButton(
                             secondary: true,
                             buttonText: "New Game",
-                            width: 160,
                             onTap: () {
                               resetCurrentGame(context, appState);
                             },
@@ -100,26 +100,12 @@ class QuickPlay extends StatelessWidget {
                         ] else ...[
                           PrimaryButton(
                             buttonText: "Play",
-                            // width: 160,
                             onTap: () {
                               appState.resetGame();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')),
-                              );
+                              enterRoom();
                             },
                           ),
-                          PrimaryButton(
-                            secondary: true,
-                            buttonText: "Customize",
-                            width: 160,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const GameOptionsScreen()),
-                              );
-                            },
-                          ),
+                          PrimaryButton(secondary: true, buttonText: "Customize", onTap: enterGameOptions),
                         ],
                       ],
                     ),

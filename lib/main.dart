@@ -27,7 +27,6 @@ class UndealerApp extends StatelessWidget {
           hintStyle: const TextStyle(color: AppColors.textColorDim),
           filled: true,
           fillColor: AppColors.primaryLighter,
-
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: const BorderSide(color: Colors.transparent, width: 3),
