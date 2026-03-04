@@ -9,7 +9,14 @@ class PrimaryButton extends StatelessWidget {
   final double? height;
   final bool? secondary;
 
-  const PrimaryButton({super.key, required this.buttonText, this.onTap, this.width, this.height, this.secondary});
+  const PrimaryButton({
+    super.key,
+    required this.buttonText,
+    this.onTap,
+    this.width,
+    this.height,
+    this.secondary,
+  });
 
   bool get isSecondary => secondary ?? false;
 
@@ -19,9 +26,23 @@ class PrimaryButton extends StatelessWidget {
       width: width,
       decoration: BoxDecoration(
         color: isSecondary ? Colors.transparent : Colors.pinkAccent.shade200,
-        boxShadow: isSecondary ? [] : [BoxShadow(color: Colors.pinkAccent.shade200.withAlpha(60), blurRadius: 25, offset: const Offset(0, 0), spreadRadius: 10)],
+        boxShadow: isSecondary
+            ? []
+            : [
+                BoxShadow(
+                  color: Colors.pinkAccent.shade200.withAlpha(60),
+                  blurRadius: 25,
+                  offset: const Offset(0, 0),
+                  spreadRadius: 10,
+                ),
+              ],
         borderRadius: BorderRadius.all(Radius.circular(12)),
-        border: Border.all(color: isSecondary ? AppColors.textColor : Colors.pinkAccent, width: 2, style: BorderStyle.solid, strokeAlign: BorderSide.strokeAlignInside),
+        border: Border.all(
+          color: isSecondary ? AppColors.textColor : Colors.pinkAccent,
+          width: 2,
+          style: BorderStyle.solid,
+          strokeAlign: BorderSide.strokeAlignInside,
+        ),
       ),
       child: CupertinoButton(
         onPressed: onTap,
@@ -37,7 +58,19 @@ class PrimaryButton extends StatelessWidget {
         child: Text(
           buttonText,
           textAlign: TextAlign.center,
-          style: isSecondary ? TextStyle(color: AppColors.textColor, fontSize: 18, fontWeight: FontWeight.w500, fontFamily: 'Lexend') : TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700, fontFamily: 'Lexend'),
+          style: isSecondary
+              ? TextStyle(
+                  color: AppColors.textColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Lexend',
+                )
+              : TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Lexend',
+                ),
         ),
       ),
     );

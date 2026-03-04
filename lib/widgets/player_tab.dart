@@ -44,8 +44,6 @@ class PlayerTab extends StatelessWidget {
         physics: const BouncingScrollPhysics(),
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        // padding: const EdgeInsets.fromLTRB(16, 40, 16, 16),
-        // Extra top padding for tooltip
         itemCount: appState.players.length + 2,
         itemBuilder: (context, index) {
           if (index == appState.players.length + 1) {

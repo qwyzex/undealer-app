@@ -14,9 +14,7 @@ import 'dart:math' as math;
 class QuickPlay extends StatelessWidget {
   const QuickPlay({super.key});
 
-  Future<void> delayCardUIUpdate(BuildContext context, AppState appState) async {
-    //   Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
-    //   await Future.delayed(const Duration(milliseconds: 25));
+  Future<void> resetCurrentGame(BuildContext context, AppState appState) async {
     appState.resetGame();
   }
 
@@ -29,7 +27,11 @@ class QuickPlay extends StatelessWidget {
       width: double.infinity,
       height: 220,
       decoration: const BoxDecoration(
-        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppColors.primaryLighter, Color(0xFFFAFAFA)]),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.primaryLighter, Color(0xFFFAFAFA)],
+        ),
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
       child: Stack(
@@ -39,7 +41,10 @@ class QuickPlay extends StatelessWidget {
             bottom: -17,
             child: Transform.rotate(
               angle: -math.pi / 30,
-              child: PokerCard(value: context.read<AppState>().communityCards[3].value ?? 14, suit: context.read<AppState>().communityCards[3].suit ?? Suit.spades),
+              child: PokerCard(
+                value: context.read<AppState>().communityCards[3].value ?? 14,
+                suit: context.read<AppState>().communityCards[3].suit ?? Suit.spades,
+              ),
             ),
           ),
           Positioned(
@@ -47,12 +52,14 @@ class QuickPlay extends StatelessWidget {
             bottom: -12,
             child: Transform.rotate(
               angle: math.pi / 30,
-              child: PokerCard(value: context.read<AppState>().communityCards[4].value ?? 13, suit: context.read<AppState>().communityCards[4].suit ?? Suit.hearts),
+              child: PokerCard(
+                value: context.read<AppState>().communityCards[4].value ?? 13,
+                suit: context.read<AppState>().communityCards[4].suit ?? Suit.hearts,
+              ),
             ),
           ),
           Positioned.fill(
             child: Padding(
-              // padding: const EdgeInsets.only(left: 10, right: 10, bottom: 20, top: 20),
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -77,7 +84,10 @@ class QuickPlay extends StatelessWidget {
                             buttonText: "Continue",
                             width: 160,
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')),
+                              );
                             },
                           ),
                           PrimaryButton(
@@ -85,7 +95,7 @@ class QuickPlay extends StatelessWidget {
                             buttonText: "New Game",
                             width: 160,
                             onTap: () {
-                              delayCardUIUpdate(context, appState);
+                              resetCurrentGame(context, appState);
                             },
                           ),
                         ] else ...[
@@ -94,7 +104,10 @@ class QuickPlay extends StatelessWidget {
                             // width: 160,
                             onTap: () {
                               appState.resetGame();
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')),
+                              );
                             },
                           ),
                           PrimaryButton(
@@ -102,7 +115,10 @@ class QuickPlay extends StatelessWidget {
                             buttonText: "Customize",
                             width: 160,
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => const GameOptionsScreen()));
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const GameOptionsScreen()),
+                              );
                             },
                           ),
                         ],

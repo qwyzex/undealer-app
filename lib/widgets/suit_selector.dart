@@ -67,11 +67,7 @@ class _RadialMenuPainter extends CustomPainter {
   final Set<Suit> unavailableSuits;
   final bool letDuplicateCards;
 
-  _RadialMenuPainter({
-    this.selectedSuit,
-    required this.unavailableSuits,
-    required this.letDuplicateCards,
-  });
+  _RadialMenuPainter({this.selectedSuit, required this.unavailableSuits, required this.letDuplicateCards});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -133,16 +129,12 @@ class _RadialMenuPainter extends CustomPainter {
         textDirection: TextDirection.ltr,
       )..layout();
 
-      textPainter.paint(
-        canvas,
-        symbolPosition - Offset(textPainter.width / 2, textPainter.height / 2),
-      );
+      textPainter.paint(canvas, symbolPosition - Offset(textPainter.width / 2, textPainter.height / 2));
     });
   }
 
   @override
   bool shouldRepaint(covariant _RadialMenuPainter oldDelegate) {
-    return oldDelegate.selectedSuit != selectedSuit ||
-        oldDelegate.unavailableSuits != unavailableSuits;
+    return oldDelegate.selectedSuit != selectedSuit || oldDelegate.unavailableSuits != unavailableSuits;
   }
 }

@@ -32,6 +32,27 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
     _playerAssignTheirOwnCard = initialOptions.playerAssignTheirOwnCard;
   }
 
+  Widget _buildOptionRow({required String title, required String subtitle, required Widget trailing}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 2),
+                Text(subtitle, style: const TextStyle(fontSize: 13, color: Colors.grey)),
+              ],
+            ),
+          ),
+          trailing,
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
@@ -48,10 +69,7 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
             letterSpacing: 1.5,
           ),
         ),
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back_ios),
-        ),
+        leading: IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.arrow_back_ios)),
         actions: [IconButton(onPressed: () => {}, icon: const Icon(Icons.settings_outlined))],
       ),
       body: SingleChildScrollView(
@@ -76,7 +94,7 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
               subtitle: "Lock the table to a specific number of players",
               trailing: CupertinoSwitch(
                 value: _lockPlayerCount,
-                activeColor: Colors.pinkAccent,
+                activeTrackColor: Colors.pinkAccent,
                 onChanged: (val) => setState(() => _lockPlayerCount = val),
               ),
             ),
@@ -99,9 +117,7 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
                       Row(
                         children: [
                           IconButton(
-                            onPressed: _playerCount > 1
-                                ? () => setState(() => _playerCount--)
-                                : null,
+                            onPressed: _playerCount > 1 ? () => setState(() => _playerCount--) : null,
                             icon: const Icon(Icons.remove_circle_outline, color: Colors.pinkAccent),
                           ),
                           Container(
@@ -116,9 +132,7 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
                             ),
                           ),
                           IconButton(
-                            onPressed: _playerCount < 20
-                                ? () => setState(() => _playerCount++)
-                                : null,
+                            onPressed: _playerCount < 20 ? () => setState(() => _playerCount++) : null,
                             icon: const Icon(Icons.add_circle_outline, color: Colors.pinkAccent),
                           ),
                         ],
@@ -157,10 +171,7 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
             // Dealer vs Player Assignment
             Container(
               width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(12),
-              ),
+              decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(12)),
               child: CupertinoSlidingSegmentedControl<bool>(
                 groupValue: _playerAssignTheirOwnCard,
                 backgroundColor: AppColors.deepShade,
@@ -209,7 +220,6 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
                     setPlayerCount: _playerCount,
                     dontCalculateFolds: _dontCalculateFolds,
                     playerAssignTheirOwnCard: _playerAssignTheirOwnCard,
-                    test: "GAME_START",
                   ),
                 );
 
@@ -228,31 +238,6 @@ class _GameOptionsScreenState extends State<GameOptionsScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildOptionRow({
-    required String title,
-    required String subtitle,
-    required Widget trailing,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
-                const SizedBox(height: 2),
-                Text(subtitle, style: const TextStyle(fontSize: 13, color: Colors.grey)),
-              ],
-            ),
-          ),
-          trailing,
-        ],
       ),
     );
   }

@@ -11,7 +11,14 @@ class PokerCard extends StatelessWidget {
   final bool showBack;
   final int? showPlayerIndex;
 
-  const PokerCard({super.key, required this.value, this.suit, this.small = false, this.showBack = false, this.showPlayerIndex});
+  const PokerCard({
+    super.key,
+    required this.value,
+    this.suit,
+    this.small = false,
+    this.showBack = false,
+    this.showPlayerIndex,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -71,10 +78,10 @@ class PokerCard extends StatelessWidget {
       switch (s) {
         case Suit.hearts:
         case Suit.diamonds:
-          return const Color(0xFFC22B2B); // A bit darker red
+          return const Color(0xFFC22B2B);
         case Suit.clubs:
         case Suit.spades:
-          return const Color(0xFF1A1A1A); // Almost black
+          return const Color(0xFF1A1A1A);
       }
     }
 
@@ -100,7 +107,14 @@ class PokerCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         color: showBack ? const Color(0xFF3A1A1A) : Colors.white,
-        boxShadow: [BoxShadow(color: Colors.grey.withAlpha(25), spreadRadius: 4, blurRadius: 10, offset: const Offset(1, 6))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withAlpha(25),
+            spreadRadius: 4,
+            blurRadius: 10,
+            offset: const Offset(1, 6),
+          ),
+        ],
       ),
       child: showPlayerIndex != null
           ? Padding(
@@ -113,14 +127,22 @@ class PokerCard extends StatelessWidget {
                     alignment: Alignment.topLeft,
                     child: Text(
                       'P',
-                      style: TextStyle(fontSize: small ? 30 : 60, color: AppColors.deepShade, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: small ? 30 : 60,
+                        color: AppColors.deepShade,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   Align(
                     alignment: Alignment.bottomRight,
                     child: Text(
                       showPlayerIndex.toString(),
-                      style: TextStyle(fontSize: small ? 30 : 60, color: AppColors.deepShade, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: small ? 30 : 60,
+                        color: AppColors.deepShade,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -140,7 +162,11 @@ class PokerCard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 2.0),
                       child: Text(
                         getSuitSymbol(suit),
-                        style: TextStyle(fontSize: small ? 18 : 22, color: getSuitColor(suit), fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: small ? 18 : 22,
+                          color: getSuitColor(suit),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                 ],

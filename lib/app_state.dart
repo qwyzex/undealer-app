@@ -19,7 +19,12 @@ class AppState extends ChangeNotifier {
 
   // SETTINGS OPTIONS
   // This is the "Initial" value, but loadState() will overwrite this if data exists in storage.
-  GameOptionsModel gameOptions = GameOptionsModel(lockPlayerCount: true, setPlayerCount: 6, dontCalculateFolds: false, playerAssignTheirOwnCard: true, test: "LOVE");
+  GameOptionsModel gameOptions = GameOptionsModel(
+    lockPlayerCount: true,
+    setPlayerCount: 6,
+    dontCalculateFolds: false,
+    playerAssignTheirOwnCard: true,
+  );
 
   /// TABLE STAGES
   /// 0: Flop, 1: Turn, 2: River
@@ -154,7 +159,8 @@ class AppState extends ChangeNotifier {
     communityCards[index].suit = suit;
     communityCards[index].flipped = true;
 
-    final bool isTrueFlop = communityCards[0].value != null && communityCards[1].value != null && communityCards[2].value != null;
+    final bool isTrueFlop =
+        communityCards[0].value != null && communityCards[1].value != null && communityCards[2].value != null;
 
     if (isTrueFlop && tableStage == 0) {
       tableStage = 1;
@@ -197,7 +203,12 @@ class AppState extends ChangeNotifier {
     tableStage = 0;
 
     // Reset game options to default values
-    gameOptions = GameOptionsModel(lockPlayerCount: false, setPlayerCount: 6, dontCalculateFolds: false, playerAssignTheirOwnCard: true, test: "LOVE");
+    gameOptions = GameOptionsModel(
+      lockPlayerCount: false,
+      setPlayerCount: 6,
+      dontCalculateFolds: false,
+      playerAssignTheirOwnCard: true,
+    );
 
     saveState();
     notifyListeners();
@@ -212,7 +223,12 @@ class AppState extends ChangeNotifier {
   // Persistence logic
   Future<void> saveState() async {
     final prefs = await SharedPreferences.getInstance();
-    final stateData = {'communityCards': communityCards.map((c) => c.toJson()).toList(), 'players': players.map((p) => p.toJson()).toList(), 'tableStage': tableStage, 'gameOptions': gameOptions.toJson()};
+    final stateData = {
+      'communityCards': communityCards.map((c) => c.toJson()).toList(),
+      'players': players.map((p) => p.toJson()).toList(),
+      'tableStage': tableStage,
+      'gameOptions': gameOptions.toJson(),
+    };
     await prefs.setString('game_state', jsonEncode(stateData));
   }
 
@@ -223,7 +239,9 @@ class AppState extends ChangeNotifier {
     if (stateString != null) {
       final Map<String, dynamic> stateData = jsonDecode(stateString);
 
-      communityCards = (stateData['communityCards'] as List).map((c) => CommunityCardData.fromJson(c)).toList();
+      communityCards = (stateData['communityCards'] as List)
+          .map((c) => CommunityCardData.fromJson(c))
+          .toList();
       players = (stateData['players'] as List).map((p) => PlayerData.fromJson(p)).toList();
       tableStage = stateData['tableStage'] ?? 0;
 

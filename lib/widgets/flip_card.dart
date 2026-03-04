@@ -16,8 +16,6 @@ class FlipCard extends StatefulWidget {
   final VoidCallback? onTap;
   final bool? quickRadialCall;
 
-  // final VoidCallback? onLongPress;
-
   final RadialFunctionCall? onCancelPress; // 0–500ms
   final RadialFunctionCall? onActionOne; // 501–1000ms
   final RadialFunctionCall? onActionTwo; // 1001ms+
@@ -45,8 +43,6 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
   late Animation<double> _flipAnimation;
 
   AnimationController? _progressController;
-
-  DateTime? _pressStart;
 
   @override
   void initState() {
@@ -85,8 +81,6 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
       if (!widget.locked) return;
     }
 
-    _pressStart = DateTime.now();
-
     _progressController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: widget.quickRadialCall == true ? 1000 : 1500),
@@ -113,7 +107,6 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
       widget.onActionTwo?.fun?.call();
     }
 
-    _pressStart = null;
     _resetProgress();
   }
 
