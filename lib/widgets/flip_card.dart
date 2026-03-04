@@ -189,7 +189,7 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
                     ),
                     if (currentTip != null)
                       Positioned(
-                        top: -45,
+                        top: -55,
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
