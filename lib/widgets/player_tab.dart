@@ -4,6 +4,7 @@ import 'package:vector_math/vector_math_64.dart' show Vector3;
 import 'package:provider/provider.dart';
 import '../app_state.dart';
 import 'package:undealer/models/card_model.dart';
+import '../models/player_model.dart';
 import 'flip_card.dart';
 import 'poker_card.dart';
 
@@ -23,7 +24,14 @@ class PlayerTab extends StatelessWidget {
   /// Called when the user taps an already active card to clear the selection.
   final void Function() onClearCard;
 
-  const PlayerTab({super.key, required this.editingPlayerIndex, required this.editingPlayerCardIndex, required this.onExpand, required this.onSelectCard, required this.onClearCard});
+  const PlayerTab({
+    super.key,
+    required this.editingPlayerIndex,
+    required this.editingPlayerCardIndex,
+    required this.onExpand,
+    required this.onSelectCard,
+    required this.onClearCard,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,13 +40,14 @@ class PlayerTab extends StatelessWidget {
     return SizedBox(
       height: 150,
       child: ListView.builder(
+        clipBehavior: Clip.none,
         physics: const BouncingScrollPhysics(),
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: appState.players.length + 2,
         itemBuilder: (context, index) {
           if (index == appState.players.length + 1) {
-            return _GhostReference(key: context.read<AppState>().addPlayerRefKey);
+            return _GhostReference(key: appState.addPlayerRefKey);
           }
 
           if (index == appState.players.length) {
@@ -46,13 +55,23 @@ class PlayerTab extends StatelessWidget {
             if (appState.players.length >= AppState.maxPlayers) {
               return const SizedBox();
             }
-            return _AddPlayerCard();
+            return appState.gameOptions.lockPlayerCount ? null : _AddPlayerCard();
           }
 
           final anyActive = editingPlayerIndex != null && editingPlayerCardIndex != null;
           final activeForThis = editingPlayerIndex == index ? editingPlayerCardIndex : null;
           return AnimatedPlayerCard(
-            child: _PlayerCard(player: appState.players[index], playerIndex: index, isEditing: editingPlayerIndex == index, editingCardIndex: editingPlayerCardIndex, activeCardIndex: activeForThis, isAnyCardActive: anyActive, onExpand: () => onExpand(index), onSelectCard: (cardIndex) => onSelectCard(index, cardIndex), onClearCard: onClearCard),
+            child: _PlayerCard(
+              player: appState.players[index],
+              playerIndex: index,
+              isEditing: editingPlayerIndex == index,
+              editingCardIndex: editingPlayerCardIndex,
+              activeCardIndex: activeForThis,
+              isAnyCardActive: anyActive,
+              onExpand: () => onExpand(index),
+              onSelectCard: (cardIndex) => onSelectCard(index, cardIndex),
+              onClearCard: onClearCard,
+            ),
           );
         },
       ),
@@ -79,12 +98,16 @@ class _AddPlayerCard extends StatelessWidget {
       child: Container(
         width: 90,
         height: 90,
-        // margin: const EdgeInsets.only(left: 20),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey, style: BorderStyle.solid),
+          border: Border.all(
+            color: AppColors.deepShadeHeavy,
+            style: BorderStyle.solid,
+            width: 3,
+            strokeAlign: BorderSide.strokeAlignInside,
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: const Center(child: Icon(Icons.add, size: 40, color: Colors.grey)),
+        child: const Center(child: Icon(Icons.add, size: 40, color: AppColors.deepShadeHeavy)),
       ),
     );
   }
@@ -137,21 +160,35 @@ class _PlayerCard extends StatelessWidget {
   final void Function(int cardIndex) onSelectCard;
   final void Function() onClearCard;
 
-  const _PlayerCard({required this.player, required this.playerIndex, required this.isEditing, required this.editingCardIndex, required this.activeCardIndex, required this.isAnyCardActive, required this.onExpand, required this.onSelectCard, required this.onClearCard});
+  const _PlayerCard({
+    required this.player,
+    required this.playerIndex,
+    required this.isEditing,
+    required this.editingCardIndex,
+    required this.activeCardIndex,
+    required this.isAnyCardActive,
+    required this.onExpand,
+    required this.onSelectCard,
+    required this.onClearCard,
+  });
+
+  // PASSES
+  final Duration animationDuration = const Duration(milliseconds: 250);
+
+  final animationCurves = Curves.easeInOut;
 
   @override
   Widget build(BuildContext context) {
-    // width grows when expanded so the second card has space; wrapping ine
-    // ClipRect prevents children from overflowing during the animation.
+    final appState = context.read<AppState>();
 
-    void handleLongPress() {
-      if (!player.isExpanded) {
-        // stacked state: remove this player
-        context.read<AppState>().deletePlayer(playerIndex);
-      } else {
-        // expanded state: toggle expansion as before
-        onExpand();
-      }
+    void handleDeletePlayer() {
+      appState.deletePlayer(playerIndex);
+    }
+
+    // TODO: Add a player fold logic
+    void handleTogglePlayerFold() {
+      // appState.togglePlayerFold(playerIndex);
+      return;
     }
 
     Widget separator() {
@@ -160,7 +197,10 @@ class _PlayerCard extends StatelessWidget {
         child: Container(
           width: 2,
           height: 70,
-          decoration: BoxDecoration(color: AppColors.textColorDim.withAlpha(player.isExpanded ? 100 : 0), borderRadius: BorderRadius.circular(2)),
+          decoration: BoxDecoration(
+            color: AppColors.textColorDim.withAlpha(player.isExpanded ? 100 : 0),
+            borderRadius: BorderRadius.circular(2),
+          ),
         ),
       );
     }
@@ -169,7 +209,7 @@ class _PlayerCard extends StatelessWidget {
       return IgnorePointer(
         ignoring: true,
         child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 250),
+          duration: animationDuration,
           opacity: player.isExpanded ? 0 : 1,
           child: Container(
             width: 10,
@@ -190,35 +230,37 @@ class _PlayerCard extends StatelessWidget {
       );
     }
 
-    Widget buildCard(CommunityCardData card, int cardIndex) {
+    Widget buildCard(CommunityCardData card, int cardIndex, bool showPlayerIndex) {
       final bool isActive = isEditing && editingCardIndex == cardIndex;
       final bool isDisabled = isAnyCardActive && !isActive;
 
       return GestureDetector(
-        // if already active, tapping again clears the selection.
-        // otherwise, select this card for editing.
         onTap: isActive ? onClearCard : () => onSelectCard(cardIndex),
         onLongPress: isDisabled
             ? null
             : () => (cardIndex) {
-                // clear a card when long‑pressed
                 context.read<AppState>().clearPlayerCard(playerIndex, cardIndex);
               },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
+            duration: animationDuration,
             transform: Matrix4.identity()..scaleByVector3(Vector3.all(isActive ? 1.1 : 1.0)),
             transformAlignment: Alignment.center,
             child: AnimatedOpacity(
-              duration: const Duration(milliseconds: 150),
+              duration: animationDuration,
               opacity: isDisabled ? 0.35 : 1,
               child: FlipCard(
                 flipped: card.value != null && player.isExpanded,
                 locked: false,
                 onTap: isActive ? onClearCard : () => onSelectCard(cardIndex),
                 front: PokerCard(value: card.value ?? 0, suit: card.suit, small: true, showBack: false),
-                back: PokerCard(value: 0, small: true, showBack: true),
+                back: PokerCard(
+                  value: 0,
+                  small: true,
+                  showBack: true,
+                  showPlayerIndex: showPlayerIndex ? playerIndex + 1 : null,
+                ),
               ),
             ),
           ),
@@ -227,30 +269,60 @@ class _PlayerCard extends StatelessWidget {
     }
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
+      duration: animationDuration,
       curve: Curves.easeInOut,
       width: player.isExpanded ? 180 : 90,
       margin: const EdgeInsets.only(right: 16),
-      // color: player.isExpanded ? Colors.red : Colors.blue,
-      // onTap: player.isExpanded ? null : onExpand,
-      // onLongPress: handleLongPress,
       child: Stack(
         alignment: Alignment.center,
+        clipBehavior: Clip.none,
         children: [
           // Margin separator
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 8, child: separator()),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), right: 8, child: separator()),
+          AnimatedPositioned(
+            duration: animationDuration,
+            left: player.isExpanded ? 8 : 0,
+            child: separator(),
+          ),
+          AnimatedPositioned(
+            duration: animationDuration,
+            right: player.isExpanded ? 8 : 0,
+            child: separator(),
+          ),
 
           // CARDs
-          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, right: player.isExpanded ? 12 : 0, top: !player.isExpanded ? 20 : 10.5, child: buildCard(player.card1, 0)),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), curve: Curves.ease, left: player.isExpanded ? 12 : 0, child: buildCard(player.card2, 1)),
+          AnimatedPositioned(
+            duration: animationDuration,
+            curve: animationCurves,
+            left: player.isExpanded ? 90 : 10,
+            top: player.isExpanded ? 10 : 20,
+            child: buildCard(player.card1, 0, false),
+          ),
+          AnimatedPositioned(
+            duration: animationDuration,
+            curve: animationCurves,
+            left: player.isExpanded ? 12 : 0,
+            top: 10.5,
+            child: buildCard(player.card2, 1, true),
+          ),
 
           // Card assigned indicator
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 9 + (player.isExpanded ? 10 : 0), bottom: 18, child: indicator(0)),
-          AnimatedPositioned(duration: Duration(milliseconds: 250), left: 18 + (player.isExpanded ? 10 : 0), bottom: 18, child: indicator(1)),
+          AnimatedPositioned(
+            duration: animationDuration,
+            curve: animationCurves,
+            left: 9 + (player.isExpanded ? 15 : 0),
+            bottom: 18,
+            child: indicator(0),
+          ),
+          AnimatedPositioned(
+            duration: animationDuration,
+            curve: animationCurves,
+            left: 9 + (player.isExpanded ? 15 : 0),
+            bottom: 30,
+            child: indicator(1),
+          ),
 
           // Overlay
-          Expanded(
+          Positioned.fill(
             child: IgnorePointer(
               ignoring: player.isExpanded,
               child: FlipCard(
@@ -258,7 +330,12 @@ class _PlayerCard extends StatelessWidget {
                 locked: false,
                 inverseLocked: true,
                 onTap: player.isExpanded ? null : onExpand,
-                onLongPress: handleLongPress,
+                // onLongPress: handleLongPress,
+                onCancelPress: RadialFunctionCall(() => {}, "CANCEL"),
+                onActionOne: RadialFunctionCall(handleTogglePlayerFold, "FOLD"),
+                onActionTwo: appState.gameOptions.lockPlayerCount
+                    ? RadialFunctionCall(handleTogglePlayerFold, "FOLD")
+                    : RadialFunctionCall(handleDeletePlayer, "DELETE"),
                 front: Container(color: Colors.transparent),
                 back: Container(),
               ),

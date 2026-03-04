@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:undealer/models/suit.dart';
+import 'package:undealer/theme/colors.dart';
 
 // POKER CARD
 class PokerCard extends StatelessWidget {
@@ -8,6 +9,7 @@ class PokerCard extends StatelessWidget {
   final Suit? suit;
   final bool small;
   final bool showBack;
+  final int? showPlayerIndex;
 
   const PokerCard({
     super.key,
@@ -15,6 +17,7 @@ class PokerCard extends StatelessWidget {
     this.suit,
     this.small = false,
     this.showBack = false,
+    this.showPlayerIndex,
   });
 
   @override
@@ -75,10 +78,10 @@ class PokerCard extends StatelessWidget {
       switch (s) {
         case Suit.hearts:
         case Suit.diamonds:
-          return const Color(0xFFC22B2B); // A bit darker red
+          return const Color(0xFFC22B2B);
         case Suit.clubs:
         case Suit.spades:
-          return const Color(0xFF1A1A1A); // Almost black
+          return const Color(0xFF1A1A1A);
       }
     }
 
@@ -93,11 +96,7 @@ class PokerCard extends StatelessWidget {
     } else {
       valueWidget = Text(
         valOf(value),
-        style: TextStyle(
-          fontSize: fontSizeVal,
-          fontWeight: FontWeight.w900,
-          color: getSuitColor(suit),
-        ),
+        style: TextStyle(fontSize: fontSizeVal, fontWeight: FontWeight.w900, color: getSuitColor(suit)),
       );
     }
 
@@ -117,10 +116,40 @@ class PokerCard extends StatelessWidget {
           ),
         ],
       ),
-      child: showBack
-          ? const Center(
-              child: Icon(Icons.casino, color: Colors.white, size: 28),
+      child: showPlayerIndex != null
+          ? Padding(
+              padding: EdgeInsetsGeometry.only(left: 10, right: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      'P',
+                      style: TextStyle(
+                        fontSize: small ? 30 : 60,
+                        color: AppColors.deepShade,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Text(
+                      showPlayerIndex.toString(),
+                      style: TextStyle(
+                        fontSize: small ? 30 : 60,
+                        color: AppColors.deepShade,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             )
+          : showBack
+          ? const Center(child: Icon(Icons.casino_outlined, color: Colors.white, size: 28))
           : Padding(
               padding: const EdgeInsets.fromLTRB(12, 6, 0, 0),
               child: Column(

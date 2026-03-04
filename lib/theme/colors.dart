@@ -9,4 +9,6 @@ class AppColors {
   static const Color textColor = Color(0xFF604a24);
   static const Color textColorDim = Color(0xFFAC987C);
   static const Color focusedBorderColor = Color(0xFF897558);
+  static const Color deepShade = Color(0xFFDAD1C1);
+  static const Color deepShadeHeavy = Color(0xFFB9B6AD);
 }

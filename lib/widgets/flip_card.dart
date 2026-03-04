@@ -1,4 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+
+class RadialFunctionCall {
+  final VoidCallback? fun;
+  final String? tip;
+
+  RadialFunctionCall(this.fun, this.tip);
+}
 
 class FlipCard extends StatefulWidget {
   final Widget front;
@@ -7,9 +16,25 @@ class FlipCard extends StatefulWidget {
   final bool flipped;
   final bool inverseLocked;
   final VoidCallback? onTap;
-  final VoidCallback? onLongPress;
+  final bool? quickRadialCall;
 
-  const FlipCard({super.key, required this.front, required this.back, required this.flipped, required this.locked, this.inverseLocked = false, this.onTap, this.onLongPress});
+  final RadialFunctionCall? onCancelPress; // 0–500ms
+  final RadialFunctionCall? onActionOne; // 501–1000ms
+  final RadialFunctionCall? onActionTwo; // 1001ms+
+
+  const FlipCard({
+    super.key,
+    required this.front,
+    required this.back,
+    required this.flipped,
+    required this.locked,
+    this.inverseLocked = false,
+    this.onTap,
+    this.onCancelPress,
+    this.onActionOne,
+    this.onActionTwo,
+    this.quickRadialCall,
+  });
 
   @override
   State<FlipCard> createState() => _FlipCardState();
@@ -45,23 +70,45 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
     }
   }
 
+  bool _getQuickRadialCallState(double value, [bool? firstCall = false]) {
+    final int secondNumerator = widget.quickRadialCall == true ? 2 : 3;
+    final int numerator = (firstCall == true ? 1 : secondNumerator);
+    final int denominator = widget.quickRadialCall == true ? 3 : 4;
+
+    return value <= numerator / denominator;
+  }
+
   void _onLongPressStart(LongPressStartDetails _) {
     if (!widget.inverseLocked == !widget.locked) {
       if (!widget.locked) return;
     }
 
-    _progressController = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
-    _progressController!.forward().whenComplete(() {
-      if (!mounted) return;
-      // If animation completes, it means it wasn't cancelled.
-      widget.onLongPress?.call();
-      _resetProgress();
-    });
-    setState(() {}); // To show the progress indicator
+    _progressController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: widget.quickRadialCall == true ? 1000 : 1500),
+    );
+
+    _progressController!.forward();
+
+    setState(() {});
   }
 
   void _onLongPressEnd() {
-    // This is the cancellation.
+    if (_progressController == null) {
+      _resetProgress();
+      return;
+    }
+
+    final progress = _progressController!.value;
+
+    if (_getQuickRadialCallState(progress, true)) {
+      widget.onCancelPress?.fun?.call();
+    } else if (_getQuickRadialCallState(progress)) {
+      widget.onActionOne?.fun?.call();
+    } else {
+      widget.onActionTwo?.fun?.call();
+    }
+
     _resetProgress();
   }
 
@@ -88,26 +135,78 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
       onLongPressCancel: _onLongPressEnd,
       child: Stack(
         alignment: Alignment.center,
+        clipBehavior: Clip.none,
         children: [
           AnimatedBuilder(
             animation: _flipAnimation,
             builder: (context, child) {
-              final angle = _flipAnimation.value * 3.1416;
+              final angle = _flipAnimation.value * pi;
               return Transform(
                 alignment: Alignment.center,
                 transform: Matrix4.rotationY(angle),
-                child: _flipAnimation.value < 0.5 ? widget.back : Transform(alignment: Alignment.center, transform: Matrix4.rotationY(3.1416), child: widget.front),
+                child: _flipAnimation.value < 0.5
+                    ? widget.back
+                    : Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.rotationY(pi),
+                        child: widget.front,
+                      ),
               );
             },
           ),
           if (_progressController != null)
             AnimatedBuilder(
               animation: _progressController!,
-              builder: (context, _) => SizedBox(
-                width: 60,
-                height: 60,
-                child: CircularProgressIndicator(value: _progressController!.value, strokeWidth: 6, valueColor: const AlwaysStoppedAnimation<Color>(Colors.white70), backgroundColor: Colors.black26),
-              ),
+              builder: (context, _) {
+                final progress = _progressController!.value;
+                String? currentTip;
+                if (_getQuickRadialCallState(progress, true)) {
+                  currentTip = widget.onCancelPress?.tip;
+                } else if (_getQuickRadialCallState(progress)) {
+                  currentTip = widget.onActionOne?.tip;
+                } else {
+                  currentTip = widget.onActionTwo?.tip;
+                }
+
+                return Stack(
+                  alignment: Alignment.center,
+                  clipBehavior: Clip.none,
+                  children: [
+                    SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: CircularProgressIndicator(
+                        value: progress,
+                        strokeWidth: 6,
+                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.white70),
+                        backgroundColor: Colors.black26,
+                      ),
+                    ),
+                    if (currentTip != null)
+                      Positioned(
+                        top: -55,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withAlpha((0.7 * 255).floor()),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.white24, width: 0.5),
+                          ),
+                          child: Text(
+                            currentTip,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
             ),
         ],
       ),
