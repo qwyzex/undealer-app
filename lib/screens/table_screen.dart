@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:undealer/logic/derangedShuffle.dart';
 import 'package:undealer/widgets/player_tab.dart';
 import 'package:provider/provider.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
@@ -36,6 +37,16 @@ class _TableRoomState extends State<TableRoom> {
   Suit? _selectedSuit;
   int? _panningCardValue;
   Offset? _panOrigin;
+
+  List<int> _cardValueOrder = [14, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+
+  void _shuffleCardOrder() {
+    _cardValueOrder = derangedShuffle(_cardValueOrder);
+  }
+
+  void _resetCardOrder() {
+    _cardValueOrder = [14, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+  }
 
   /// Helper that forwards to the provider so we consistently account for both
   /// community and player cards when deciding which suits are already used.
@@ -176,6 +187,7 @@ class _TableRoomState extends State<TableRoom> {
               _panningCardValue = null;
               _panOrigin = null;
               _selectedSuit = null;
+              _resetCardOrder();
             });
           },
           child: PokerCard(value: val, suit: _panningCardValue == val ? _selectedSuit : null),
@@ -206,6 +218,7 @@ class _TableRoomState extends State<TableRoom> {
       editingPlayerIndex = null;
       editingPlayerCardIndex = null;
       selectingCommunityIndex = index;
+      _resetCardOrder();
     });
   }
 
@@ -215,30 +228,12 @@ class _TableRoomState extends State<TableRoom> {
 
     bool hideAssignedCardFromPlayer = appState.gameOptions.playerAssignTheirOwnCard;
 
-    List<Widget> plainCards = [
-      valueButton(14, hideAssignedCardFromPlayer),
-      valueButton(2, hideAssignedCardFromPlayer),
-      valueButton(3, hideAssignedCardFromPlayer),
-      valueButton(4, hideAssignedCardFromPlayer),
-      valueButton(5, hideAssignedCardFromPlayer),
-      valueButton(6, hideAssignedCardFromPlayer),
-      valueButton(7, hideAssignedCardFromPlayer),
-      valueButton(8, hideAssignedCardFromPlayer),
-      valueButton(9, hideAssignedCardFromPlayer),
-      valueButton(10, hideAssignedCardFromPlayer),
-      valueButton(11, hideAssignedCardFromPlayer),
-      valueButton(12, hideAssignedCardFromPlayer),
-      valueButton(13, hideAssignedCardFromPlayer),
-    ];
-
-    // TODO: Shuffle plain cards when in player tab && assigned by players
-    // plainCards.shuffle();
-
     //*************************************************************************//
 
     void switchTab() {
       appState.collapseAllPlayers();
       setState(() {
+        _resetCardOrder();
         openedCardTab = openedCardTab == 1 ? 2 : 1;
         selectingCommunityIndex = null;
         editingPlayerIndex = null;
@@ -247,6 +242,25 @@ class _TableRoomState extends State<TableRoom> {
     }
 
     //*************************************************************************//
+
+    Widget buildTableCards() {
+      List<Widget> plainCards = _cardValueOrder
+          .map((val) => valueButton(val, hideAssignedCardFromPlayer))
+          .toList();
+
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(spacing: 8, children: [plainCards[0], plainCards[1], plainCards[2], plainCards[3]]),
+          const SizedBox(height: 12),
+          Row(spacing: 8, children: [plainCards[4], plainCards[5], plainCards[6]]),
+          const SizedBox(height: 12),
+          Row(spacing: 8, children: [plainCards[7], plainCards[8], plainCards[9]]),
+          const SizedBox(height: 12),
+          Row(spacing: 8, children: [plainCards[10], plainCards[11], plainCards[12]]),
+        ],
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -274,25 +288,12 @@ class _TableRoomState extends State<TableRoom> {
             editingPlayerIndex = null;
             editingPlayerCardIndex = null;
             selectingCommunityIndex = null;
+            _resetCardOrder();
           });
           appState.collapseAllPlayers();
         },
         child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(25.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(spacing: 8, children: [plainCards[0], plainCards[1], plainCards[2], plainCards[3]]),
-                const SizedBox(height: 12),
-                Row(spacing: 8, children: [plainCards[4], plainCards[5], plainCards[6]]),
-                const SizedBox(height: 12),
-                Row(spacing: 8, children: [plainCards[7], plainCards[8], plainCards[9]]),
-                const SizedBox(height: 12),
-                Row(spacing: 8, children: [plainCards[10], plainCards[11], plainCards[12]]),
-              ],
-            ),
-          ),
+          child: Padding(padding: const EdgeInsets.all(25.0), child: buildTableCards()),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
@@ -349,10 +350,14 @@ class _TableRoomState extends State<TableRoom> {
                           selectingCommunityIndex = null;
                           editingPlayerIndex = null;
                           editingPlayerCardIndex = null;
+                          _resetCardOrder();
                         });
                       },
                       onSelectCard: (playerIndex, cardIndex) {
                         setState(() {
+                          if (appState.gameOptions.playerAssignTheirOwnCard) {
+                            _shuffleCardOrder();
+                          }
                           editingPlayerIndex = playerIndex;
                           editingPlayerCardIndex = cardIndex;
                           selectingCommunityIndex = null;
@@ -363,6 +368,7 @@ class _TableRoomState extends State<TableRoom> {
                           editingPlayerIndex = null;
                           editingPlayerCardIndex = null;
                           selectingCommunityIndex = null;
+                          _resetCardOrder();
                         }),
                       },
                     )
@@ -405,6 +411,7 @@ class _TableRoomState extends State<TableRoom> {
                                     editingPlayerIndex = null;
                                     editingPlayerCardIndex = null;
                                     selectingCommunityIndex = index;
+                                    _resetCardOrder();
                                   });
                                 },
                                 onCancelPress: RadialFunctionCall(() => {}, "CANCEL"),
