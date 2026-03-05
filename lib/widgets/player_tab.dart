@@ -183,10 +183,8 @@ class _PlayerCard extends StatelessWidget {
       appState.deletePlayer(playerIndex);
     }
 
-    // TODO: Add a player fold logic
     void handleTogglePlayerFold() {
-      // appState.togglePlayerFold(playerIndex);
-      return;
+      appState.togglePlayerFold(playerIndex);
     }
 
     Widget separator() {
@@ -267,80 +265,106 @@ class _PlayerCard extends StatelessWidget {
       );
     }
 
+    const ColorFilter greyscaleFilter = ColorFilter.matrix(<double>[
+      0.2126,
+      0.7152,
+      0.0722,
+      0,
+      0,
+      0.2126,
+      0.7152,
+      0.0722,
+      0,
+      0,
+      0.2126,
+      0.7152,
+      0.0722,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+    ]);
+
     return AnimatedContainer(
       duration: animationDuration,
       curve: Curves.easeInOut,
       width: player.isExpanded ? 180 : 90,
       margin: const EdgeInsets.only(right: 16),
-      child: Stack(
-        alignment: Alignment.center,
-        clipBehavior: Clip.none,
-        children: [
-          // Margin separator
-          AnimatedPositioned(
-            duration: animationDuration,
-            left: player.isExpanded ? 8 : 0,
-            child: separator(),
-          ),
-          AnimatedPositioned(
-            duration: animationDuration,
-            right: player.isExpanded ? 8 : 0,
-            child: separator(),
-          ),
+      child: ColorFiltered(
+        colorFilter: player.isFolded ? greyscaleFilter : ColorFilter.saturation(1),
+        child: Stack(
+          alignment: Alignment.center,
+          clipBehavior: Clip.none,
+          children: [
+            // Margin separator
+            AnimatedPositioned(
+              duration: animationDuration,
+              left: player.isExpanded ? 8 : 0,
+              child: separator(),
+            ),
+            AnimatedPositioned(
+              duration: animationDuration,
+              right: player.isExpanded ? 8 : 0,
+              child: separator(),
+            ),
 
-          // CARDs
-          AnimatedPositioned(
-            duration: animationDuration,
-            curve: animationCurves,
-            left: player.isExpanded ? 90 : 10,
-            top: player.isExpanded ? 10 : 20,
-            child: buildCard(player.card1, 0, false),
-          ),
-          AnimatedPositioned(
-            duration: animationDuration,
-            curve: animationCurves,
-            left: player.isExpanded ? 12 : 0,
-            top: 10.5,
-            child: buildCard(player.card2, 1, true),
-          ),
+            // CARDs
+            AnimatedPositioned(
+              duration: animationDuration,
+              curve: animationCurves,
+              left: player.isExpanded ? 90 : 10,
+              top: player.isExpanded ? 10 : 20,
+              child: buildCard(player.card1, 0, false),
+            ),
+            AnimatedPositioned(
+              duration: animationDuration,
+              curve: animationCurves,
+              left: player.isExpanded ? 12 : 0,
+              top: 10.5,
+              child: buildCard(player.card2, 1, true),
+            ),
 
-          // Card assigned indicator
-          AnimatedPositioned(
-            duration: animationDuration,
-            curve: animationCurves,
-            left: 9 + (player.isExpanded ? 15 : 0),
-            bottom: 18,
-            child: indicator(0),
-          ),
-          AnimatedPositioned(
-            duration: animationDuration,
-            curve: animationCurves,
-            left: 9 + (player.isExpanded ? 15 : 0),
-            bottom: 30,
-            child: indicator(1),
-          ),
+            // Card assigned indicator
+            AnimatedPositioned(
+              duration: animationDuration,
+              curve: animationCurves,
+              left: 9 + (player.isExpanded ? 15 : 0),
+              bottom: 18,
+              child: indicator(0),
+            ),
+            AnimatedPositioned(
+              duration: animationDuration,
+              curve: animationCurves,
+              left: 9 + (player.isExpanded ? 15 : 0),
+              bottom: 30,
+              child: indicator(1),
+            ),
 
-          // Overlay
-          Positioned.fill(
-            child: IgnorePointer(
-              ignoring: player.isExpanded,
-              child: FlipCard(
-                flipped: true,
-                locked: false,
-                inverseLocked: true,
-                onTap: player.isExpanded ? null : onExpand,
-                onDoubleTap: onCallChangeName,
-                onCancelPress: RadialFunctionCall(() => {}, "CANCEL"),
-                onActionOne: RadialFunctionCall(handleTogglePlayerFold, "FOLD"),
-                onActionTwo: appState.gameOptions.lockPlayerCount
-                    ? RadialFunctionCall(handleTogglePlayerFold, "FOLD")
-                    : RadialFunctionCall(handleDeletePlayer, "DELETE"),
-                front: Container(color: Colors.transparent),
-                back: Container(),
+            // Overlay
+            Positioned.fill(
+              child: IgnorePointer(
+                ignoring: player.isExpanded,
+                child: FlipCard(
+                  flipped: true,
+                  locked: false,
+                  inverseLocked: true,
+                  onTap: player.isExpanded ? null : onExpand,
+                  onDoubleTap: onCallChangeName,
+                  onCancelPress: RadialFunctionCall(() => {}, "CANCEL"),
+                  onActionOne: RadialFunctionCall(handleTogglePlayerFold, "FOLD"),
+                  onActionTwo: appState.gameOptions.lockPlayerCount
+                      ? RadialFunctionCall(handleTogglePlayerFold, "FOLD")
+                      : RadialFunctionCall(handleDeletePlayer, "DELETE"),
+                  front: Container(color: Colors.transparent),
+                  back: Container(),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

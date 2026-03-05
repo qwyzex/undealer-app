@@ -5,7 +5,7 @@ class PlayerData {
     CommunityCardData? card1,
     CommunityCardData? card2,
     this.isExpanded = false,
-    this.folded = false,
+    this.isFolded = false,
     this.playerName = 'P',
   }) : card1 = card1 ?? CommunityCardData(),
        card2 = card2 ?? CommunityCardData();
@@ -14,7 +14,7 @@ class PlayerData {
   CommunityCardData card2;
   bool isExpanded;
 
-  bool folded;
+  bool isFolded;
 
   String? playerName;
 
@@ -22,7 +22,7 @@ class PlayerData {
     'card1': card1.toJson(),
     'card2': card2.toJson(),
     'isExpanded': isExpanded,
-    'folded': folded,
+    'isFolded': isFolded,
     'playerName': playerName,
   };
 
@@ -30,7 +30,7 @@ class PlayerData {
     card1: CommunityCardData.fromJson(json['card1']),
     card2: CommunityCardData.fromJson(json['card2']),
     isExpanded: json['isExpanded'] ?? false,
-    folded: json['folded'] ?? false,
+    isFolded: json['isFolded'] ?? false,
     playerName: json['playerName'],
   );
 }

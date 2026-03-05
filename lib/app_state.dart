@@ -89,9 +89,20 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void changePlayerName(int playerIndex, String newName) {
+    players[playerIndex].playerName = newName;
+    saveState();
+    notifyListeners();
+  }
+
   void togglePlayerExpansion(int index) {
     collapseAllPlayers();
     players[index].isExpanded = !players[index].isExpanded;
+    notifyListeners();
+  }
+
+  void togglePlayerFold(int index) {
+    players[index].isFolded = !players[index].isFolded;
     notifyListeners();
   }
 
@@ -202,12 +213,6 @@ class AppState extends ChangeNotifier {
     card.value = null;
     card.suit = null;
     card.flipped = false;
-    saveState();
-    notifyListeners();
-  }
-
-  void changePlayerName(int playerIndex, String newName) {
-    players[playerIndex].playerName = newName;
     saveState();
     notifyListeners();
   }
