@@ -14,10 +14,7 @@ class AppState extends ChangeNotifier {
   //*************************************************************************//
   // PRIMITIVES
 
-  List<CommunityCardData> communityCards = List.generate(
-    5,
-    (_) => CommunityCardData(),
-  );
+  List<CommunityCardData> communityCards = List.generate(5, (_) => CommunityCardData());
   List<PlayerData> players = [];
   final GlobalKey addPlayerRefKey = GlobalKey();
   static const int maxPlayers = 20;
@@ -38,8 +35,7 @@ class AppState extends ChangeNotifier {
   int tableStage = 0;
 
   // PERSISTENCE SAVE STATES
-  bool get hasSavedGame =>
-      players.isNotEmpty || communityCards.any((c) => c.value != null);
+  bool get hasSavedGame => players.isNotEmpty || communityCards.any((c) => c.value != null);
 
   //*************************************************************************//
   // ACTIONS
@@ -74,19 +70,13 @@ class AppState extends ChangeNotifier {
   void addPlayer() {
     if (players.length >= maxPlayers) return;
 
-    players.add(
-      PlayerData(card1: CommunityCardData(), card2: CommunityCardData()),
-    );
+    players.add(PlayerData(card1: CommunityCardData(), card2: CommunityCardData()));
 
     saveState();
 
     final context = addPlayerRefKey.currentContext;
     if (context != null) {
-      Scrollable.ensureVisible(
-        context,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
+      Scrollable.ensureVisible(context, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
     }
 
     notifyListeners();
@@ -100,6 +90,7 @@ class AppState extends ChangeNotifier {
   }
 
   void togglePlayerExpansion(int index) {
+    collapseAllPlayers();
     players[index].isExpanded = !players[index].isExpanded;
     notifyListeners();
   }
@@ -113,12 +104,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Set<Suit> getUnavailableSuitsForValue(
-    int value, {
-    int? playerIndex,
-    int? cardIndex,
-    int? communityIndex,
-  }) {
+  Set<Suit> getUnavailableSuitsForValue(int value, {int? playerIndex, int? cardIndex, int? communityIndex}) {
     final Set<Suit> unavailable = {};
 
     // 1. Check Community Cards
@@ -151,10 +137,8 @@ class AppState extends ChangeNotifier {
               unavailable.add(otherCard.suit!);
             }
           } else {
-            if (p.card1.value == value && p.card1.suit != null)
-              unavailable.add(p.card1.suit!);
-            if (p.card2.value == value && p.card2.suit != null)
-              unavailable.add(p.card2.suit!);
+            if (p.card1.value == value && p.card1.suit != null) unavailable.add(p.card1.suit!);
+            if (p.card2.value == value && p.card2.suit != null) unavailable.add(p.card2.suit!);
           }
         }
       }
@@ -162,10 +146,8 @@ class AppState extends ChangeNotifier {
       // WE ARE EDITING A COMMUNITY CARD (or just viewing the value selector)
       // The dealer must be sentient of ALL players' cards to ensure no duplicates on the table.
       for (var p in players) {
-        if (p.card1.value == value && p.card1.suit != null)
-          unavailable.add(p.card1.suit!);
-        if (p.card2.value == value && p.card2.suit != null)
-          unavailable.add(p.card2.suit!);
+        if (p.card1.value == value && p.card1.suit != null) unavailable.add(p.card1.suit!);
+        if (p.card2.value == value && p.card2.suit != null) unavailable.add(p.card2.suit!);
       }
     }
 
@@ -178,9 +160,7 @@ class AppState extends ChangeNotifier {
     communityCards[index].flipped = true;
 
     final bool isTrueFlop =
-        communityCards[0].value != null &&
-        communityCards[1].value != null &&
-        communityCards[2].value != null;
+        communityCards[0].value != null && communityCards[1].value != null && communityCards[2].value != null;
 
     if (isTrueFlop && tableStage == 0) {
       tableStage = 1;
@@ -274,9 +254,7 @@ class AppState extends ChangeNotifier {
       communityCards = (stateData['communityCards'] as List)
           .map((c) => CommunityCardData.fromJson(c))
           .toList();
-      players = (stateData['players'] as List)
-          .map((p) => PlayerData.fromJson(p))
-          .toList();
+      players = (stateData['players'] as List).map((p) => PlayerData.fromJson(p)).toList();
       tableStage = stateData['tableStage'] ?? 0;
 
       if (stateData['gameOptions'] != null) {
