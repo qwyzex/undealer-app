@@ -249,7 +249,10 @@ class _PlayerCard extends StatelessWidget {
               child: FlipCard(
                 flipped: card.value != null && player.isExpanded,
                 locked: false,
-                onTap: isActive ? onClearCard : () => onSelectCard(cardIndex),
+                onTap: () => {
+                  if (!player.isFolded) () => {isActive ? onClearCard : () => onSelectCard(cardIndex)},
+                },
+
                 front: PokerCard(value: card.value ?? 0, suit: card.suit, small: true, showBack: false),
                 back: PokerCard(
                   value: 0,
@@ -323,7 +326,7 @@ class _PlayerCard extends StatelessWidget {
               duration: animationDuration,
               curve: animationCurves,
               left: player.isExpanded ? 12 : 0,
-              top: 10.5,
+              top: player.isFolded ? 30 : 10,
               child: buildCard(player.card2, 1, true),
             ),
 
@@ -354,9 +357,12 @@ class _PlayerCard extends StatelessWidget {
                   onTap: player.isExpanded ? null : onExpand,
                   onDoubleTap: onCallChangeName,
                   onCancelPress: RadialFunctionCall(() => {}, "CANCEL"),
-                  onActionOne: RadialFunctionCall(handleTogglePlayerFold, "FOLD"),
+                  onActionOne: RadialFunctionCall(
+                    handleTogglePlayerFold,
+                    player.isFolded ? "UNFOLD" : "FOLD",
+                  ),
                   onActionTwo: appState.gameOptions.lockPlayerCount
-                      ? RadialFunctionCall(handleTogglePlayerFold, "FOLD")
+                      ? RadialFunctionCall(handleTogglePlayerFold, player.isFolded ? "UNFOLD" : "FOLD")
                       : RadialFunctionCall(handleDeletePlayer, "DELETE"),
                   front: Container(color: Colors.transparent),
                   back: Container(),
