@@ -206,6 +206,12 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void changePlayerName(int playerIndex, String newName) {
+    players[playerIndex].playerName = newName;
+    saveState();
+    notifyListeners();
+  }
+
   void resetGame() {
     communityCards = List.generate(5, (_) => CommunityCardData());
     players = [];

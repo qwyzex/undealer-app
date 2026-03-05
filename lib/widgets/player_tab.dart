@@ -9,20 +9,14 @@ import 'flip_card.dart';
 import 'poker_card.dart';
 
 class PlayerTab extends StatelessWidget {
-  /// Index of the player that is currently being edited, or null if none.
   final int? editingPlayerIndex;
-
-  /// Which card of the player is being edited (0 or 1).
   final int? editingPlayerCardIndex;
 
-  /// Called when the user taps the collapsed player card to toggle expansion.
   final void Function(int playerIndex) onExpand;
-
-  /// Called when the user taps one of two cards while the player is expanded.
   final void Function(int playerIndex, int cardIndex) onSelectCard;
 
-  /// Called when the user taps an already active card to clear the selection.
   final void Function() onClearCard;
+  final void Function(int playerIndex) onChangeName;
 
   const PlayerTab({
     super.key,
@@ -31,6 +25,7 @@ class PlayerTab extends StatelessWidget {
     required this.onExpand,
     required this.onSelectCard,
     required this.onClearCard,
+    required this.onChangeName,
   });
 
   @override
@@ -69,6 +64,7 @@ class PlayerTab extends StatelessWidget {
               activeCardIndex: activeForThis,
               isAnyCardActive: anyActive,
               onExpand: () => onExpand(index),
+              onCallChangeName: () => onChangeName(index),
               onSelectCard: (cardIndex) => onSelectCard(index, cardIndex),
               onClearCard: onClearCard,
             ),
@@ -149,6 +145,7 @@ class _PlayerCard extends StatelessWidget {
   final int playerIndex;
   final bool isEditing;
   final int? editingCardIndex;
+  final VoidCallback? onCallChangeName;
 
   /// null if this player has no card currently chosen; non-null indicates the
   /// index of the card that is actively being assigned.
@@ -170,6 +167,7 @@ class _PlayerCard extends StatelessWidget {
     required this.onExpand,
     required this.onSelectCard,
     required this.onClearCard,
+    required this.onCallChangeName,
   });
 
   // PASSES
@@ -260,6 +258,7 @@ class _PlayerCard extends StatelessWidget {
                   small: true,
                   showBack: true,
                   showPlayerIndex: showPlayerIndex ? playerIndex + 1 : null,
+                  playerName: player.playerName,
                 ),
               ),
             ),
@@ -330,7 +329,7 @@ class _PlayerCard extends StatelessWidget {
                 locked: false,
                 inverseLocked: true,
                 onTap: player.isExpanded ? null : onExpand,
-                // onLongPress: handleLongPress,
+                onDoubleTap: onCallChangeName,
                 onCancelPress: RadialFunctionCall(() => {}, "CANCEL"),
                 onActionOne: RadialFunctionCall(handleTogglePlayerFold, "FOLD"),
                 onActionTwo: appState.gameOptions.lockPlayerCount

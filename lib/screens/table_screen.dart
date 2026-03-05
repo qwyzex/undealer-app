@@ -222,6 +222,72 @@ class _TableRoomState extends State<TableRoom> {
     });
   }
 
+  OverlayEntry? _nameOverlayEntry;
+  final TextEditingController _nameController = TextEditingController();
+
+  void _showChangeNameOverlay(int index) {
+    final appState = context.read<AppState>();
+    _nameController.text = appState.players[index].playerName ?? "P${index + 1}";
+
+    _nameOverlayEntry = OverlayEntry(
+      builder: (context) => Material(
+        color: Colors.black54,
+        child: Center(
+          child: Container(
+            width: 300,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Change Player ${index + 1} Name",
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 15),
+                TextField(
+                  controller: _nameController,
+                  autofocus: true,
+                  maxLength: 3,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: "Enter 1-3 chars",
+                    counterText: "",
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(onPressed: _hideChangeNameOverlay, child: const Text("Cancel")),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        final newName = _nameController.text.trim();
+                        if (newName.isNotEmpty && newName.length <= 3) {
+                          appState.changePlayerName(index, newName);
+                          _hideChangeNameOverlay();
+                        }
+                      },
+                      child: const Text("Save"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(_nameOverlayEntry!);
+  }
+
+  void _hideChangeNameOverlay() {
+    _nameOverlayEntry?.remove();
+    _nameOverlayEntry = null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
@@ -352,6 +418,9 @@ class _TableRoomState extends State<TableRoom> {
                           editingPlayerCardIndex = null;
                           _resetCardOrder();
                         });
+                      },
+                      onChangeName: (index) {
+                        _showChangeNameOverlay(index);
                       },
                       onSelectCard: (playerIndex, cardIndex) {
                         setState(() {

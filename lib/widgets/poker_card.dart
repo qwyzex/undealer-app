@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:undealer/models/suit.dart';
@@ -10,6 +12,7 @@ class PokerCard extends StatelessWidget {
   final bool small;
   final bool showBack;
   final int? showPlayerIndex;
+  final String? playerName;
 
   const PokerCard({
     super.key,
@@ -18,6 +21,7 @@ class PokerCard extends StatelessWidget {
     this.small = false,
     this.showBack = false,
     this.showPlayerIndex,
+    this.playerName,
   });
 
   @override
@@ -118,7 +122,7 @@ class PokerCard extends StatelessWidget {
       ),
       child: showPlayerIndex != null
           ? Padding(
-              padding: EdgeInsetsGeometry.only(left: 10, right: 10),
+              padding: const EdgeInsets.only(left: 6, right: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -126,9 +130,11 @@ class PokerCard extends StatelessWidget {
                   Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      'P',
+                      (playerName ?? '').substring(0, min(3, (playerName ?? '').length)),
+                      softWrap: false,
+                      overflow: TextOverflow.fade,
                       style: TextStyle(
-                        fontSize: small ? 30 : 60,
+                        fontSize: small ? 20 : 40,
                         color: AppColors.deepShade,
                         fontWeight: FontWeight.bold,
                       ),
@@ -139,7 +145,7 @@ class PokerCard extends StatelessWidget {
                     child: Text(
                       showPlayerIndex.toString(),
                       style: TextStyle(
-                        fontSize: small ? 30 : 60,
+                        fontSize: small ? 30 : 40,
                         color: AppColors.deepShade,
                         fontWeight: FontWeight.bold,
                       ),

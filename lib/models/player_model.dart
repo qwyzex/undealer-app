@@ -6,6 +6,7 @@ class PlayerData {
     CommunityCardData? card2,
     this.isExpanded = false,
     this.folded = false,
+    this.playerName = 'P',
   }) : card1 = card1 ?? CommunityCardData(),
        card2 = card2 ?? CommunityCardData();
 
@@ -15,11 +16,14 @@ class PlayerData {
 
   bool folded;
 
+  String? playerName;
+
   Map<String, dynamic> toJson() => {
     'card1': card1.toJson(),
     'card2': card2.toJson(),
     'isExpanded': isExpanded,
     'folded': folded,
+    'playerName': playerName,
   };
 
   factory PlayerData.fromJson(Map<String, dynamic> json) => PlayerData(
@@ -27,5 +31,6 @@ class PlayerData {
     card2: CommunityCardData.fromJson(json['card2']),
     isExpanded: json['isExpanded'] ?? false,
     folded: json['folded'] ?? false,
+    playerName: json['playerName'],
   );
 }
