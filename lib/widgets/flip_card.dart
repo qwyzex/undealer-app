@@ -136,6 +136,7 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
       widget.onTap?.call();
     }
 
+    // TODO [IMPORTANT] : SOMEHOW, REPLACE DOUBLE TAP FOR A MORE ERGONOMIC UX
     return GestureDetector(
       onTap: onTap,
       onDoubleTap: onDoubleTap,

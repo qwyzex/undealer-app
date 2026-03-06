@@ -21,6 +21,7 @@ dependencies:
     scaffold_gradient_background: ^1.0.3+1
     shared_preferences: ^2.2.2
     hugeicons: ^1.1.5
+    fluttertoast: ^9.0.0
 
 dev_dependencies:
     flutter_test:

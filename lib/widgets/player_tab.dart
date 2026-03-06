@@ -230,37 +230,38 @@ class _PlayerCard extends StatelessWidget {
       final bool isActive = isEditing && editingCardIndex == cardIndex;
       final bool isDisabled = isAnyCardActive && !isActive;
 
-      return GestureDetector(
-        onTap: isActive ? onClearCard : () => onSelectCard(cardIndex),
-        onLongPress: isDisabled
-            ? null
-            : () => (cardIndex) {
-                context.read<AppState>().clearPlayerCard(playerIndex, cardIndex);
-              },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: AnimatedContainer(
-            duration: animationDuration,
-            transform: Matrix4.identity()..scaleByVector3(Vector3.all(isActive ? 1.1 : 1.0)),
-            transformAlignment: Alignment.center,
-            child: AnimatedOpacity(
-              duration: animationDuration,
-              opacity: isDisabled ? 0.35 : 1,
-              child: FlipCard(
-                flipped: card.value != null && player.isExpanded,
-                locked: false,
-                onTap: () => {
-                  if (!player.isFolded) () => {isActive ? onClearCard : () => onSelectCard(cardIndex)},
-                },
+      void onSelectCardCall() {
+        if (player.isFolded) return;
 
-                front: PokerCard(value: card.value ?? 0, suit: card.suit, small: true, showBack: false),
-                back: PokerCard(
-                  value: 0,
-                  small: true,
-                  showBack: true,
-                  showPlayerIndex: showPlayerIndex ? playerIndex + 1 : null,
-                  playerName: player.playerName,
-                ),
+        if (isActive) {
+          onClearCard();
+        } else {
+          onSelectCard(cardIndex);
+        }
+      }
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: AnimatedContainer(
+          duration: animationDuration,
+          transform: Matrix4.identity()..scaleByVector3(Vector3.all(isActive ? 1.1 : 1.0)),
+          transformAlignment: Alignment.center,
+          child: AnimatedOpacity(
+            duration: animationDuration,
+            opacity: isDisabled ? 0.35 : 1,
+            child: FlipCard(
+              flipped: card.value != null && player.isExpanded,
+              locked: false,
+              onTap: onSelectCardCall,
+
+              // if (!player.isFolded) () => {isActive ? onClearCard : () => onSelectCard(cardIndex)},
+              front: PokerCard(value: card.value ?? 0, suit: card.suit, small: true, showBack: false),
+              back: PokerCard(
+                value: 0,
+                small: true,
+                showBack: true,
+                showPlayerIndex: showPlayerIndex ? playerIndex + 1 : null,
+                playerName: player.playerName,
               ),
             ),
           ),
@@ -326,7 +327,11 @@ class _PlayerCard extends StatelessWidget {
               duration: animationDuration,
               curve: animationCurves,
               left: player.isExpanded ? 12 : 0,
-              top: player.isFolded ? 30 : 10,
+              top: player.isExpanded
+                  ? 10
+                  : player.isFolded
+                  ? 30
+                  : 10,
               child: buildCard(player.card2, 1, true),
             ),
 
@@ -335,14 +340,22 @@ class _PlayerCard extends StatelessWidget {
               duration: animationDuration,
               curve: animationCurves,
               left: 9 + (player.isExpanded ? 15 : 0),
-              bottom: 18,
+              bottom: player.isExpanded
+                  ? 18
+                  : player.isFolded
+                  ? -2
+                  : 18,
               child: indicator(0),
             ),
             AnimatedPositioned(
               duration: animationDuration,
               curve: animationCurves,
               left: 9 + (player.isExpanded ? 15 : 0),
-              bottom: 30,
+              bottom: player.isExpanded
+                  ? 30
+                  : player.isFolded
+                  ? 10
+                  : 30,
               child: indicator(1),
             ),
 

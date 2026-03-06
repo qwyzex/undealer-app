@@ -1,3 +1,4 @@
+// ignore: file_names
 List<T> derangedShuffle<T>(List<T> list) {
   final shuffled = List<T>.from(list)..shuffle();
 
