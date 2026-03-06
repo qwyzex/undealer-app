@@ -16,7 +16,6 @@ class FlipCard extends StatefulWidget {
   final bool flipped;
   final bool inverseLocked;
   final VoidCallback? onTap;
-  final VoidCallback? onDoubleTap;
   final bool? quickRadialCall;
 
   final RadialFunctionCall? onCancelPress; // 0–500ms
@@ -34,7 +33,6 @@ class FlipCard extends StatefulWidget {
     this.onCancelPress,
     this.onActionOne,
     this.onActionTwo,
-    this.onDoubleTap,
     this.quickRadialCall,
   });
 
@@ -127,10 +125,6 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    void onDoubleTap() {
-      widget.onDoubleTap?.call();
-    }
-
     void onTap() {
       if (widget.locked) return;
       widget.onTap?.call();
@@ -139,11 +133,9 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
     // TODO [IMPORTANT] : SOMEHOW, REPLACE DOUBLE TAP FOR A MORE ERGONOMIC UX
     return GestureDetector(
       onTap: onTap,
-      onDoubleTap: onDoubleTap,
       onLongPressStart: _onLongPressStart,
       onLongPressUp: _onLongPressEnd,
       onLongPressCancel: _onLongPressEnd,
-      onDoubleTapCancel: _onLongPressEnd,
       child: Stack(
         alignment: Alignment.center,
         clipBehavior: Clip.none,

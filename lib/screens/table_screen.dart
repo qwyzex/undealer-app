@@ -396,7 +396,7 @@ class _TableRoomState extends State<TableRoom> {
                 // TODO: Replace evaluation UI and add logic
                 // EVALUATION LOGIC BUTTON TO DETERMINE THE WINNING HAND
                 TextButton(
-                  onPressed: () => {},
+                  onPressed: () => {print("POPOPOPOPOPOPOPOPOPOPOPOPOPOPOPOPOPOP")},
                   child: GradientText(
                     "EVAL",
                     colors: [Colors.red, Colors.orange],
