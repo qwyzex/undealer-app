@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:undealer/theme/colors.dart';
 import 'package:undealer/widgets/player_option_menu.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;

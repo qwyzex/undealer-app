@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:undealer/logic/derangedShuffle.dart';
 import 'package:undealer/widgets/player_tab.dart';
 import 'package:provider/provider.dart';
@@ -378,7 +377,7 @@ class _TableRoomState extends State<TableRoom> {
                     // SWITCH BETWEEN COMMUNITY AND PLAYERS HOLE CARD
                     IconButton(
                       onPressed: switchTab,
-                      icon: HugeIcon(icon: HugeIcons.strokeRoundedCards01, size: 40, strokeWidth: 1.4),
+                      icon: Icon(Icons.icecream, size: 40),
                       color: openedCardTab == 1 ? Color(0xFFC59090) : Color(0xFF7E5B5B),
                     ),
                     // TEXT DISPLAYING THE CURRENT STAGE OF COMMUNITY CARDS (FLOP, TURN, RIVER)
