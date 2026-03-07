@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_icons/flutter_custom_icons.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:undealer/theme/colors.dart';
 import 'package:undealer/widgets/player_option_menu.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
@@ -186,11 +188,31 @@ class _PlayerCardState extends State<_PlayerCard> {
 
   List<PlayerOption> _getOptions() {
     final appState = context.read<AppState>();
+
+    List<String> svgIconPath = [
+      "assets/svgs/icon_remove_player.svg",
+      "assets/svgs/icon_rename.svg",
+      "assets/svgs/icon_fold.svg",
+    ];
+
+    Widget SVGIcon(String assetName) {
+      return SvgPicture.asset(
+        assetName,
+        width: 24,
+        height: 24,
+        colorFilter: ColorFilter.mode(
+          assetName == svgIconPath[0] ? Colors.redAccent : AppColors.textColor,
+          BlendMode.srcIn,
+        ),
+        semanticsLabel: 'A description of the icon',
+      );
+    }
+
     return [
       if (!appState.gameOptions.lockPlayerCount)
         PlayerOption(
           label: 'Remove',
-          icon: Icons.person,
+          icon: SVGIcon(svgIconPath[0]),
           color: Colors.redAccent,
           onTap: () {
             _hideMenu();
@@ -199,7 +221,7 @@ class _PlayerCardState extends State<_PlayerCard> {
         ),
       PlayerOption(
         label: 'Rename',
-        icon: Icons.person,
+        icon: SVGIcon(svgIconPath[1]),
         onTap: () {
           _hideMenu();
           widget.onChangeName();
@@ -207,13 +229,13 @@ class _PlayerCardState extends State<_PlayerCard> {
       ),
       PlayerOption(
         label: 'Fold',
-        icon: Icons.person,
+        icon: SVGIcon(svgIconPath[2]),
         onTap: () {
           _hideMenu();
           appState.togglePlayerFold(widget.playerIndex);
         },
       ),
-      PlayerOption(label: 'Cancel', icon: Icons.person, color: Colors.redAccent, onTap: _hideMenu),
+      // PlayerOption(label: 'Cancel', icon: Icons.person, color: Colors.redAccent, onTap: _hideMenu),
     ];
   }
 

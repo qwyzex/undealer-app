@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 class PlayerOption {
   final String label;
-  final IconData icon;
+  final Widget icon;
   final VoidCallback onTap;
   final Color? color;
 
@@ -14,7 +16,12 @@ class PlayerOptionMenu extends StatelessWidget {
   final Offset position;
   final int? hoveredIndex;
 
-  const PlayerOptionMenu({super.key, required this.options, required this.position, this.hoveredIndex});
+  const PlayerOptionMenu({
+    super.key,
+    required this.options,
+    required this.position,
+    this.hoveredIndex,
+  });
 
   static const double itemHeight = 60.0;
   static const double itemWidth = 220.0;
@@ -22,7 +29,8 @@ class PlayerOptionMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double totalHeight = (options.length * itemHeight) + ((options.length - 1) * verticalSpacing);
+    final double totalHeight =
+        (options.length * itemHeight) + ((options.length - 1) * verticalSpacing);
 
     double top = position.dy - (totalHeight / 2);
     double left = position.dx - (itemWidth / 2);
@@ -47,7 +55,9 @@ class PlayerOptionMenu extends StatelessWidget {
                 final bool isHovered = hoveredIndex == index;
 
                 return Padding(
-                  padding: EdgeInsets.only(bottom: index == options.length - 1 ? 0 : verticalSpacing),
+                  padding: EdgeInsets.only(
+                    bottom: index == options.length - 1 ? 0 : verticalSpacing,
+                  ),
                   child: _MenuTile(
                     option: option,
                     isHovered: isHovered,
@@ -99,7 +109,12 @@ class _MenuTile extends StatelessWidget {
   final double width;
   final double height;
 
-  const _MenuTile({required this.option, required this.isHovered, required this.width, required this.height});
+  const _MenuTile({
+    required this.option,
+    required this.isHovered,
+    required this.width,
+    required this.height,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +129,9 @@ class _MenuTile extends StatelessWidget {
       duration: const Duration(milliseconds: 100),
       width: width,
       height: height,
+      transform: Matrix4.identity()
+        ..translateByVector3(Vector3(0, isHovered ? -(0.05 * height) : 0, 0))
+        ..scaleByVector3(Vector3.all(isHovered ? 1.1 : 1)),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(12),
@@ -128,7 +146,8 @@ class _MenuTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          Icon(option.icon, color: contentColor, size: 24),
+          option.icon,
+          // Icon(option.icon as IconData?, color: contentColor, size: 24),
           const SizedBox(width: 16),
           Text(
             option.label,
