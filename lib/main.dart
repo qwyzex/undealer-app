@@ -52,8 +52,11 @@ class UndealerApp extends StatelessWidget {
           labelColor: AppColors.textColor,
           unselectedLabelColor: AppColors.textColorDim,
           indicator: UnderlineTabIndicator(
-            borderSide: BorderSide(color: AppColors.textColor, width: 3.0),
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5)),
+            borderSide: BorderSide(color: AppColors.border, width: 3.0),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(5),
+              topRight: Radius.circular(5),
+            ),
           ),
         ),
         primaryColor: AppColors.primary,

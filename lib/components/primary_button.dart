@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:undealer/theme/colors.dart';
 
 class PrimaryButton extends StatelessWidget {
@@ -25,12 +24,12 @@ class PrimaryButton extends StatelessWidget {
     return Container(
       width: width,
       decoration: BoxDecoration(
-        color: isSecondary ? Colors.transparent : Colors.pinkAccent.shade200,
+        color: isSecondary ? AppColors.transparent : AppColors.buttonPrimaryColor,
         boxShadow: isSecondary
             ? []
             : [
                 BoxShadow(
-                  color: Colors.pinkAccent.shade200.withAlpha(60),
+                  color: AppColors.buttonPrimaryShadowColor,
                   blurRadius: 25,
                   offset: const Offset(0, 0),
                   spreadRadius: 10,
@@ -38,7 +37,7 @@ class PrimaryButton extends StatelessWidget {
               ],
         borderRadius: BorderRadius.all(Radius.circular(12)),
         border: Border.all(
-          color: isSecondary ? AppColors.textColor : Colors.pinkAccent,
+          color: isSecondary ? AppColors.border : AppColors.accentPink,
           width: 2,
           style: BorderStyle.solid,
           strokeAlign: BorderSide.strokeAlignInside,
@@ -46,11 +45,8 @@ class PrimaryButton extends StatelessWidget {
       ),
       child: CupertinoButton(
         onPressed: onTap,
-        color: isSecondary ? Colors.transparent : Colors.pinkAccent,
+        color: isSecondary ? AppColors.transparent : AppColors.accentPink,
         minimumSize: Size(width ?? 160, height ?? 40),
-        focusColor: Colors.blue,
-        foregroundColor: Colors.yellow,
-        disabledColor: Colors.purple,
         borderRadius: BorderRadius.circular(10),
         pressedOpacity: 0.65,
         sizeStyle: CupertinoButtonSize.large,
@@ -60,13 +56,13 @@ class PrimaryButton extends StatelessWidget {
           textAlign: TextAlign.center,
           style: isSecondary
               ? TextStyle(
-                  color: AppColors.textColor,
+                  color: AppColors.buttonSecondaryTextColor,
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
                   fontFamily: 'Lexend',
                 )
               : TextStyle(
-                  color: Colors.white,
+                  color: AppColors.buttonPrimaryTextColor,
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   fontFamily: 'Lexend',

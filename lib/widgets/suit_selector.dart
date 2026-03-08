@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:undealer/models/suit.dart';
+import 'package:undealer/theme/colors.dart';
 
 class SuitSelector extends StatefulWidget {
   final Suit? selectedSuit;
@@ -67,7 +68,11 @@ class _RadialMenuPainter extends CustomPainter {
   final Set<Suit> unavailableSuits;
   final bool letDuplicateCards;
 
-  _RadialMenuPainter({this.selectedSuit, required this.unavailableSuits, required this.letDuplicateCards});
+  _RadialMenuPainter({
+    this.selectedSuit,
+    required this.unavailableSuits,
+    required this.letDuplicateCards,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -89,7 +94,7 @@ class _RadialMenuPainter extends CustomPainter {
 
     // 3. Draw highlight for the selected suit (if any)
     if (selectedSuit != null && (letDuplicateCards || !unavailableSuits.contains(selectedSuit!))) {
-      final highlightPaint = Paint()..color = Colors.pinkAccent.withAlpha(30);
+      final highlightPaint = Paint()..color = AppColors.accentPink.withAlpha(30);
       final startAngle = suitInfo[selectedSuit!]!['angle'] - (pi / 4);
       const sweepAngle = pi / 2;
       canvas.drawArc(rect, startAngle, sweepAngle, true, highlightPaint);
@@ -97,8 +102,8 @@ class _RadialMenuPainter extends CustomPainter {
 
     // 4. Draw the dividers
     final dividerPaint = Paint()
-      ..color = Colors.grey.withAlpha(40)
-      ..strokeWidth = 4;
+      ..color = AppColors.border.withAlpha(40)
+      ..strokeWidth = 3;
 
     canvas.drawLine(
       center + Offset.fromDirection(-pi / 4, radius),
@@ -129,12 +134,16 @@ class _RadialMenuPainter extends CustomPainter {
         textDirection: TextDirection.ltr,
       )..layout();
 
-      textPainter.paint(canvas, symbolPosition - Offset(textPainter.width / 2, textPainter.height / 2));
+      textPainter.paint(
+        canvas,
+        symbolPosition - Offset(textPainter.width / 2, textPainter.height / 2),
+      );
     });
   }
 
   @override
   bool shouldRepaint(covariant _RadialMenuPainter oldDelegate) {
-    return oldDelegate.selectedSuit != selectedSuit || oldDelegate.unavailableSuits != unavailableSuits;
+    return oldDelegate.selectedSuit != selectedSuit ||
+        oldDelegate.unavailableSuits != unavailableSuits;
   }
 }

@@ -24,7 +24,10 @@ class QuickPlay extends StatelessWidget {
     final double cardShiftAngle = math.pi / 30; // r+ l-
 
     void enterRoom() {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')));
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const TableRoom(title: 'undealer')),
+      );
     }
 
     void enterGameOptions() {
@@ -35,13 +38,13 @@ class QuickPlay extends StatelessWidget {
       margin: const EdgeInsets.all(30),
       width: double.infinity,
       height: 220,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppColors.primaryLighter, Color(0xFFFAFAFA)],
+          colors: [AppColors.quickPlayShimmerOne, AppColors.quickPlayShimmerTwo],
         ),
-        borderRadius: BorderRadius.all(Radius.circular(20)),
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
       ),
       child: Stack(
         children: [
@@ -105,7 +108,11 @@ class QuickPlay extends StatelessWidget {
                               enterRoom();
                             },
                           ),
-                          PrimaryButton(secondary: true, buttonText: "Customize", onTap: enterGameOptions),
+                          PrimaryButton(
+                            secondary: true,
+                            buttonText: "Customize",
+                            onTap: enterGameOptions,
+                          ),
                         ],
                       ],
                     ),

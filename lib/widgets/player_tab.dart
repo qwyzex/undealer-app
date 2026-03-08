@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_custom_icons/flutter_custom_icons.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:undealer/theme/colors.dart';
 import 'package:undealer/widgets/player_option_menu.dart';
 import 'package:undealer/widgets/svg_icon.dart';
@@ -84,7 +82,7 @@ class _GhostReference extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(width: 165, color: Colors.transparent);
+    return Container(width: 165, color: AppColors.transparent);
   }
 }
 
@@ -197,8 +195,8 @@ class _PlayerCardState extends State<_PlayerCard> {
       if (!appState.gameOptions.lockPlayerCount)
         PlayerOption(
           label: 'Remove',
-          icon: SVGIcon(assetName: svgIconPath[0], color: Colors.redAccent),
-          color: Colors.redAccent,
+          icon: SVGIcon(assetName: svgIconPath[0], color: AppColors.danger),
+          color: AppColors.danger,
           onTap: () {
             _hideMenu();
             appState.deletePlayer(widget.playerIndex);
@@ -220,7 +218,6 @@ class _PlayerCardState extends State<_PlayerCard> {
           appState.togglePlayerFold(widget.playerIndex);
         },
       ),
-      // PlayerOption(label: 'Cancel', icon: Icons.person, color: Colors.redAccent, onTap: _hideMenu),
     ];
   }
 
@@ -260,8 +257,6 @@ class _PlayerCardState extends State<_PlayerCard> {
 
   @override
   Widget build(BuildContext context) {
-    final appState = context.read<AppState>();
-
     Widget separator() {
       return IgnorePointer(
         ignoring: true,
@@ -288,13 +283,13 @@ class _PlayerCardState extends State<_PlayerCard> {
             decoration: BoxDecoration(
               color: cardNum == 0
                   ? widget.player.card1.value != null && widget.player.card1.value! > 1
-                        ? Colors.green
-                        : Colors.red
+                        ? AppColors.indicatorTrue
+                        : AppColors.indicatorFalse
                   : widget.player.card2.value != null && widget.player.card2.value! > 1
-                  ? Colors.green
-                  : Colors.red,
+                  ? AppColors.indicatorTrue
+                  : AppColors.indicatorFalse,
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.primary, width: 2),
+              border: Border.all(color: AppColors.primaryLighter, width: 2),
             ),
           ),
         ),
@@ -352,91 +347,94 @@ class _PlayerCardState extends State<_PlayerCard> {
       margin: const EdgeInsets.only(right: 16),
       child: ColorFiltered(
         colorFilter: ColorFilter.saturation(widget.player.isFolded ? 0 : 1),
-        child: Stack(
-          alignment: Alignment.center,
-          clipBehavior: Clip.none,
-          children: [
-            // Margin separator
-            AnimatedPositioned(
-              duration: animationDuration,
-              left: widget.player.isExpanded ? 8 : 0,
-              child: separator(),
-            ),
-            AnimatedPositioned(
-              duration: animationDuration,
-              right: widget.player.isExpanded ? 8 : 0,
-              child: separator(),
-            ),
+        child: Opacity(
+          opacity: widget.player.isFolded ? 0.6 : 1,
+          child: Stack(
+            alignment: Alignment.center,
+            clipBehavior: Clip.none,
+            children: [
+              // Margin separator
+              AnimatedPositioned(
+                duration: animationDuration,
+                left: widget.player.isExpanded ? 8 : 0,
+                child: separator(),
+              ),
+              AnimatedPositioned(
+                duration: animationDuration,
+                right: widget.player.isExpanded ? 8 : 0,
+                child: separator(),
+              ),
 
-            // CARDs
-            AnimatedPositioned(
-              duration: animationDuration,
-              curve: animationCurves,
-              left: widget.player.isExpanded ? 90 : 10,
-              top: widget.player.isExpanded ? 10 : 20,
-              child: buildCard(widget.player.card1, 0, false),
-            ),
-            AnimatedPositioned(
-              duration: animationDuration,
-              curve: animationCurves,
-              left: widget.player.isExpanded ? 12 : 0,
-              top: widget.player.isExpanded
-                  ? 10
-                  : widget.player.isFolded
-                  ? 30
-                  : 10,
-              child: buildCard(widget.player.card2, 1, true),
-            ),
+              // CARDs
+              AnimatedPositioned(
+                duration: animationDuration,
+                curve: animationCurves,
+                left: widget.player.isExpanded ? 90 : 10,
+                top: widget.player.isExpanded ? 10 : 20,
+                child: buildCard(widget.player.card1, 0, false),
+              ),
+              AnimatedPositioned(
+                duration: animationDuration,
+                curve: animationCurves,
+                left: widget.player.isExpanded ? 12 : 0,
+                top: widget.player.isExpanded
+                    ? 10
+                    : widget.player.isFolded
+                    ? 30
+                    : 10,
+                child: buildCard(widget.player.card2, 1, true),
+              ),
 
-            // Card assigned indicator
-            AnimatedPositioned(
-              duration: animationDuration,
-              curve: animationCurves,
-              left: 9 + (widget.player.isExpanded ? 15 : 0),
-              bottom: widget.player.isExpanded
-                  ? 18
-                  : widget.player.isFolded
-                  ? -2
-                  : 18,
-              child: indicator(0),
-            ),
-            AnimatedPositioned(
-              duration: animationDuration,
-              curve: animationCurves,
-              left: 9 + (widget.player.isExpanded ? 15 : 0),
-              bottom: widget.player.isExpanded
-                  ? 30
-                  : widget.player.isFolded
-                  ? 10
-                  : 30,
-              child: indicator(1),
-            ),
+              // Card assigned indicator
+              AnimatedPositioned(
+                duration: animationDuration,
+                curve: animationCurves,
+                left: 9 + (widget.player.isExpanded ? 15 : 0),
+                bottom: widget.player.isExpanded
+                    ? 18
+                    : widget.player.isFolded
+                    ? -2
+                    : 18,
+                child: indicator(0),
+              ),
+              AnimatedPositioned(
+                duration: animationDuration,
+                curve: animationCurves,
+                left: 9 + (widget.player.isExpanded ? 15 : 0),
+                bottom: widget.player.isExpanded
+                    ? 30
+                    : widget.player.isFolded
+                    ? 10
+                    : 30,
+                child: indicator(1),
+              ),
 
-            // Overlay
-            Positioned.fill(
-              child: IgnorePointer(
-                ignoring: widget.player.isExpanded,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: widget.player.isExpanded ? null : widget.onExpand,
-                  onLongPressStart: (details) {
-                    _menuTriggerPosition = details.globalPosition;
-                    _hoveredIndex = null;
-                    _showMenu(context, details.globalPosition);
-                  },
-                  onLongPressMoveUpdate: (details) => _updateMenu(details.globalPosition),
-                  onLongPressEnd: (details) {
-                    if (_hoveredIndex != null) {
-                      _getOptions()[_hoveredIndex!].onTap();
-                    } else {
-                      _hideMenu();
-                    }
-                  },
-                  child: Container(color: Colors.transparent),
+              // Overlay
+              Positioned.fill(
+                child: IgnorePointer(
+                  ignoring: widget.player.isExpanded,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: widget.player.isExpanded ? null : widget.onExpand,
+                    onLongPressStart: (details) {
+                      _menuTriggerPosition = details.globalPosition;
+                      _hoveredIndex = null;
+                      _showMenu(context, details.globalPosition);
+                    },
+                    onLongPressMoveUpdate: (details) => _updateMenu(details.globalPosition),
+                    onLongPressEnd: (details) {
+                      if (_hoveredIndex != null) {
+                        _getOptions()[_hoveredIndex!].onTap();
+                      } else {
+                        _hideMenu();
+                      }
+                    },
+                    child: Container(color: AppColors.transparent),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

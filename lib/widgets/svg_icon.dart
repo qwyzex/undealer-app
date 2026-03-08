@@ -8,6 +8,7 @@ class SVGIcon extends StatelessWidget {
   final int? width;
   final int? height;
   final String description;
+  final int? size;
 
   const SVGIcon({
     super.key,
@@ -15,6 +16,7 @@ class SVGIcon extends StatelessWidget {
     this.color = AppColors.textColor,
     this.width = 24,
     this.height = 24,
+    this.size,
     this.description = 'Undealer Widget Icon',
   });
 
@@ -22,8 +24,8 @@ class SVGIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return SvgPicture.asset(
       "assets/svgs/$assetName.svg",
-      width: width?.toDouble(),
-      height: height?.toDouble(),
+      width: size != null ? size?.toDouble() : width?.toDouble(),
+      height: size != null ? size?.toDouble() : height?.toDouble(),
       colorFilter: ColorFilter.mode(color!, BlendMode.srcIn),
       semanticsLabel: description,
     );

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:undealer/models/suit.dart';
 import 'package:undealer/theme/colors.dart';
+import 'package:undealer/widgets/svg_icon.dart';
 
 // POKER CARD
 class PokerCard extends StatelessWidget {
@@ -82,10 +83,10 @@ class PokerCard extends StatelessWidget {
       switch (s) {
         case Suit.hearts:
         case Suit.diamonds:
-          return const Color(0xFFC22B2B);
+          return AppColors.suitsRed;
         case Suit.clubs:
         case Suit.spades:
-          return const Color(0xFF1A1A1A);
+          return AppColors.suitsBlack;
       }
     }
 
@@ -95,12 +96,16 @@ class PokerCard extends StatelessWidget {
         valOf(value),
         style: TextStyle(fontSize: fontSizeVal, fontWeight: FontWeight.w900),
         gradientDirection: GradientDirection.btt,
-        colors: const [Color(0xFF3A1A1A), Color(0xFFA16D6D)],
+        colors: AppColors.gradientCopper,
       );
     } else {
       valueWidget = Text(
         valOf(value),
-        style: TextStyle(fontSize: fontSizeVal, fontWeight: FontWeight.w900, color: getSuitColor(suit)),
+        style: TextStyle(
+          fontSize: fontSizeVal,
+          fontWeight: FontWeight.w900,
+          color: getSuitColor(suit),
+        ),
       );
     }
 
@@ -110,7 +115,7 @@ class PokerCard extends StatelessWidget {
       alignment: Alignment.topLeft,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: showBack ? const Color(0xFF3A1A1A) : Colors.white,
+        color: showBack ? AppColors.cardBackBackground : Colors.white,
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withAlpha(25),
@@ -135,7 +140,7 @@ class PokerCard extends StatelessWidget {
                       overflow: TextOverflow.fade,
                       style: TextStyle(
                         fontSize: small ? 20 : 40,
-                        color: AppColors.deepShade,
+                        color: AppColors.textColor,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -146,7 +151,7 @@ class PokerCard extends StatelessWidget {
                       showPlayerIndex.toString(),
                       style: TextStyle(
                         fontSize: small ? 30 : 40,
-                        color: AppColors.deepShade,
+                        color: AppColors.textColor,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -155,7 +160,7 @@ class PokerCard extends StatelessWidget {
               ),
             )
           : showBack
-          ? const Center(child: Icon(Icons.casino_outlined, color: Colors.white, size: 28))
+          ? const Center(child: SVGIcon(assetName: "icon_card_back", size: 35))
           : Padding(
               padding: const EdgeInsets.fromLTRB(12, 6, 0, 0),
               child: Column(

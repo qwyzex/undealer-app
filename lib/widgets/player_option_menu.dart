@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:undealer/theme/colors.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 class PlayerOption {
@@ -42,10 +42,10 @@ class PlayerOptionMenu extends StatelessWidget {
     if (left + itemWidth > size.width - 20) left = size.width - 20 - itemWidth;
 
     return Material(
-      color: Colors.transparent,
+      color: AppColors.transparent,
       child: Stack(
         children: [
-          Positioned.fill(child: Container(color: Colors.black.withOpacity(0.12))),
+          Positioned.fill(child: Container(color: AppColors.playerOptionOverlay)),
           Positioned(
             top: top,
             left: left,
@@ -118,11 +118,11 @@ class _MenuTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color contentColor = option.color ?? const Color(0xFF5D4037);
+    final Color contentColor = option.color ?? AppColors.textColor;
     final Color bgColor = isHovered
         ? (option.label == 'Cancel' || option.label == 'Remove'
-              ? Colors.red.shade100
-              : const Color(0xFFF5EFE1))
+              ? AppColors.dangerLight
+              : AppColors.playerOptionMenuBackground)
         : Colors.white;
 
     return AnimatedContainer(
@@ -137,7 +137,7 @@ class _MenuTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isHovered ? 0.1 : 0.05),
+            color: Colors.black.withAlpha(isHovered ? (0.1 * 255).floor() : (0.05 * 255).floor()),
             blurRadius: isHovered ? 12 : 6,
             offset: const Offset(0, 4),
           ),
@@ -147,12 +147,11 @@ class _MenuTile extends StatelessWidget {
       child: Row(
         children: [
           option.icon,
-          // Icon(option.icon as IconData?, color: contentColor, size: 24),
           const SizedBox(width: 16),
           Text(
             option.label,
             style: TextStyle(
-              color: contentColor.withOpacity(isHovered ? 1.0 : 0.8),
+              color: contentColor.withAlpha(isHovered ? (1.0 * 255).floor() : (0.8 * 255).floor()),
               fontSize: 18,
               fontWeight: isHovered ? FontWeight.bold : FontWeight.w600,
             ),

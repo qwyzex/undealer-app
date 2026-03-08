@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'package:undealer/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class RadialFunctionCall {
@@ -130,7 +130,6 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
       widget.onTap?.call();
     }
 
-    // TODO [IMPORTANT] : SOMEHOW, REPLACE DOUBLE TAP FOR A MORE ERGONOMIC UX
     return GestureDetector(
       onTap: onTap,
       onLongPressStart: _onLongPressStart,
@@ -181,8 +180,10 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
                       child: CircularProgressIndicator(
                         value: progress,
                         strokeWidth: 6,
-                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.white70),
-                        backgroundColor: Colors.black26,
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          AppColors.circularProgressFore,
+                        ),
+                        backgroundColor: AppColors.circularProgressBack,
                       ),
                     ),
                     if (currentTip != null)
@@ -193,13 +194,12 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
                           decoration: BoxDecoration(
                             color: Colors.black.withAlpha((0.7 * 255).floor()),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.white24, width: 0.5),
                           ),
                           child: Text(
                             currentTip,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: AppColors.tooltipTextColor,
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
                               decoration: TextDecoration.none,
