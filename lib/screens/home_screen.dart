@@ -95,7 +95,10 @@ class _FloatingBottomBarState extends State<_FloatingBottomBar> {
             curve: Cubic(0.2, 0.9, 0.3, 1.15), // CUSTOM CUBIC CURVES
             child: Container(
               width: 85,
-              decoration: BoxDecoration(color: AppColors.textColor, borderRadius: BorderRadius.circular(40)),
+              decoration: BoxDecoration(
+                color: AppColors.textColor,
+                borderRadius: BorderRadius.circular(40),
+              ),
             ),
           ),
           Row(

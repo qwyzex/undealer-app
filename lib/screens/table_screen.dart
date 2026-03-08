@@ -1,7 +1,9 @@
 import 'dart:math';
 import 'package:undealer/logic/derangedShuffle.dart';
+import 'package:undealer/theme/colors.dart';
 import 'package:undealer/widgets/player_tab.dart';
 import 'package:provider/provider.dart';
+import 'package:undealer/widgets/svg_icon.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 import '/app_state.dart';
 
@@ -350,25 +352,27 @@ class _TableRoomState extends State<TableRoom> {
         ),
         actions: [IconButton(onPressed: () => {}, icon: const Icon(Icons.menu))],
       ),
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () {
-          // tapping anywhere in the body should collapse any expanded player cards
-          setState(() {
-            editingPlayerIndex = null;
-            editingPlayerCardIndex = null;
-            selectingCommunityIndex = null;
-            _resetCardOrder();
-          });
-          appState.collapseAllPlayers();
-        },
-        child: Center(
-          child: Padding(padding: const EdgeInsets.all(25.0), child: buildTableCards()),
+      body: SingleChildScrollView(
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            // tapping anywhere in the body should collapse any expanded player cards
+            setState(() {
+              editingPlayerIndex = null;
+              editingPlayerCardIndex = null;
+              selectingCommunityIndex = null;
+              _resetCardOrder();
+            });
+            appState.collapseAllPlayers();
+          },
+          child: Center(
+            child: Padding(padding: const EdgeInsets.all(25.0), child: buildTableCards()),
+          ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
         elevation: 0,
-        height: 200,
+        height: 205,
         color: Colors.transparent,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -378,6 +382,8 @@ class _TableRoomState extends State<TableRoom> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // SWITCH BETWEEN COMMUNITY AND PLAYERS HOLE CARD
                     IconButton(
@@ -399,7 +405,7 @@ class _TableRoomState extends State<TableRoom> {
                     ),
                     // TEXT DISPLAYING THE CURRENT STAGE OF COMMUNITY CARDS (FLOP, TURN, RIVER)
                     Padding(
-                      padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
+                      padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
                       child: GradientText(
                         getStage(appState.tableStage),
                         gradientDirection: GradientDirection.ttb,
