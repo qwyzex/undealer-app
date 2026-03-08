@@ -3,6 +3,7 @@ import 'package:flutter_custom_icons/flutter_custom_icons.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:undealer/theme/colors.dart';
 import 'package:undealer/widgets/player_option_menu.dart';
+import 'package:undealer/widgets/svg_icon.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 import 'package:provider/provider.dart';
 import '../app_state.dart';
@@ -121,7 +122,8 @@ class AnimatedPlayerCard extends StatefulWidget {
   State<AnimatedPlayerCard> createState() => _AnimatedPlayerCardState();
 }
 
-class _AnimatedPlayerCardState extends State<AnimatedPlayerCard> with SingleTickerProviderStateMixin {
+class _AnimatedPlayerCardState extends State<AnimatedPlayerCard>
+    with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
 
   @override
@@ -189,30 +191,13 @@ class _PlayerCardState extends State<_PlayerCard> {
   List<PlayerOption> _getOptions() {
     final appState = context.read<AppState>();
 
-    List<String> svgIconPath = [
-      "assets/svgs/icon_remove_player.svg",
-      "assets/svgs/icon_rename.svg",
-      "assets/svgs/icon_fold.svg",
-    ];
-
-    Widget SVGIcon(String assetName) {
-      return SvgPicture.asset(
-        assetName,
-        width: 24,
-        height: 24,
-        colorFilter: ColorFilter.mode(
-          assetName == svgIconPath[0] ? Colors.redAccent : AppColors.textColor,
-          BlendMode.srcIn,
-        ),
-        semanticsLabel: 'A description of the icon',
-      );
-    }
+    List<String> svgIconPath = ["icon_remove_player", "icon_rename", "icon_fold"];
 
     return [
       if (!appState.gameOptions.lockPlayerCount)
         PlayerOption(
           label: 'Remove',
-          icon: SVGIcon(svgIconPath[0]),
+          icon: SVGIcon(assetName: svgIconPath[0], color: Colors.redAccent),
           color: Colors.redAccent,
           onTap: () {
             _hideMenu();
@@ -221,7 +206,7 @@ class _PlayerCardState extends State<_PlayerCard> {
         ),
       PlayerOption(
         label: 'Rename',
-        icon: SVGIcon(svgIconPath[1]),
+        icon: SVGIcon(assetName: svgIconPath[1], color: AppColors.textColor),
         onTap: () {
           _hideMenu();
           widget.onChangeName();
@@ -229,7 +214,7 @@ class _PlayerCardState extends State<_PlayerCard> {
       ),
       PlayerOption(
         label: 'Fold',
-        icon: SVGIcon(svgIconPath[2]),
+        icon: SVGIcon(assetName: svgIconPath[2], color: AppColors.textColor),
         onTap: () {
           _hideMenu();
           appState.togglePlayerFold(widget.playerIndex);
@@ -340,7 +325,12 @@ class _PlayerCardState extends State<_PlayerCard> {
                 flipped: card.value != null && widget.player.isExpanded,
                 locked: false,
                 onTap: isActive ? widget.onClearCard : () => widget.onSelectCard(cardIndex),
-                front: PokerCard(value: card.value ?? 0, suit: card.suit, small: true, showBack: false),
+                front: PokerCard(
+                  value: card.value ?? 0,
+                  suit: card.suit,
+                  small: true,
+                  showBack: false,
+                ),
                 back: PokerCard(
                   value: 0,
                   small: true,
