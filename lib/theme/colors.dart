@@ -8,7 +8,11 @@ class AppColors {
   static const Color background = Color(0xFFFFE7CF);
   static const Color textColor = Color(0xFF604a24);
   static const Color textColorDim = Color(0xFFAC987C);
-  static const Color focusedBorderColor = Color(0xFF897558);
+
+  // GRADIENT
+  static const List<Color> gradientCopper = [Color(0xFF3A1A1A), Color(0xFFA16D6D)];
+  static const List<Color> gradientSeamless = [AppColors.primary, Color(0xFFF5C193)];
+
   static const Color deepShade = Color(0xFFDAD1C1);
   static const Color deepShadeHeavy = Color(0xFFB9B6AD);
 }

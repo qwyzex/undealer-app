@@ -1,5 +1,6 @@
 import 'dart:math';
-import 'package:undealer/logic/derangedShuffle.dart';
+import 'package:scaffold_gradient_background/scaffold_gradient_background.dart';
+import 'package:undealer/logic/deranged_shuffle.dart';
 import 'package:undealer/theme/colors.dart';
 import 'package:undealer/widgets/player_tab.dart';
 import 'package:provider/provider.dart';
@@ -334,7 +335,13 @@ class _TableRoomState extends State<TableRoom> {
       );
     }
 
-    return Scaffold(
+    return ScaffoldGradientBackground(
+      gradient: LinearGradient(
+        colors: AppColors.gradientSeamless,
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        stops: [0.6, 1.0],
+      ),
       appBar: AppBar(
         centerTitle: true,
         title: Text(
