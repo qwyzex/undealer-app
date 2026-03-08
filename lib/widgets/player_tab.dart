@@ -355,36 +355,13 @@ class _PlayerCardState extends State<_PlayerCard> {
       );
     }
 
-    const ColorFilter greyscaleFilter = ColorFilter.matrix(<double>[
-      0.2126,
-      0.7152,
-      0.0722,
-      0,
-      0,
-      0.2126,
-      0.7152,
-      0.0722,
-      0,
-      0,
-      0.2126,
-      0.7152,
-      0.0722,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      0,
-    ]);
-
     return AnimatedContainer(
       duration: animationDuration,
       curve: Curves.easeInOut,
       width: widget.player.isExpanded ? 180 : 90,
       margin: const EdgeInsets.only(right: 16),
       child: ColorFiltered(
-        colorFilter: widget.player.isFolded ? greyscaleFilter : ColorFilter.saturation(1),
+        colorFilter: ColorFilter.saturation(widget.player.isFolded ? 0 : 1),
         child: Stack(
           alignment: Alignment.center,
           clipBehavior: Clip.none,
