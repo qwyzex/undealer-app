@@ -1,3 +1,4 @@
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:undealer/theme/colors.dart';
 import 'package:undealer/widgets/player_option_menu.dart';
@@ -91,21 +92,22 @@ class _AddPlayerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = context.read<AppState>();
 
-    return GestureDetector(
-      onTap: () => appState.addPlayer(),
-      child: Container(
-        width: 90,
-        height: 90,
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: AppColors.deepShadeHeavy,
-            style: BorderStyle.solid,
-            width: 3,
-            strokeAlign: BorderSide.strokeAlignInside,
+    return Center(
+      child: GestureDetector(
+        onTap: () => appState.addPlayer(),
+        child: Container(
+          width: 74,
+          height: 102,
+          child: DottedBorder(
+            options: const RoundedRectDottedBorderOptions(
+              radius: Radius.circular(8),
+              dashPattern: [5, 4],
+              strokeWidth: 4,
+              color: AppColors.textColor,
+            ),
+            child: const Center(child: Icon(Icons.add, size: 40, color: AppColors.textColor)),
           ),
-          borderRadius: BorderRadius.circular(12),
         ),
-        child: const Center(child: Icon(Icons.add, size: 40, color: AppColors.deepShadeHeavy)),
       ),
     );
   }
@@ -260,12 +262,16 @@ class _PlayerCardState extends State<_PlayerCard> {
     Widget separator() {
       return IgnorePointer(
         ignoring: true,
-        child: Container(
-          width: 2,
-          height: 70,
-          decoration: BoxDecoration(
-            color: AppColors.textColorDim.withAlpha(widget.player.isExpanded ? 100 : 0),
-            borderRadius: BorderRadius.circular(2),
+        child: AnimatedOpacity(
+          opacity: widget.player.isExpanded ? 0.6 : 0,
+          duration: Duration(milliseconds: 250),
+          child: Container(
+            width: 2,
+            height: 70,
+            decoration: BoxDecoration(
+              color: AppColors.border,
+              borderRadius: BorderRadius.circular(2),
+            ),
           ),
         ),
       );
