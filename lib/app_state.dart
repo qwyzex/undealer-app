@@ -5,6 +5,7 @@ import 'package:undealer/models/game_options.dart';
 import 'package:undealer/models/player_model.dart';
 import 'package:undealer/models/suit.dart';
 import 'package:flutter/material.dart';
+import 'package:undealer/screens/evaluation_result_screen.dart';
 
 class AppState extends ChangeNotifier {
   AppState() {
@@ -76,7 +77,11 @@ class AppState extends ChangeNotifier {
 
     final context = addPlayerRefKey.currentContext;
     if (context != null) {
-      Scrollable.ensureVisible(context, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
     }
 
     notifyListeners();
@@ -115,7 +120,12 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Set<Suit> getUnavailableSuitsForValue(int value, {int? playerIndex, int? cardIndex, int? communityIndex}) {
+  Set<Suit> getUnavailableSuitsForValue(
+    int value, {
+    int? playerIndex,
+    int? cardIndex,
+    int? communityIndex,
+  }) {
     final Set<Suit> unavailable = {};
 
     // 1. Check Community Cards
@@ -171,7 +181,9 @@ class AppState extends ChangeNotifier {
     communityCards[index].flipped = true;
 
     final bool isTrueFlop =
-        communityCards[0].value != null && communityCards[1].value != null && communityCards[2].value != null;
+        communityCards[0].value != null &&
+        communityCards[1].value != null &&
+        communityCards[2].value != null;
 
     if (isTrueFlop && tableStage == 0) {
       tableStage = 1;
@@ -275,5 +287,15 @@ class AppState extends ChangeNotifier {
     } else {
       saveState();
     }
+  }
+
+  //*************************************************************************//
+  // Evaluation logic
+
+  void evaluate(dynamic context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => EvaluationResultScreen()),
+    );
   }
 }

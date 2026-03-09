@@ -25,13 +25,8 @@ class TableRoom extends StatefulWidget {
 }
 
 class _TableRoomState extends State<TableRoom> {
-  /// Index of the community slot the user is currently editing (via the
-  /// value buttons). Only one of [selectingCommunityIndex] or the player
-  /// equivalents can be non-null at a time.
   int? selectingCommunityIndex;
 
-  /// When editing a particular player's hole card we store the player index
-  /// and which of their two cards (0 or 1) is being targeted.
   int? editingPlayerIndex;
   int? editingPlayerCardIndex;
 
@@ -39,6 +34,8 @@ class _TableRoomState extends State<TableRoom> {
   Suit? _selectedSuit;
   int? _panningCardValue;
   Offset? _panOrigin;
+
+  int openedCardTab = 1;
 
   List<int> _cardValueOrder = [14, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
@@ -62,8 +59,7 @@ class _TableRoomState extends State<TableRoom> {
     );
   }
 
-  /// Convenience wrappers that operate on the appState instead of a local
-  /// copy.
+  // CARD SETTER LOGICS
   void setCommunityCard(int index, int value, Suit suit) {
     context.read<AppState>().setCommunityCard(index, value, suit);
   }
@@ -80,6 +76,18 @@ class _TableRoomState extends State<TableRoom> {
     context.read<AppState>().clearPlayerCard(playerIndex, cardIndex);
   }
 
+  void handleLongPressCommunityCard(int index) {
+    clearCard(index);
+    context.read<AppState>().collapseAllPlayers();
+    setState(() {
+      editingPlayerIndex = null;
+      editingPlayerCardIndex = null;
+      selectingCommunityIndex = index;
+      _resetCardOrder();
+    });
+  }
+
+  // SUIT SELECTOR OVERLAY
   void _showSuitSelector(
     BuildContext context,
     Offset position,
@@ -150,85 +158,7 @@ class _TableRoomState extends State<TableRoom> {
     }
   }
 
-  Widget valueButton(int val, bool hideAssignedCardFromPlayer) {
-    return Builder(
-      builder: (context) {
-        return GestureDetector(
-          onPanStart: (details) {
-            if (selectingCommunityIndex == null &&
-                (editingPlayerIndex == null || editingPlayerCardIndex == null)) {
-              // nothing to edit (either no target or no card chosen)
-              return;
-            }
-            final cardBox = context.findRenderObject() as RenderBox;
-            final cardCenter = cardBox.localToGlobal(cardBox.size.center(Offset.zero));
-            setState(() {
-              _panningCardValue = val;
-              _panOrigin = cardCenter;
-              _selectedSuit = null;
-            });
-            _showSuitSelector(context, cardCenter, val, hideAssignedCardFromPlayer);
-          },
-          onPanUpdate: (details) {
-            if (selectingCommunityIndex == null &&
-                (editingPlayerIndex == null || editingPlayerCardIndex == null)) {
-              return;
-            }
-            _updateSuitSelection(details.globalPosition, val);
-          },
-          onPanEnd: (details) {
-            if (_selectedSuit != null && _panningCardValue == val) {
-              if (selectingCommunityIndex != null) {
-                setCommunityCard(selectingCommunityIndex!, val, _selectedSuit!);
-                selectingCommunityIndex = null;
-              } else if (editingPlayerIndex != null && editingPlayerCardIndex != null) {
-                setPlayerCard(editingPlayerIndex!, editingPlayerCardIndex!, val, _selectedSuit!);
-                // keep the player expanded so the other hole card can be set;
-                // clear only the card index so a subsequent tap will choose the
-                // other card.
-                editingPlayerCardIndex = null;
-              }
-            }
-            _removeSuitSelector();
-            setState(() {
-              _panningCardValue = null;
-              _panOrigin = null;
-              _selectedSuit = null;
-              _resetCardOrder();
-            });
-          },
-          child: PokerCard(value: val, suit: _panningCardValue == val ? _selectedSuit : null),
-        );
-      },
-    );
-  }
-
-  int openedCardTab = 1;
-
-  String getStage(int tableStage) {
-    switch (tableStage) {
-      case 0:
-        return "Flop";
-      case 1:
-        return "Turn";
-      case 2:
-        return "River";
-      default:
-        return "Table";
-    }
-  }
-
-  void handleLongPressCommunityCard(int index) {
-    clearCard(index);
-    context.read<AppState>().collapseAllPlayers();
-    setState(() {
-      editingPlayerIndex = null;
-      editingPlayerCardIndex = null;
-      selectingCommunityIndex = index;
-      _resetCardOrder();
-    });
-  }
-
+  // PLAYER CHANGE NAME OVERLAY
   OverlayEntry? _nameOverlayEntry;
   final TextEditingController _nameController = TextEditingController();
 
@@ -314,7 +244,85 @@ class _TableRoomState extends State<TableRoom> {
       });
     }
 
+    String getStage(int tableStage) {
+      switch (tableStage) {
+        case 0:
+          return "Flop";
+        case 1:
+          return "Turn";
+        case 2:
+          return "River";
+        default:
+          return "Table";
+      }
+    }
+
+    void handleEvaluation() {
+      appState.collapseAllPlayers();
+      setState(() {
+        _resetCardOrder();
+        selectingCommunityIndex = null;
+        editingPlayerIndex = null;
+        editingPlayerCardIndex = null;
+      });
+
+      appState.evaluate(context);
+    }
+
     //*************************************************************************//
+
+    Widget valueButton(int val, bool hideAssignedCardFromPlayer) {
+      return Builder(
+        builder: (context) {
+          return GestureDetector(
+            onPanStart: (details) {
+              if (selectingCommunityIndex == null &&
+                  (editingPlayerIndex == null || editingPlayerCardIndex == null)) {
+                // nothing to edit (either no target or no card chosen)
+                return;
+              }
+              final cardBox = context.findRenderObject() as RenderBox;
+              final cardCenter = cardBox.localToGlobal(cardBox.size.center(Offset.zero));
+              setState(() {
+                _panningCardValue = val;
+                _panOrigin = cardCenter;
+                _selectedSuit = null;
+              });
+              _showSuitSelector(context, cardCenter, val, hideAssignedCardFromPlayer);
+            },
+            onPanUpdate: (details) {
+              if (selectingCommunityIndex == null &&
+                  (editingPlayerIndex == null || editingPlayerCardIndex == null)) {
+                return;
+              }
+              _updateSuitSelection(details.globalPosition, val);
+            },
+            onPanEnd: (details) {
+              if (_selectedSuit != null && _panningCardValue == val) {
+                if (selectingCommunityIndex != null) {
+                  setCommunityCard(selectingCommunityIndex!, val, _selectedSuit!);
+                  selectingCommunityIndex = null;
+                } else if (editingPlayerIndex != null && editingPlayerCardIndex != null) {
+                  setPlayerCard(editingPlayerIndex!, editingPlayerCardIndex!, val, _selectedSuit!);
+                  // keep the player expanded so the other hole card can be set;
+                  // clear only the card index so a subsequent tap will choose the
+                  // other card.
+                  editingPlayerCardIndex = null;
+                }
+              }
+              _removeSuitSelector();
+              setState(() {
+                _panningCardValue = null;
+                _panOrigin = null;
+                _selectedSuit = null;
+                _resetCardOrder();
+              });
+            },
+            child: PokerCard(value: val, suit: _panningCardValue == val ? _selectedSuit : null),
+          );
+        },
+      );
+    }
 
     Widget buildTableCards() {
       List<Widget> plainCards = _cardValueOrder
@@ -425,7 +433,7 @@ class _TableRoomState extends State<TableRoom> {
                 // TODO: Replace evaluation UI and add logic
                 // EVALUATION LOGIC BUTTON TO DETERMINE THE WINNING HAND
                 TextButton(
-                  onPressed: () => {print("POPOPOPOPOPOPOPOPOPOPOPOPOPOPOPOPOPOP")},
+                  onPressed: handleEvaluation,
                   child: GradientText(
                     "EVAL",
                     colors: [Colors.red, Colors.orange],
