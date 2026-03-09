@@ -1,6 +1,7 @@
 import 'package:scaffold_gradient_background/scaffold_gradient_background.dart';
 import 'package:flutter/material.dart';
 import 'package:undealer/components/quick_play.dart';
+import 'package:undealer/logic/to_alpha.dart';
 import 'package:undealer/theme/colors.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -80,7 +81,7 @@ class _FloatingBottomBarState extends State<_FloatingBottomBar> {
         borderRadius: BorderRadius.circular(40),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha((0.15 * 255).floor()),
+            color: Colors.black.withAlpha(toAlpha(0.15)),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),

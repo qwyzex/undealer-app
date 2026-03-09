@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:undealer/logic/to_alpha.dart';
 import 'package:undealer/theme/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -192,7 +193,7 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
-                            color: Colors.black.withAlpha((0.7 * 255).floor()),
+                            color: Colors.black.withAlpha(toAlpha(0.7)),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(

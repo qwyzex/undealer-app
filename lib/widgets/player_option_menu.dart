@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:undealer/logic/to_alpha.dart';
 import 'package:undealer/theme/colors.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 
@@ -137,7 +138,7 @@ class _MenuTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(isHovered ? (0.1 * 255).floor() : (0.05 * 255).floor()),
+            color: Colors.black.withAlpha(isHovered ? toAlpha(0.1) : toAlpha(0.05)),
             blurRadius: isHovered ? 12 : 6,
             offset: const Offset(0, 4),
           ),
@@ -151,7 +152,7 @@ class _MenuTile extends StatelessWidget {
           Text(
             option.label,
             style: TextStyle(
-              color: contentColor.withAlpha(isHovered ? (1.0 * 255).floor() : (0.8 * 255).floor()),
+              color: contentColor.withAlpha(isHovered ? toAlpha(1.0) : toAlpha(0.8)),
               fontSize: 18,
               fontWeight: isHovered ? FontWeight.bold : FontWeight.w600,
             ),
