@@ -3,16 +3,20 @@ import '../models/card_model.dart';
 import '../models/player_model.dart';
 
 enum HandRank {
-  highCard,
-  onePair,
-  twoPair,
-  threeOfAKind,
-  straight,
-  flush,
-  fullHouse,
-  fourOfAKind,
-  straightFlush,
-  royalFlush,
+  highCard("High Card"),
+  onePair("One Pair"),
+  twoPair("Two Pair"),
+  threeOfAKind("Three Of A Kind"),
+  straight("Straight"),
+  flush("Flush"),
+  fullHouse("Full House"),
+  fourOfAKind("Four Of A Kind"),
+  straightFlush("Straight Flush"),
+  royalFlush("Royal Flush");
+
+  final String label;
+
+  const HandRank(this.label);
 }
 
 class EvalCard {
@@ -26,7 +30,16 @@ class EvalCard {
   }
 
   @override
-  String toString() => '$value${suit.name[0].toUpperCase()}';
+  String toString() {
+    final rankStr = switch (value) {
+      11 => 'J',
+      12 => 'Q',
+      13 => 'K',
+      14 => 'A',
+      _ => value.toString(),
+    };
+    return '$rankStr${suit.name[0].toUpperCase()}';
+  }
 }
 
 class HandResult implements Comparable<HandResult> {
@@ -37,43 +50,17 @@ class HandResult implements Comparable<HandResult> {
 
   @override
   int compareTo(HandResult other) {
-    if (rank.index != other.rank.index) {
+    if (rank != other.rank) {
       return rank.index.compareTo(other.rank.index);
     }
     for (int i = 0; i < tiebreakers.length; i++) {
-      if (i >= other.tiebreakers.length) return 1;
-      if (tiebreakers[i] != other.tiebreakers[i]) {
-        return tiebreakers[i].compareTo(other.tiebreakers[i]);
-      }
+      final cmp = tiebreakers[i].compareTo(other.tiebreakers[i]);
+      if (cmp != 0) return cmp;
     }
-    if (other.tiebreakers.length > tiebreakers.length) return -1;
     return 0;
   }
 
-  String get rankName {
-    switch (rank) {
-      case HandRank.highCard:
-        return "High Card";
-      case HandRank.onePair:
-        return "One Pair";
-      case HandRank.twoPair:
-        return "Two Pair";
-      case HandRank.threeOfAKind:
-        return "Three of a Kind";
-      case HandRank.straight:
-        return "Straight";
-      case HandRank.flush:
-        return "Flush";
-      case HandRank.fullHouse:
-        return "Full House";
-      case HandRank.fourOfAKind:
-        return "Four of a Kind";
-      case HandRank.straightFlush:
-        return "Straight Flush";
-      case HandRank.royalFlush:
-        return "Royal Flush";
-    }
-  }
+  String get rankName => rank.label;
 
   @override
   bool operator ==(Object other) =>
@@ -81,7 +68,8 @@ class HandResult implements Comparable<HandResult> {
       other is HandResult && rank == other.rank && _listEquals(tiebreakers, other.tiebreakers);
 
   @override
-  int get hashCode => rank.hashCode ^ tiebreakers.hashCode;
+  // int get hashCode => rank.hashCode ^ tiebreakers.hashCode;
+  int get hashCode => Object.hash(rank, Object.hashAll(tiebreakers));
 
   bool _listEquals(List<int> a, List<int> b) {
     if (a.length != b.length) return false;
@@ -169,19 +157,23 @@ class PokerEvaluator {
   static int? _getStraightHighCard(List<int> values) {
     if (values.length < 5) return null;
 
-    final vals = values.toSet().toList();
-    if (vals.contains(14)) vals.add(1);
-    vals.sort((a, b) => b.compareTo(a));
-
-    int run = 1;
-    for (int i = 0; i < vals.length - 1; i++) {
-      if (vals[i] - 1 == vals[i + 1]) {
-        run++;
-        if (run >= 5) return vals[i - 3];
-      } else {
-        run = 1;
+    // Check for standard straights (any 5 consecutive cards)
+    for (int i = 0; i <= values.length - 5; i++) {
+      if (values[i] - values[i + 4] == 4) {
+        return values[i];
       }
     }
+
+    // Check for "Wheel" (Ace-low straight: 5-4-3-2-A)
+    // Ace is 14. If we have 14, 5, 4, 3, 2, it's a straight with high card 5.
+    if (values.contains(14) &&
+        values.contains(5) &&
+        values.contains(4) &&
+        values.contains(3) &&
+        values.contains(2)) {
+      return 5;
+    }
+
     return null;
   }
 
@@ -255,30 +247,20 @@ class GameEvaluator {
     List<PlayerData> players,
     List<CommunityCardData> community,
   ) {
-    final activePlayers = players.where((p) => !p.isFolded).toList();
-    if (activePlayers.isEmpty) return [];
-
-    final results = <_WinnerResult>[];
-    for (final p in activePlayers) {
-      final hand = evaluatePlayer(p, community);
-      if (hand != null) {
-        results.add(_WinnerResult(p, hand));
-      }
-    }
+    final results = players
+        .where((p) => !p.isFolded)
+        .map((p) => (player: p, hand: evaluatePlayer(p, community)))
+        .where((r) => r.hand != null)
+        .cast<({PlayerData player, HandResult hand})>()
+        .toList();
 
     if (results.isEmpty) return [];
 
+    // Sort descending by hand strength
     results.sort((a, b) => b.hand.compareTo(a.hand));
 
-    final winners = <PlayerData>[results[0].player];
-    for (int i = 1; i < results.length; i++) {
-      if (results[i].hand.compareTo(results[0].hand) == 0) {
-        winners.add(results[i].player);
-      } else {
-        break;
-      }
-    }
-    return winners;
+    final bestHand = results.first.hand;
+    return results.where((r) => r.hand.compareTo(bestHand) == 0).map((r) => r.player).toList();
   }
 }
 
