@@ -140,7 +140,7 @@ class PokerCard extends StatelessWidget {
                       overflow: TextOverflow.fade,
                       style: TextStyle(
                         fontSize: small ? 20 : 40,
-                        color: AppColors.textColor,
+                        color: AppColors.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -151,7 +151,7 @@ class PokerCard extends StatelessWidget {
                       showPlayerIndex.toString(),
                       style: TextStyle(
                         fontSize: small ? 30 : 40,
-                        color: AppColors.textColor,
+                        color: AppColors.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -160,7 +160,9 @@ class PokerCard extends StatelessWidget {
               ),
             )
           : showBack
-          ? const Center(child: SVGIcon(assetName: "icon_card_back", size: 35))
+          ? const Center(
+              child: SVGIcon(assetName: "icon_card_back", size: 35, color: AppColors.background),
+            )
           : Padding(
               padding: const EdgeInsets.fromLTRB(12, 6, 0, 0),
               child: Column(

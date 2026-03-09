@@ -289,7 +289,11 @@ class _PlayerCardState extends State<_PlayerCard> {
                   ? AppColors.indicatorTrue
                   : AppColors.indicatorFalse,
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.primaryLighter, width: 2),
+              border: Border.all(
+                color: AppColors.indicatorRing,
+                width: 2,
+                strokeAlign: BorderSide.strokeAlignOutside,
+              ),
             ),
           ),
         ),

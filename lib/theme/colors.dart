@@ -11,14 +11,8 @@ class AppColors {
   static const Color textColorDim = Color(0xFFAC987C);
 
   // GRADIENT
-  static const List<Color> gradientCopper = [
-    Color(0xFF3A1A1A),
-    Color(0xFFA16D6D),
-  ];
-  static const List<Color> gradientSeamless = [
-    AppColors.primary,
-    Color(0xFFF5C193),
-  ];
+  static const List<Color> gradientCopper = [Color(0xFF3A1A1A), Color(0xFFA16D6D)];
+  static const List<Color> gradientSeamless = [Color(0xFFFFE7CF), Color(0xFFE8B083)];
 
   static const Color deepShade = Color(0xFFDAD1C1);
   static const Color deepShadeHeavy = Color(0xFFB9B6AD);
@@ -35,8 +29,7 @@ class AppColors {
 
   // BUTTONS
   static final Color buttonPrimaryColor = Colors.pinkAccent.shade200;
-  static final Color buttonPrimaryShadowColor = Colors.pinkAccent.shade200
-      .withAlpha(60);
+  static final Color buttonPrimaryShadowColor = Colors.pinkAccent.shade200.withAlpha(60);
   static const Color buttonPrimaryTextColor = Color(0xFFFFFFFF);
   static const Color buttonSecondaryColor = Color(0x00000000);
   static const Color buttonSecondaryTextColor = AppColors.textColor;
@@ -48,7 +41,7 @@ class AppColors {
   // CARD WIDGET
   static const Color circularProgressFore = Color(0x70FFFFFF);
   static const Color circularProgressBack = Color(0x26000000);
-  static const Color cardBackBackground = Color(0xFFFFF8EE);
+  static const Color cardBackBackground = Color(0xFF493123);
 
   // PLAYER OPTION MENU WIDGET
   static final Color playerOptionOverlay = Colors.black.withAlpha(40);
@@ -60,4 +53,5 @@ class AppColors {
   static final Color dangerLight = Colors.red.shade100;
   static const Color indicatorTrue = Color(0xFF8EE041);
   static const Color indicatorFalse = Color(0xFFE0228A);
+  static const Color indicatorRing = Color(0xFF3A1A1A);
 }
