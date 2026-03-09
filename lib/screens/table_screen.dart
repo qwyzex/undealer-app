@@ -1,11 +1,14 @@
 import 'dart:math';
 import 'package:scaffold_gradient_background/scaffold_gradient_background.dart';
 import 'package:undealer/logic/deranged_shuffle.dart';
+import 'package:undealer/models/card_model.dart';
 import 'package:undealer/theme/colors.dart';
 import 'package:undealer/widgets/player_tab.dart';
 import 'package:provider/provider.dart';
 import 'package:undealer/widgets/svg_icon.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
+
+// import '../models/player_model.dart';
 import '/app_state.dart';
 
 import 'package:flutter/material.dart';
@@ -14,6 +17,14 @@ import 'package:undealer/models/suit.dart';
 import 'package:undealer/widgets/flip_card.dart';
 import 'package:undealer/widgets/poker_card.dart';
 import 'package:undealer/widgets/suit_selector.dart';
+
+class CardOwner {
+  final String source; // "community" or player name
+  final int? playerIndex;
+  final int? cardIndex; // 1 or 2
+
+  CardOwner(this.source, {this.playerIndex, this.cardIndex});
+}
 
 class TableRoom extends StatefulWidget {
   const TableRoom({super.key, required this.title});
@@ -266,7 +277,101 @@ class _TableRoomState extends State<TableRoom> {
         editingPlayerCardIndex = null;
       });
 
-      appState.evaluate(context);
+      // final List<PlayerData> players = appState.players;
+      List<CommunityCardData> exhaustedCards = [...appState.communityCards];
+
+      // check if theres still a card that hasn't got assigned
+      for (var card in appState.communityCards) {
+        if (card.value == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Please assign all community cards."),
+              duration: Duration(seconds: 3),
+            ),
+          );
+          return;
+        }
+      }
+
+      // check if player count is less then 2
+      if (appState.players.length < 2) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Please add at least 2 players."),
+            duration: Duration(seconds: 3),
+          ),
+        );
+        return;
+      }
+
+      for (var player in appState.players) {
+        if (player.card1.value == null || player.card2.value == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Please assign all cards to players."),
+              duration: Duration(seconds: 3),
+            ),
+          );
+          return;
+        }
+      }
+
+      // check if different players had the same card rank and suit, basically check for duplicates
+      final Map<String, CardOwner> seenCards = {};
+
+      bool hasDuplicate = false;
+      String? errorMessage;
+
+      // check community cards
+      for (int i = 0; i < appState.communityCards.length; i++) {
+        final card = appState.communityCards[i];
+        final key = "${card.value}-${card.suit}";
+
+        seenCards[key] = CardOwner("community", playerIndex: null);
+      }
+
+      // check players
+      for (int p = 0; p < appState.players.length; p++) {
+        final player = appState.players[p];
+
+        final playerCards = [player.card1, player.card2];
+
+        for (int c = 0; c < playerCards.length; c++) {
+          final card = playerCards[c];
+          final key = "${card.value}-${card.suit}";
+
+          if (seenCards.containsKey(key)) {
+            final owner = seenCards[key]!;
+
+            // errorMessage =
+            //     "Duplicate card detected: ${card.value} of ${(card.suit).toString().replaceAll("Suit.", "").toUpperCase()}\n"
+            //     "Player ${player.playerName} has the same card as ${owner.source}.";
+
+            hasDuplicate = true;
+            break;
+          }
+
+          seenCards[key] = CardOwner(
+            player.playerName ?? "Player ${p + 1}",
+            playerIndex: p,
+            cardIndex: c + 1,
+          );
+        }
+
+        if (hasDuplicate) break;
+      }
+
+      if (hasDuplicate) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Duplicate cards detected. Please ask the players to check."),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        return;
+      }
+
+      appState.evaluate(context, appState.players, appState.communityCards);
     }
 
     //*************************************************************************//

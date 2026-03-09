@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:undealer/logic/evaluation.dart';
 import 'package:undealer/models/card_model.dart';
 import 'package:undealer/models/game_options.dart';
 import 'package:undealer/models/player_model.dart';
@@ -292,10 +293,22 @@ class AppState extends ChangeNotifier {
   //*************************************************************************//
   // Evaluation logic
 
-  void evaluate(dynamic context) {
+  void evaluate(dynamic context, List<PlayerData> players, List<CommunityCardData> communityCards) {
+    final winners = GameEvaluator.determineWinners(players, communityCards);
+    final results = {
+      for (final player in players) player: GameEvaluator.evaluatePlayer(player, communityCards),
+    };
+
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => EvaluationResultScreen()),
+      MaterialPageRoute(
+        builder: (context) => EvaluationResultScreen(
+          players: players,
+          communityCards: communityCards,
+          winners: winners,
+          results: results,
+        ),
+      ),
     );
   }
 }
