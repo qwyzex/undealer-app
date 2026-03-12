@@ -23,6 +23,7 @@ dependencies:
   fluttertoast: ^9.0.0
   flutter_custom_icons: ^0.0.5
   flutter_svg: ^2.2.4
+  page_transition: ^2.2.1
 
 dev_dependencies:
   flutter_test:
