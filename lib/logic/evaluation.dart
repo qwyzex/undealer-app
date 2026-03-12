@@ -2,6 +2,13 @@ import '../models/suit.dart';
 import '../models/card_model.dart';
 import '../models/player_model.dart';
 
+class PlayerEvaluation {
+  final PlayerData player;
+  final HandResult hand;
+
+  PlayerEvaluation(this.player, this.hand);
+}
+
 enum HandRank {
   highCard("High Card"),
   onePair("One Pair"),

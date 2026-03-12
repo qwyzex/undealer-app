@@ -295,11 +295,14 @@ class AppState extends ChangeNotifier {
 
   void evaluate(dynamic context, List<PlayerData> players, List<CommunityCardData> communityCards) {
     final winners = GameEvaluator.determineWinners(players, communityCards);
-    final results = {
-      for (final player in players) player: GameEvaluator.evaluatePlayer(player, communityCards),
-    };
 
-    Navigator.pushReplacement(
+    final results =
+        players
+            .map((p) => PlayerEvaluation(p, GameEvaluator.evaluatePlayer(p, communityCards)!))
+            .toList()
+          ..sort((a, b) => b.hand.compareTo(a.hand));
+
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => EvaluationResultScreen(
