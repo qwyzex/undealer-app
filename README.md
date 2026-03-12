@@ -1,16 +1,22 @@
-# undealer
+# ♥♠ undealer ♦♣
 
-A new Flutter project.
+Undealer is a passion project by @qwyzex that was first initialised as a tool to help casual poker
+players play without needing deep knowledge on how to determine hands and winners on a poker game.
 
-## Getting Started
+## ✨ Features
 
-This project is a starting point for a Flutter application.
+- Three-stage community card deals
+- Add up to 20 players on a table
+- Fold-aware evaluation logic
+- Re-assign cards rank and suit
+- Remove, rename, and fold a player card
+- Various game options to set before start
 
-A few resources to get you started if this is your first Flutter project:
+## 📝 TODO
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- [ ] Add more game options
+- [ ] Add game history features
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 📄 LICENCE
+
+This project is licensed under the MIT Licence.
