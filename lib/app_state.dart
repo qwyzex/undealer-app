@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:undealer/logic/evaluation.dart';
 import 'package:undealer/models/card_model.dart';
@@ -304,8 +305,11 @@ class AppState extends ChangeNotifier {
 
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => EvaluationResultScreen(
+      PageTransition(
+        type: PageTransitionType.fade,
+        duration: Duration(milliseconds: 2500),
+        curve: Curves.ease,
+        child: EvaluationResultScreen(
           players: players,
           communityCards: communityCards,
           winners: winners,

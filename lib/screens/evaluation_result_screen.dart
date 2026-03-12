@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:scaffold_gradient_background/scaffold_gradient_background.dart';
+import 'package:undealer/theme/colors.dart';
 import '../logic/evaluation.dart';
 import '../models/card_model.dart';
 import '../models/player_model.dart';
@@ -25,7 +27,24 @@ class EvaluationResultScreen extends StatefulWidget {
 class _EvaluationResultScreenState extends State<EvaluationResultScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ScaffoldGradientBackground(
+      gradient: LinearGradient(
+        colors: [Color(0xFF281B1B), Color(0xFFEA8665)],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        stops: [0.075, 1.0],
+      ),
+      appBar: AppBar(
+        foregroundColor: Colors.white,
+        leading: IconButton(
+          onPressed: () => {Navigator.pop(context)},
+          icon: Icon(Icons.arrow_back_ios),
+        ),
+        actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.share))],
+        title: Text("Game Results"),
+        centerTitle: true,
+        backgroundColor: AppColors.transparent,
+      ),
       body: SafeArea(
         child: Center(
           child: ListView.builder(
